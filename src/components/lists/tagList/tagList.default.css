@@ -1,0 +1,17 @@
+tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+
+    .arpaList__items {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        gap: 4px;
+    }
+
+    .tag {
+        flex: 1 1 auto;
+        width: calc(50% - 4px);
+    }
+}

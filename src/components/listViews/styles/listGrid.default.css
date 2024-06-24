@@ -1,0 +1,190 @@
+:root {
+    --listView--grid--imageWidth: 200px;
+}
+.listItem--grid .listItem__imageContainer {
+    width: var(--listView--grid--imageWidth);
+    height: var(--listView--grid--imageWidth);
+    max-width: var(--listView--grid--imageWidth);
+    max-height: var(--listView--grid--imageWidth);
+    min-width: var(--listView--grid--imageWidth);
+    min-height: var(--listView--grid--imageWidth);
+}
+
+.listView--grid
+    > .listComponent__body
+    > .listComponent__bodyMain
+    > .listComponent__list
+    > .listItem
+    > .listItem__icon {
+    top: 10px;
+}
+
+.listItem--grid {
+    position: relative;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    padding: 8px 8px 0px;
+    max-width: var(--listView--grid--imageWidth);
+    flex-direction: column;
+    padding: 0 !important;
+    border-radius: 4px;
+    max-width: 400px;
+    min-width: 0;
+}
+
+.listItem--grid .listItem__imageContainer .circularPreloader {
+    scale: 100%;
+}
+
+.listItem--grid .listItem__title {
+    margin-top: 0px;
+    gap: 0;
+    width: 100%;
+}
+
+.listItem--grid .listItem__titleText {
+    padding: 0 4px 8px;
+    text-align: left;
+    width: 100%;
+    color: var(--grey-800);
+}
+
+.listItem--grid .listItem__titleText:not(:first-child) {
+    padding-top: 12px;
+}
+
+.listItem--grid.listItem--grid.listItem--grid .listItem__imageContainer {
+    background-color: var(--image-bg-color);
+    padding: 0;
+    margin: 0;
+    min-width: 100%;
+    min-height: none;
+}
+
+.listItem--grid.listItem--grid .imageComponent__image {
+    object-fit: contain;
+    min-width: 100%;
+}
+
+.listItem--grid > .listItem__contentContainer {
+    flex-direction: column;
+    width: 100%;
+    padding: 10px 12px 6px;
+}
+
+
+
+.listItem--grid:hover .listItem__nav .iconButton {
+    opacity: 1;
+}
+
+.listView--grid > .listComponent__body > .listComponent__bodyMain > .listComponent__list.listComponent__list {
+    display: grid;
+    column-gap: 50px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--listView--grid--imageWidth), 1fr));
+    grid-gap: 16px;
+}
+
+.listView--grid.listView--grid .listItem__imageContainer {
+    min-width: 100%;
+    width: 100%;
+    top: 0;
+}
+
+.listView--grid.listView--grid .imageComponent__image {
+    width: 100%;
+    max-width: 0;
+    min-width: 100%;
+    padding: 4px;
+}
+
+.listView--grid .listItem__imageError {
+    width: 100%;
+}
+
+.listItem--grid .listItem__checkboxContainer {
+    position: absolute;
+    top: 32px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    background-color: var(--overlay);
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    box-shadow: rgba(99, 99, 99, 0.1) 0px 2px 8px 0px;
+}
+
+.listItem--grid .listItem__nav .iconButton {
+    transition: opacity 0.2s ease-in-out;
+    opacity: 0;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    border-radius: 4px;
+    box-shadow: rgba(99, 99, 99, 0.1) 0px 2px 8px 0px;
+    background-color: var(--overlay);
+}
+
+.listItem--grid .listItem__nav {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+}
+.listItem--grid .listItem__nav .selectCombo {
+    margin-right: 0px;
+}
+
+.listItem--selected.listItem--grid .listItem__checkboxContainer {
+    opacity: 1;
+}
+
+.listItem--grid.listItem--selected.listItem--selected {
+    border: 2px dashed var(--grey-200);
+    background-color: transparent;
+}
+
+.listItem--grid:hover .listItem__checkboxContainer {
+    opacity: 1;
+}
+
+
+.listItem--grid .listItem__tags.listItem__tags {
+    flex-wrap: wrap;
+    padding: 0;
+    min-width: 100%;
+}
+
+.listItem--grid .listItem__title.listItem__title {
+    padding-top: 2px;
+}
+
+.listItem--grid .listItem__subTitle.listItem__subTitle {
+    padding: 0;
+    margin-top: 2px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    align-items: center;
+}
+
+.listItem--grid .listItem__tags .tag {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1 1 auto;
+}
+
+@media (hover: none) {
+
+    .listItem--grid .listItem__titleText.listItem__titleText {
+        padding-right: 30px;
+    }
+    .listItem--grid .listItem__nav .iconButton,
+    .listItem--grid .listItem__checkboxContainer {
+        opacity: 1;
+    }
+}
+

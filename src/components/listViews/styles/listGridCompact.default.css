@@ -1,0 +1,61 @@
+:root {
+    --listView--grid-compact--imageWidth: 120px;
+}
+
+.listItem--grid-compact .listItem__imageContainer,
+.listItem--grid-compact .listItem__imageContainer img,
+.listItem--grid-compact .icon.imageComponent__thumbnail {
+    width: var(--listView--grid-compact--imageWidth);
+    height: var(--listView--grid-compact--imageWidth);
+    max-width: var(--listView--grid-compact--imageWidth);
+    max-height: var(--listView--grid-compact--imageWidth);
+    min-width: var(--listView--grid-compact--imageWidth);
+    min-height: var(--listView--grid-compact--imageWidth);
+}
+
+.listView--grid-compact
+    > .listComponent__body
+    > .listComponent__bodyMain
+    > .listComponent__list.listComponent__list {
+    display: grid;
+    column-gap: 50px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--listView--grid-compact--imageWidth), 1fr));
+    grid-gap: 8px;
+}
+
+.listItem--grid-compact {
+    max-width: 220px;
+    min-width: 0;
+}
+
+.listItem.listItem.listItem--grid-compact .listItem__contentContainer {
+    padding: 6px;
+}
+
+.listItem--grid-compact .listItem__title {
+    gap: 0px;
+}
+
+.listItem--grid-compact .listItem__titleText {
+    font-size: 14px;
+    padding: 8px 2px;
+}
+
+.listItem--grid-compact .listItem__tags {
+    gap: 2px;
+}
+
+.listItem--grid-compact .listItem__tags .tag:not(.tag--locationNotVerified, .tag--locationVerified) .icon {
+    /* display: none; */
+}
+
+.listItem--grid-compact .tag__text {
+    padding: 6px 4px 4px;
+}
+
+.listItem--grid-compact .listItem__nav .selectCombo {
+    width: 130px;
+    min-width: 0;
+    margin-right: 0px;
+}

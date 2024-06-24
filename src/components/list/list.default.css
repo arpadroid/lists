@@ -1,0 +1,126 @@
+.arpaList {
+    position: relative;
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+}
+
+.arpaList__title {
+    margin: 0px 0px 12px;
+    font-weight: normal;
+    color: var(--grey-600);
+    font-size: 26px;
+}
+
+.arpaList__items {
+    display: flex;
+    flex-direction: column;
+    padding: 0px 0px;
+    margin: 0px 0px;
+    position: relative;
+    padding-bottom: 8px;
+    width: 100%;
+}
+
+.arpaList__header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 8px;
+    min-width: 0;
+}
+
+.arpaList .listHeading {
+    flex: 1 1 auto;
+    display: flex;
+    min-width: 0;
+    color: var(--grey-500);
+}
+
+.listHeading__resultsMessageText {
+    padding: 4px 0px 16px;
+}
+
+.listHeading__resultsMessageText:empty {
+    display: none;
+}
+
+.arpaList__items:empty {
+    display: none;
+}
+
+.arpaList__header:empty {
+    display: none;
+}
+
+.arpaList__header:has(.listHeading:empty) {
+    display: none;
+}
+
+.arpaList__noItems {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--grey-500);
+    text-transform: uppercase;
+    font-size: 15px;
+    margin: 8px 0px;
+    border: 2px solid var(--color-background);
+    width: 100%;
+    padding: 16px;
+    border-radius: 8px;
+    height: 100px;
+    border: var(--striped-area-border);
+    background: var(--striped-area);
+    outline: var(--striped-area-outline);
+    text-align: center;
+    justify-content: center;
+    text-align: center;
+    letter-spacing: 0.7px;
+}
+
+.arpaList__noItemsText {
+    padding: 6px 12px 5px;
+    border-radius: 4px;
+    background-color: var(--overlay-light);
+}
+
+.arpaList__body {
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+}
+
+.arpaList__bodyMain {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.arpaList__bodyAside {
+    flex: 0 1 auto;
+}
+
+.arpaList__bodyAside:empty {
+    display: none;
+}
+
+.arpaList .pager.pager {
+    margin: 12px auto;
+    margin-top: auto;
+}
+
+.arpaList .pager.absoluteFix {
+    margin-bottom: 0;
+}
+
+.arpaList[variant='mini'] {
+    /* min-height: 32px; */
+    .arpaList__noItems {
+        flex-direction: row;
+        height: 20px;
+    }
+}
