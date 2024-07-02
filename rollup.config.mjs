@@ -1,4 +1,4 @@
-import alias from '@rollup/plugin-alias';
+import alias from './node_modules/@arpadroid/arpadroid/node_modules/@rollup/plugin-alias/dist/cjs/index.js';
 import { getBuild } from '@arpadroid/arpadroid/src/rollup/builds/rollup-builds.mjs';
 const cwd = process.cwd();
 const SLIM = process.env['slim'] === 'true';
