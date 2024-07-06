@@ -256,16 +256,25 @@ class ListItem extends ArpaElement {
     }
 
     async _onConnected() {
-        this._initializeProperties();
         this._initializeNodes();
         await this._initializeItem();
     }
 
     _initializeItem() {}
 
-    _initializeProperties() {
+    initializeProperties() {
+        super.initializeProperties();
         this.list = this.closest('.arpaList');
         this.listResource = this.list?.listResource;
+    }
+
+    _onRendered() {
+        super._onRendered();
+        if (!this.isConnected) {
+            return;
+        }
+        const payload = { id: this.getId(), ...this.getPayload() };
+        this.listResource?.registerItem(payload, this);
     }
 
     _initializeNodes() {
@@ -285,13 +294,6 @@ class ListItem extends ArpaElement {
         if (this.mainNode && typeof action === 'function') {
             this.mainNode.removeEventListener('click', doAction);
             this.mainNode.addEventListener('click', doAction);
-        }
-        const payload = {
-            id: this.getId(),
-            ...this.getPayload()
-        };
-        if (this.isConnected) {
-            this.listResource?.registerItem(payload, this);
         }
     }
 

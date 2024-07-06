@@ -208,6 +208,9 @@ class List extends ArpaElement {
     }
 
     async addItemNodes(items) {
+        if (!items?.length) {
+            return;
+        }
         await this.onReady();
         this.itemsNode?.append(...items);
     }
@@ -424,18 +427,15 @@ class List extends ArpaElement {
     // #region LIFECYCLE
     /////////////////////
 
-    async update(items = this.getItems()) {
+    async update() {
         await this.onReady();
-        requestAnimationFrame(() => {
-            if (!items?.length) {
-                this.noItemsNode = this.noItemsNode || renderNode(this.renderNoItemsContent());
-                if (this.noItemsNode) {
-                    this.bodyMainNode?.appendChild(this.noItemsNode);
-                }
-            } else {
-                this.noItemsNode?.remove();
-            }
-        });
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        if (!this.getItems()?.length) {
+            this.noItemsNode = this.noItemsNode || renderNode(this.renderNoItemsContent());
+            this.noItemsNode && this.bodyMainNode?.appendChild(this.noItemsNode);
+        } else {
+            this.noItemsNode?.remove();
+        }
     }
 
     _onConnected() {
