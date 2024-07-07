@@ -128,10 +128,8 @@ class ListSort extends ArpaElement {
             customElements.whenDefined('select-combo').then(async () => {
                 this.configureSelect(select);
                 select.listen('onChange', this.onSelectChange);
-                await select.onReady();
                 this.sortButton = this.renderSortButton();
-                select.inputMask.addRhs('sortButton', this.sortButton);
-                select;
+                select.onRendered(() => select.inputMask?.addRhs('sortButton', this.sortButton));
             });
             return select;
         }

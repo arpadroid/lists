@@ -2,15 +2,15 @@
  * @typedef {import('@arpadroid/application/dist/index.js').ListResource} ListResource
  * @typedef {import('../list/list.js').default} List
  */
-import { mergeObjects } from '@arpadroid/tools';
-import { Context } from '@arpadroid/application';
-// import { IconMenu } from '@arpadroid/navigation';
+import { mergeObjects, attrString } from '@arpadroid/tools';
 import { ArpaElement } from '@arpadroid/ui';
+import { Context } from '@arpadroid/application';
 
 export const LIST_VIEW_GRID = 'grid';
 export const LIST_VIEW_GRID_COMPACT = 'grid-compact';
 export const LIST_VIEW_LIST = 'list';
 export const LIST_VIEW_LIST_COMPACT = 'list-compact';
+const html = String.raw;
 class ListViews extends ArpaElement {
     // #region INITIALIZATION
     getDefaultConfig() {
@@ -45,15 +45,20 @@ class ListViews extends ArpaElement {
             ]
         });
     }
+    render() {
+        const props = this.getProperties('icon', 'label');
+        this.innerHTML = html`<icon-menu ${attrString(props)}></icon-menu>`;
+    }
 
     initializeProperties() {
+        super.initializeProperties();
         /** @type {List} */
         this.list = this.closest('.arpaList');
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
         this._initializeViewFilter();
         this._initializeViewsConfig();
-        super.initializeProperties();
+
         this.viewClasses = this._config.links.map(link => 'listView--' + link.value);
         Context.Router.listen('ROUTE_CHANGED', () => this.initializeView());
         return true;
@@ -125,10 +130,16 @@ class ListViews extends ArpaElement {
         selected?.setAttribute('aria-current', 'location');
     }
 
-    _onConnected() {
+    async _onConnected() {
         super._onConnected();
-        console.log('Im connected');
-        // this.navigation.onRendered(() => this.initializeView());
+        await customElements.whenDefined('icon-menu');
+        this.iconMenu = this.querySelector('icon-menu');
+        this.iconMenu.setLinks(this._config.links);
+        return this.iconMenu?.onRendered(() => {
+            this.navigation = this.iconMenu.navigation;
+            this.initializeView();
+            return true;
+        });
     }
 
     initializeView(view = this.viewFilter?.getValue()) {

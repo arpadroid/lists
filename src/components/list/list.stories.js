@@ -14,7 +14,7 @@ const ListStory = {
             hasSearch: false,
             hasSort: false,
             hasViews: false,
-            allControls: true
+            allControls: false
         };
     },
     getArgTypes: (category = 'List Props') => {
@@ -35,27 +35,15 @@ const ListStory = {
                     image="http://museovaquero.local/api/image/convert?source=%2Fcmsx%2Fassets%2Fhqrvutmy_museovaquero_assets%2Fgallery%2Fimages%2F449.jpg&width=400&height=400&quality=70"
                     title="Some title"
                     has-selection
-                    sub-title="test subtitle"
                 >
-                    Some message
+                    A Demo list item.
                 </list-item>
             </arpa-list>
             <script>
+                // http://museovaquero.local/api/gallery/item/get-items?galleryList-search=&galleryList-sortBy=modified_date&galleryList-sortDir=desc&galleryList-state=&galleryList-page=2&galleryList-perPage=50&public=
                 customElements.whenDefined('arpa-list').then(() => {
                     /** @type {List} */
                     const list = document.getElementById('test-list');
-                    list.setSortOptions([
-                        {
-                            label: 'Name',
-                            value: 'name',
-                            icon: 'sort_by_alpha'
-                        },
-                        {
-                            label: 'Date',
-                            value: 'date',
-                            icon: 'calendar_month'
-                        }
-                    ]);
                 });
             </script>
         `;
@@ -67,6 +55,37 @@ export const Default = {
     parameters: {},
     argTypes: ListStory.getArgTypes(),
     args: { ...ListStory.getArgs(), id: 'test-list' }
+};
+
+export const ResourceDriven = {
+    name: 'Resource Driven',
+    parameters: {},
+    argTypes: ListStory.getArgTypes(),
+    args: { ...ListStory.getArgs(), id: 'test-list', allControls: true },
+    render: args => {
+        delete args.text;
+        return html`
+            <arpa-list ${attrString(args)} views="grid, list"> </arpa-list>
+            <script>
+                // http://museovaquero.local/api/gallery/item/get-items?galleryList-search=&galleryList-sortBy=modified_date&galleryList-sortDir=desc&galleryList-state=&galleryList-page=2&galleryList-perPage=50&public=
+                customElements.whenDefined('arpa-list').then(() => {
+                    /** @type {List} */
+                    const list = document.getElementById('test-list');
+                    list.setSortOptions([
+                        { label: 'Name', value: 'name', icon: 'sort_by_alpha' },
+                        { label: 'Date', value: 'date', icon: 'calendar_month' }
+                    ]);
+                    /** @type {ListResource} */
+                    const resource = list.listResource;
+                    resource.setPreProcessItem(item => {
+                        console.log('setPreProcessItem', item)
+                        return item;
+                    });
+                    resource.setUrl('/api/gallery/item/get-items').fetch();
+                });
+            </script>
+        `;
+    }
 };
 
 export const Test = {

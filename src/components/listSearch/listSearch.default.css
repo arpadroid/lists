@@ -1,4 +1,7 @@
 list-search {
     flex: 1 1 auto;
     margin-right: auto;
+    .arpaForm__fields {
+        gap: 12px;
+    }
 }

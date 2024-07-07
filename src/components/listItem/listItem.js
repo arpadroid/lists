@@ -1,11 +1,9 @@
 /* eslint-disable indent */
 /**
  * @typedef {import('./listItemInterface').ListItemInterface} ListItemInterface
- * @typedef {import('../../resources/listResource.js').default} ListResource
- * @typedef {import('../../contexts/listFilter.js').default} ListFilter
+ * @typedef {import('../../resources/listResource/listResource.js').default} ListResource
+ * @typedef {import('../../resources/listResource/listFilter.js').default} ListFilter
  * @typedef {import('../list/list.js').default} List
- * @typedef {import('../../../../components/abstract-content/abstractContentInterface').AbstractContentInterface} AbstractContentInterface
- * @typedef {import('@arpadroid/ui').IconMenu} IconMenu
  * @typedef {import('../../../../components/tag/tagInterface.js').TagInterface} TagInterface
  */
 
@@ -118,14 +116,11 @@ class ListItem extends ArpaElement {
     }
 
     render() {
+        const { role, action } = this._config;
         this.classList.add('listItem');
-        if (this._config.role) {
-            this.setAttribute('role', this._config.role);
-        }
+        role && this.setAttribute('role', role);
         this.link = this.getProperty('link');
-        if (!this.link && this.hasAttribute('link')) {
-            this.removeAttribute('link');
-        }
+        this.removeAttribute('link');
         const href = this.link ? `href="${this.link}"` : '';
         const wrapperComponent = href ? 'a' : this.getWrapperComponent();
         const template = html`
@@ -141,6 +136,8 @@ class ListItem extends ArpaElement {
         `;
         const content = this.renderTemplate(template);
         this.innerHTML = content;
+        this.button = this.querySelector('button.listItem__main');
+        action && this.button?.addEventListener('click', event => action(event, this));
     }
 
     getWrapperComponent() {

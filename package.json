@@ -9,7 +9,7 @@
     "scripts": {
         "build": "node ./node_modules/@arpadroid/arpadroid/scripts/build-project.mjs --project=lists --minify",
         "prepublish": "npm run build",
-        "storybook": "npm run build -- --storybook=6008 --deps=forms --watch",
+        "storybook": "npm run build -- --storybook=6008 --deps=forms,navigation --watch",
         "test": "npm run storybook:test",
         "test:storybook": "test-storybook"
     },
@@ -45,6 +45,7 @@
         "@arpadroid/forms": "file:../forms",
         "@arpadroid/i18n": "file:../i18n",
         "@arpadroid/tools": "file:../tools",
-        "@arpadroid/ui": "file:../ui"
+        "@arpadroid/ui": "file:../ui",
+        "@arpadroid/navigation": "file:../navigation"
     }
 }

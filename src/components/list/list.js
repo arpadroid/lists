@@ -1,16 +1,15 @@
 /**
  * @typedef {import('../listItem/listItemInterface').ListItemInterface} ListItemInterface
  * @typedef {import('./listInterface.js').ListInterface} ListInterface
- * @typedef {import('@arpadroid/application/src/resources/listResource/listResource')} ListResource
  * @typedef {import('../../../../types').AbstractContentInterface} AbstractContentInterface
  */
 
 import { ArpaElement } from '@arpadroid/ui';
 import ListItem from '../listItem/listItem.js';
-import { ListResource } from '@arpadroid/application';
 import { I18nTool } from '@arpadroid/i18n';
 import { mergeObjects, getScrollableParent, isInView } from '@arpadroid/tools';
 import { sanitizeSearchInput, render, renderNode, renderAttr } from '@arpadroid/tools';
+import ListResource from '../../resources/listResource/listResource.js';
 
 const html = String.raw;
 class List extends ArpaElement {
@@ -239,6 +238,7 @@ class List extends ArpaElement {
         this.listResource.listen('REMOVE_ITEM', this.onResourceRemoveItem);
         this.listResource.listen('ITEMS_UPDATED', this.onResourceItemsUpdated);
         this.listResource.listen('SET_ITEMS', this.onResourceSetItems);
+        this.listResource.listen('ITEMS', this.onResourceSetItems);
         // this.listResource.listen('UPDATE_ITEM', payload => this.layout.updateNode(payload));
     }
 
@@ -429,7 +429,7 @@ class List extends ArpaElement {
 
     async update() {
         await this.onReady();
-        await new Promise(resolve => requestAnimationFrame(resolve));
+        await new Promise(resolve => setTimeout(resolve, 10));
         if (!this.getItems()?.length) {
             this.noItemsNode = this.noItemsNode || renderNode(this.renderNoItemsContent());
             this.noItemsNode && this.bodyMainNode?.appendChild(this.noItemsNode);
