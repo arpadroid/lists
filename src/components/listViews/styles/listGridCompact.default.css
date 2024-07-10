@@ -2,8 +2,8 @@
     --listView--grid-compact--imageWidth: 120px;
 }
 
-.listItem--grid-compact .listItem__imageContainer,
-.listItem--grid-compact .listItem__imageContainer img,
+.listItem--grid-compact .listItem__image,
+.listItem--grid-compact .listItem__image img,
 .listItem--grid-compact .icon.imageComponent__thumbnail {
     width: var(--listView--grid-compact--imageWidth);
     height: var(--listView--grid-compact--imageWidth);

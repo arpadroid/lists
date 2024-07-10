@@ -13,7 +13,7 @@ class ListControls extends ArpaElement {
         return {
             className: 'listControls',
             hasStickyControls: this.list?.hasStickyControls(),
-            template: html`{search}{views}{multiSelect}`
+            template: html`{search}{multiSelect}{views}`
         };
     }
 
@@ -34,10 +34,15 @@ class ListControls extends ArpaElement {
     }
 
     renderSearch() {
-        return this.list?.hasSearch() ? html`<list-search></list-search>` : '';
+        const canRender = this.list?.hasSearch() || this.list?.hasSort();
+        return canRender ? html`<list-search></list-search>` : '';
     }
 
-    postRender() {
+    _onConnected() {
+        super._onConnected();
+        this.search = this.querySelector('list-search');
+        this.views = this.querySelector('list-views');
+        this.multiSelect = this.querySelector('list-multi-select');
         // super.postRender();
         // const { hasStickyControls } = this._config;
         // if (hasStickyControls) {

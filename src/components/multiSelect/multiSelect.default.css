@@ -1,0 +1,59 @@
+list-multi-select {
+    padding: 8px;
+}
+
+
+.multiSelect__nav {
+    /* display: block !important; */
+    
+}
+
+.multiSelect__form {
+    min-width: 320px;
+    display: flex;
+    padding: 8px;
+    flex-wrap: wrap;
+    .arpaForm__fields {
+        margin-top: 8px;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .arpaField {
+        width: 100%;
+        margin-top: 0;
+    }
+
+}
+
+.listSelection__itemList {
+    padding: 8px;
+}
+
+.listSelection__itemList button {
+    text-decoration: underline;
+}
+
+.listSelection__content {
+    padding: 8px;
+    min-width: 320px;
+}
+
+.listSelection__itemsSelected {
+    margin-bottom: 8px;
+}
+
+.listSelection__content form .fieldComponent {
+    margin: 0;
+    width: 100%;
+}
+
+.listSelection__content .formFieldsComponent {
+    /* gap: 8px; */
+    display: flex;
+    flex-direction: column;
+}
+
+.listSelection__menu--active .iconMenu__button .iconButton__content {
+    color: var(--color-primary)
+}

@@ -17,7 +17,7 @@ class ListSort extends ArpaElement {
     //////////////////////////
     // #region INITIALIZATION
     //////////////////////////
-    _bindings = ['renderSelectValue', 'onSelectChange', 'onRouteChanged'];
+    _bindings = ['renderSelectValue', 'onSelectChange', 'onRouteChanged', 'onSortClick'];
 
     getDefaultConfig() {
         return {
@@ -86,9 +86,13 @@ class ListSort extends ArpaElement {
     // #region RENDERING
     ////////////////////
 
-    render() {
-        this.selectField = this.renderSelect();
-        this.append(this.selectField);
+    async render() {
+        this.innerHTML = await this.renderSelect();
+        this.selectField = this.querySelector('select-combo');
+        await customElements.whenDefined('select-combo');
+        this.selectField.onRendered(() => {
+            this.configureSelect(this.selectField);
+        });
     }
 
     renderSortButton() {
@@ -102,52 +106,39 @@ class ListSort extends ArpaElement {
                 label="${this.getSortDirTooltip()}"
             ></button>`
         );
-        button.addEventListener('click', () => {
-            const value = this.sortDirFilter.getValue();
-            const newValue = value === 'asc' ? 'desc' : 'asc';
-            const newURL = editURL(Context.Router.getRoute(), {
-                [this.sortDirFilter.getUrlName()]: newValue
-            });
-            Context.Router.go(newURL);
-        });
+        button.addEventListener('click', this.onSortClick);
         return button;
     }
+    
+    onSortClick() {
+        const value = this.sortDirFilter.getValue();
+        const newValue = value === 'asc' ? 'desc' : 'asc';
+        const newURL = editURL(Context.Router.getRoute(), {
+            [this.sortDirFilter.getUrlName()]: newValue
+        });
+        Context.Router.go(newURL);
+    }
 
-    renderSelect() {
-        if (this.list?.getSortOptions()?.length) {
-            const value = this.sortFilter?.getValue();
-            /** @type {SelectCombo} */
-            const select = renderNode(
-                html`<select-combo
-                    value="${value}"
-                    id="sortBy"
-                    class="sortByField"
-                    icon-right="none"
-                ></select-combo>`
-            );
-            customElements.whenDefined('select-combo').then(async () => {
-                this.configureSelect(select);
-                select.listen('onChange', this.onSelectChange);
-                this.sortButton = this.renderSortButton();
-                select.onRendered(() => select.inputMask?.addRhs('sortButton', this.sortButton));
-            });
-            return select;
-        }
+    async renderSelect() {
+        return html`<select-combo id="sortBy" class="sortByField" icon-right="none"></select-combo>`;
     }
 
     configureSelect(
         field,
-        options = this.list?.getSortOptions(),
-        value = this.sortFilter?.getValue() ?? this.list?.getSortDefault(),
+        options = this.list.getSortOptions(),
+        value = this.sortFilter?.getValue() || this.list?.getSortDefault(),
         config = {}
     ) {
+        field.listen('onChange', this.onSelectChange);
         field.addConfig({
             icon: this.getProperty('sort-icon'),
             renderValue: this.renderSelectValue,
             ...config
         });
-        value && field.setValue(value);
         options && field.setOptions(options);
+        this.sortButton = this.renderSortButton();
+        field.inputMask.addRhs('sortButton', this.sortButton);
+        field.setValue(value);
     }
 
     renderSelectValue(option) {
@@ -155,9 +146,7 @@ class ListSort extends ArpaElement {
         return html`
             ${icon ? html`<arpa-icon>${icon}</arpa-icon>` : ''}
             <i18n-text className="selectComboInput__label" key="modules.list.listSort.lblSortBy"></i18n-text>
-            <span className="selectComboInput__title">
-                ${option?.getProperty('label') ?? this.getProperty('lbl-no-selection')}
-            </span>
+            <span className="selectComboInput__title"> ${option?.getProperty('label') ?? this.getProperty('lbl-no-selection')} </span>
         `;
     }
 

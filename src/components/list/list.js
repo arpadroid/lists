@@ -46,6 +46,7 @@ class List extends ArpaElement {
             hasMiniSearch: true,
             hasPager: true,
             hasSearch: false,
+            hasSelection: false,
             hasSort: false,
             hasStickyFilters: false,
             hasViews: false,
@@ -92,8 +93,8 @@ class List extends ArpaElement {
         }
     }
 
-    setPreProcessItem(callback) {
-        this.listResource?.setPreProcessItem(callback);
+    mapItem(callback) {
+        this.listResource?.mapItem(callback);
     }
 
     preProcessNode(callback) {
@@ -129,7 +130,7 @@ class List extends ArpaElement {
     }
 
     hasMultiSelect() {
-        return this.hasAllControls() || this.hasProperty('has-multiSelect');
+        return this.hasAllControls() || this.hasProperty('has-selection');
     }
 
     /**
@@ -148,12 +149,12 @@ class List extends ArpaElement {
         return this.getProperty('sort-default');
     }
 
-    setSortOptions(options, defaultValue = null) {
+    async setSortOptions(options, defaultValue = null) {
         this._config.sortOptions = options;
         this._config.sortDefault = defaultValue;
-        if (this.sortField) {
-            this.sortField.setOptions(options, defaultValue);
-        }
+        const listSort = this.controls?.search?.listSort;
+        const sortField = listSort?.selectField;
+        sortField?.setOptions(options, defaultValue);
     }
 
     hasStickyControls() {
@@ -249,7 +250,7 @@ class List extends ArpaElement {
     /////////////////
 
     onResourceAddItems(items = []) {
-        const itemNodes = items.map(payload => this.createItem(payload));
+        const itemNodes = items.map(config => this.createItem(config, this?.listResource?.getRawItem(config?.id)));
         this.addItemNodes(itemNodes);
     }
 
@@ -309,15 +310,15 @@ class List extends ArpaElement {
 
     render() {
         const renderMode = this.getRenderMode();
-        const template = renderMode === 'minimal' ? this.getMinimalTemplate() : this.renderFullTemplate();
+        const template = renderMode === 'minimal' ? this.renderMinimal() : this.renderFull();
         this.innerHTML = I18nTool.processTemplate(template, this.getTemplateVars());
     }
 
-    getMinimalTemplate() {
+    renderMinimal() {
         return html`{items}`;
     }
 
-    renderFullTemplate() {
+    renderFull() {
         return html`
             ${this.renderTitle()}
             <list-controls></list-controls>
@@ -355,13 +356,7 @@ class List extends ArpaElement {
         const urlParam = this.listResource?.pageFilter?.getUrlName();
         return render(
             this.hasPager(),
-            html`
-                <arpa-pager
-                    total-pages="${totalPages}"
-                    current-page="${currentPage}"
-                    url-param="${urlParam}"
-                ></arpa-pager>
-            `
+            html` <arpa-pager total-pages="${totalPages}" current-page="${currentPage}" url-param="${urlParam}"></arpa-pager> `
         );
     }
 
@@ -444,7 +439,7 @@ class List extends ArpaElement {
         this.bodyMainNode = this.querySelector('.arpaList__bodyMain');
         this.bodyMainNode?.append(...this._childNodes);
         this.itemsNode = renderMode === 'minimal' ? this : this.querySelector('.arpaList__items');
-        this.controlsNode = this.querySelector('list-controls');
+        this.controls = this.querySelector('list-controls');
         this.noItemsNode = this.querySelector('.arpaList__noItems');
         this.addItemNodes(this.getInitialItems());
     }

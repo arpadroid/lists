@@ -75,11 +75,12 @@ class ListSearch extends ArpaElement {
         });
         this.innerHTML = I18nTool.processTemplate(
             html`<form id="{formId}" is="arpa-form" variant="mini">
-                <search-field id="search" ${searchAttr}></search-field>
+                ${this.list?.hasSearch() ? html`<search-field id="search" ${searchAttr}></search-field>` : ''}
                 ${this.list?.hasSort() ? html`<list-sort></list-sort>` : ''}
             </form>`,
             this.getTemplateVars()
         );
+        this.listSort = this.querySelector('list-sort');
     }
 
     getTemplateVars() {

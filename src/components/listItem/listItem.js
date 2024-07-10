@@ -12,6 +12,8 @@ import { render, renderNode } from '@arpadroid/tools';
 
 const html = String.raw;
 class ListItem extends ArpaElement {
+    // #region INITIALIZATION
+
     constructor(config = {}, payload, map) {
         super(config);
         this.payload = payload;
@@ -36,6 +38,10 @@ class ListItem extends ArpaElement {
         };
     }
 
+    // #endregion
+
+    // #region ACCESSORS
+
     getTagName() {
         return 'list-item';
     }
@@ -49,22 +55,19 @@ class ListItem extends ArpaElement {
     }
 
     hasSelection() {
-        return (
-            this.listResource?.hasSelection() ??
-            this.hasAttribute('has-selection') ??
-            this.getProperty('has-selection')
-        );
+        return this.list?.hasMultiSelect() ?? this.getProperty('has-selection');
     }
 
-    setSelected() {
-        // const item = this.listResource?.getItem(this._config.id);
-        // if (this.checkbox.checked) {
-        //     this.listResource.selectItem(item);
-        //     this.node.classList.add(this._config.selectedClass);
-        // } else {
-        //     this.listResource.deselectItem(item);
-        //     this.node.classList.remove(this._config.selectedClass);
-        // }
+    hasNav() {
+        return Boolean(this._config.nav);
+    }
+
+    getContent() {
+        return this._content || this._config?.content;
+    }
+
+    getSelectedClass() {
+        return this.getProperty('selected-class');
     }
 
     getId() {
@@ -115,29 +118,115 @@ class ListItem extends ArpaElement {
         this._config.action = action;
     }
 
+    setViewClass() {
+        if (this.view) {
+            this.classList.add('listItem--' + this.view);
+            if (this.view === 'grid-compact') {
+                this.classList.add('listItem--grid');
+            }
+        }
+    }
+
+    setContent(content) {
+        this._config.content = content;
+        if (this.contentNode) {
+            if (typeof this.contentNode.setContent === 'function') {
+                this.contentNode.setContent(content);
+                return;
+            }
+            this.contentNode.innerHTML = content;
+        }
+    }
+
+    setSelected() {
+        const item = this.listResource?.getItem(this.getId());
+        if (this.checkbox.checked) {
+            this.listResource?.selectItem(item);
+            this.classList.add(this.getSelectedClass());
+        } else {
+            this.listResource.deselectItem(item);
+            this.classList.remove(this.getSelectedClass());
+        }
+    }
+
+    // #endregion
+
+    // #region RENDERING
+
     render() {
         const { role, action } = this._config;
         this.classList.add('listItem');
         role && this.setAttribute('role', role);
         this.link = this.getProperty('link');
         this.removeAttribute('link');
+        const content = this.renderTemplate(this.getTemplate());
+        this.innerHTML = content;
+        this.button = this.querySelector('button.listItem__main');
+        this.initializeNav();
+        this.setViewClass();
+        action && this.button?.addEventListener('click', event => action(event, this));
+        // if (this.hasChildren()) {
+        // this.childrenNode.classList.add('listItem__children');
+        // this.itemWrapperNode = document.createElement('div');
+        // this.itemWrapperNode.classList.add('listItem__itemWrapper');
+        // this.itemWrapperNode.append(...this.node.childNodes);
+        // this.node.appendChild(this.itemWrapperNode);
+        // this.appendChildrenNode();
+        // this.node.classList.add('listItem--hasChildren');
+        // }
+    }
+
+    getTemplate() {
         const href = this.link ? `href="${this.link}"` : '';
         const wrapperComponent = href ? 'a' : this.getWrapperComponent();
-        const template = html`
+        return html`
             <${wrapperComponent} ${href} class="listItem__main ${render(this.link, 'listItem__link')}">
                 <arpa-icon class="listItem__icon">{icon}</arpa-icon>
                 ${this.renderImage()}
                 <div class="listItem__contentWrapper">
-                    ${this.renderTitleContainer()} ${this.renderTags()} ${this.renderContent()}
+                    ${this.renderTitleContainer()} 
+                    ${this.renderTags()} 
+                    ${this.renderContent()}
                 </div>
                 <arpa-icon class="listItem__iconRight">{iconRight}</arpa-icon>
+                
             </${wrapperComponent}>
             ${this.renderRhs()}
         `;
-        const content = this.renderTemplate(template);
-        this.innerHTML = content;
-        this.button = this.querySelector('button.listItem__main');
-        action && this.button?.addEventListener('click', event => action(event, this));
+    }
+
+    getTemplateVars() {
+        return {
+            icon: this.getProperty('icon'),
+            iconRight: this.getProperty('icon-right'),
+            titleIcon: this.getProperty('title-icon'),
+            title: this.getTitle(),
+            subTitle: this.getSubTitle()
+        };
+    }
+
+    async initializeNav() {
+        this.navNode = this.querySelector('.listItem__nav');
+        if (this.navNode) {
+            await customElements.whenDefined('icon-menu');
+            this.navNode.setConfig(this._config.nav);
+        }
+    }
+
+    renderTags() {
+        const { tags } = this._config;
+        if (!tags?.length) {
+            return '';
+        }
+        return html`
+            <tag-list id="item-${this.getId()}-tagList" variant="compact" class="listItem__tags">
+                ${tags.map(tag => this.renderTag(tag))}
+            </tag-list>
+        `;
+    }
+
+    renderTag(tag) {
+        return html`<tag-item class="listItem__tag" text="${tag.label}" icon="${tag.icon}"></tag-item>`;
     }
 
     getWrapperComponent() {
@@ -164,8 +253,10 @@ class ListItem extends ArpaElement {
         if (!this.hasSelection()) {
             return '';
         }
-        const { id, isSelected = this.listResource?.isSelected(this) } = this._config;
-        const htmlId = `listItem__checkbox-${id}`;
+        const props = this.getProperties('id', 'is-selected');
+        const { id = '', isSelected = this.listResource?.isSelected(this.getPayload()) } = props;
+        const checkboxId = id?.toString() ?? id ?? '';
+        const htmlId = `listItem__checkbox-${checkboxId}`;
         const checked = render(isSelected, 'checked');
         return html`
             <label class="listItem__checkboxContainer" for="${htmlId}">
@@ -202,17 +293,22 @@ class ListItem extends ArpaElement {
     }
 
     renderImage(image = this.getImage(), alt = this.getImageAlt()) {
-        return render(image, html`<arpa-image src="${image}" alt="${alt}"></arpa-image>`);
+        return render(
+            image,
+            html`<arpa-image class="listItem__image" src="${image}" alt="${alt}"></arpa-image>`
+        );
     }
 
-    getTemplateVars() {
-        return {
-            icon: this.getProperty('icon'),
-            iconRight: this.getProperty('icon-right'),
-            titleIcon: this.getProperty('title-icon'),
-            title: this.getTitle(),
-            subTitle: this.getSubTitle()
-        };
+    renderSubTitle() {
+        const subTitle = this.getProperty('sub-title');
+        return render(subTitle, html`<span class="listItem__subTitle">${subTitle}</span>`);
+    }
+
+    renderNav() {
+        if (!this.hasNav()) {
+            return '';
+        }
+        return html`<icon-menu class="listItem__nav"></icon-menu>`;
     }
 
     renderContent() {
@@ -224,33 +320,33 @@ class ListItem extends ArpaElement {
         );
     }
 
-    setContent(content) {
-        this._config.content = content;
-        if (this.contentNode) {
-            if (typeof this.contentNode.setContent === 'function') {
-                this.contentNode.setContent(content);
-                return;
-            }
-            this.contentNode.innerHTML = content;
+    // #endregion
+
+    // #region EVENTS
+
+    /**
+     * Called when the image has loaded.
+     * @param {Event} event
+     */
+    _onImageLoaded(event) {
+        if (this._config.onImageLoaded) {
+            this._config.onImageLoaded(event, this);
         }
     }
 
-    getContent() {
-        return this._content || this._config?.content;
+    /**
+     * Called when the image has failed to load.
+     * @param {Event} event
+     */
+    _onImageError(event) {
+        if (this._config.onImageError) {
+            this._config.onImageError(event, this);
+        }
     }
 
-    renderSubTitle() {
-        const subTitle = this.getProperty('sub-title');
-        return render(subTitle, html`<span class="listItem__subTitle">${subTitle}</span>`);
-    }
+    // #endregion
 
-    renderNav() {
-        return '';
-    }
-
-    renderTags() {
-        return '';
-    }
+    // #region LIFECYCLE
 
     async _onConnected() {
         this._initializeNodes();
@@ -261,8 +357,34 @@ class ListItem extends ArpaElement {
 
     initializeProperties() {
         super.initializeProperties();
+        /** @type {List} */
         this.list = this.closest('.arpaList');
         this.listResource = this.list?.listResource;
+        const selectedClass = this.getProperty('selected-class');
+        this._initializeView();
+        const id = this.getId();
+        if (this.list?.hasMultiSelect()) {
+            this.listResource.listen(`ITEM-SELECTED-${id}`, () => {
+                this.checkbox.checked = true;
+                this.classList.add(selectedClass);
+            });
+            this.listResource.listen(`ITEM-DESELECTED-${id}`, () => {
+                this.checkbox.checked = false;
+                this.classList.remove(selectedClass);
+            });
+        }
+    }
+
+    _initializeView() {
+        /** @type {ListFilter} */
+        this.viewsFilter = this.listResource?.filters?.views;
+        this.view = this.viewsFilter?.getValue();
+        this.viewsFilter?.listen('value', view => {
+            this.view = view;
+            if (this.node?.isConnected) {
+                this.reRender();
+            }
+        });
     }
 
     _onRendered() {
@@ -274,9 +396,15 @@ class ListItem extends ArpaElement {
         this.listResource?.registerItem(payload, this);
     }
 
-    _initializeNodes() {
+    async _initializeNodes() {
         this.mainNode = this.querySelector('.listItem__main');
         this.checkbox = this.querySelector('.listItem__checkbox');
+        this.imageNode = this.querySelector('.listItem__image');
+        await customElements.whenDefined('arpa-image');
+        this.imageNode?.addConfig({
+            onLoad: event => this._onImageLoaded(event),
+            onError: event => this._onImageError(event)
+        });
     }
 
     async _onInitialized() {
@@ -311,233 +439,25 @@ class ListItem extends ArpaElement {
             this.contentNode?.appendChild(this.i18nNode);
         }
     }
+
+    // #endregion
+
+    // #region ACTIONS
+
+    /**
+     * Deletes the list item.
+     * @returns {Promise<void>}
+     */
+    delete() {
+        if (this.listResource) {
+            return this.listResource.removeItem(this._config);
+        }
+        return this.remove();
+    }
+
+    // #endregion
 }
 
 customElements.define(ListItem.prototype.getTagName(), ListItem);
-
-//     _initializeProperties() {
-//         /** @type {List} */
-//         this.listComponent = this?.layout?.getComponent();
-//         /** @type {ListResource} */
-//         this.listResource = this.listComponent?.listResource;
-//         super._initializeProperties();
-//         this._initializeView();
-//         const { selectedClass } = this._config;
-//         if (this.listResource?.hasSelection()) {
-//             this.listResource.listen('ITEM-SELECTED-' + this._config.id, () => {
-//                 this.checkbox.checked = true;
-//                 this.node.classList.add(selectedClass);
-//             });
-//             this.listResource.listen('ITEM-DESELECTED-' + this._config.id, () => {
-//                 this.checkbox.checked = false;
-//                 this.node.classList.remove(selectedClass);
-//             });
-//         }
-//     }
-
-//     /**
-//      * Initializes the list view.
-//      */
-//     _initializeView() {
-//         /** @type {ListFilter} */
-//         this.viewsFilter = this.listResource?.filters?.views;
-//         this.view = this.viewsFilter?.getValue();
-//         this.viewsFilter?.listen('value', view => {
-//             this.view = view;
-//             if (this.node?.isConnected) {
-//                 this.update();
-//             }
-//         });
-//     }
-
-//     render() {
-//         this.node = super.render();
-//         this.setViewClass();
-//         this.contentContainer = this.renderContentContainer();
-//         this.contentContainer.append(...this.node.childNodes);
-//         this.node.appendChild(this.contentContainer);
-//         this.appendChildrenNode();
-//         this.icon = this.renderIcon();
-//         if (this.icon) {
-//             this.node.prepend(this.icon);
-//         }
-//         this.iconRight = this.renderIconRight();
-//         if (this.iconRight) {
-//             this.node.appendChild(this.iconRight);
-//         }
-//         this.renderCheckbox();
-//         this.renderNav();
-//         if (this.hasChildren()) {
-//             this.childrenNode.classList.add('listItem__children');
-//             this.itemWrapperNode = document.createElement('div');
-//             this.itemWrapperNode.classList.add('listItem__itemWrapper');
-//             this.itemWrapperNode.append(...this.node.childNodes);
-//             this.node.appendChild(this.itemWrapperNode);
-//             this.appendChildrenNode();
-//             this.node.classList.add('listItem--hasChildren');
-//         }
-
-//         return this.node;
-//     }
-
-//     renderCheckbox() {
-//         if (this.listResource?.hasSelection()) {
-//             const id = 'listItem__checkbox-' + this._config.id;
-//             this.checkboxContainer = document.createElement('label');
-//             this.checkboxContainer.setAttribute('for', id);
-//             this.checkboxContainer.classList.add('listItem__checkboxContainer');
-//             this.checkbox = document.createElement('input');
-//             this.checkbox.type = 'checkbox';
-//             this.checkbox.id = id;
-//             this.checkbox.classList.add('listItem__checkbox');
-//             this.checkbox.addEventListener('change', () => {
-//                 this.setSelected();
-//             });
-//             this.checkbox.checked = this.listResource.isSelected(this._config);
-//             this.setSelected();
-//             this.checkboxContainer.appendChild(this.checkbox);
-//             this.node.appendChild(this.checkboxContainer);
-//         }
-//     }
-
-//     /**
-//      * Sets the view class for the list item.
-//      */
-//     setViewClass() {
-//         if (this.view) {
-//             this.node.classList.add('listItem--' + this.view);
-//             if (this.view === 'grid-compact') {
-//                 this.node.classList.add('listItem--grid');
-//             }
-//         }
-//     }
-
-//     initializeImage() {
-//         this?.imageComponent?.initializeImage();
-//     }
-
-//     /**
-//      * Called when the image has loaded.
-//      * @param {Event} event
-//      */
-//     _onImageLoaded(event) {
-//         if (this._config.onImageLoaded) {
-//             this._config.onImageLoaded(event, this);
-//         }
-//     }
-
-//     /**
-//      * Called when the image has failed to load.
-//      * @param {Event} event
-//      */
-//     _onImageError(event) {
-//         if (this._config.onImageError) {
-//             this._config.onImageError(event, this);
-//         }
-//     }
-
-//     /**
-//      * Renders the image container.
-//      * @returns {HTMLElement | undefined}
-//      */
-//     renderImageContainer() {
-//         const { image, imageConfig = {} } = this._config;
-//         if (typeof image !== 'undefined') {
-//             this.imageComponent = new ImageComponent(image, {
-//                 className: 'listItem__imageContainer',
-//                 onLoad: event => this._onImageLoaded(event),
-//                 onError: event => this._onImageError(event),
-//                 highResSrc: this._config.highResImage,
-//                 caption: this._config?.name,
-//                 ...imageConfig
-//             });
-//             this.imageNode = this.imageComponent.render();
-//             this.image = this.imageComponent.image;
-//             return this.imageNode;
-//         }
-//     }
-
-//      * Renders the subtitle.
-//      * @returns {HTMLElement | undefined}
-//      */
-//     renderSubTitle() {
-//         const { subTitle, tags } = this._config;
-//         if (subTitle || tags) {
-//             const node = document.createElement('span');
-//             const content = new AbstractContent(subTitle).render();
-//             node.appendChild(content);
-//             node.classList.add('listItem__subTitle');
-//             this.tagsNode = this.renderTags();
-//             if (this.tagsNode) {
-//                 node.appendChild(this.tagsNode);
-//             }
-//             return node;
-//         }
-//     }
-
-//     renderTags(tags = this._config.tags ?? []) {
-//         /** @type {Tag[]} tagInstances */
-//         this.tagInstances = [];
-//         /** @type {TagInterface[]} tags */
-//         this.tags = tags;
-//         const node = document.createElement('div');
-//         node.classList.add('listItem__tags');
-//         this.tags.forEach(tag => {
-//             if (!tag?.text) {
-//                 return;
-//             }
-//             const tagInstance = new Tag(tag.id, {
-//                 ...tag,
-//                 tooltipPosition: ''
-//             });
-//             this.tagInstances.push(tagInstance);
-//             const tagNode = tagInstance.render();
-//             node.appendChild(tagNode);
-//         });
-//         return node;
-//     }
-
-//     /**
-//      * Preloads the icon menu because of import dependency error.
-//      * @returns {IconMenu}
-//      */
-//     async getIconMenu() {
-//         if (this.IconMenu) {
-//             return this.IconMenu;
-//         }
-//         this.IconMenu = (await import('../../../navigation/components/iconMenu/iconMenu.js')).default;
-//         return this.IconMenu;
-//     }
-
-//     /**
-//      * Renders the navigation for the list item.
-//      */
-//     async renderNav() {
-//         const nav = this._config.nav;
-//         if (nav) {
-//             const navStub = document.createElement('span');
-//             this.node.appendChild(navStub);
-//             const IconMenu = await this.getIconMenu();
-//             this.navComponent = new IconMenu('nav', nav);
-//             this.navNode = this.navComponent.render();
-//             this.navNode.classList.add('listItem__nav');
-//             navStub.parentNode.replaceChild(this.navNode, navStub);
-//         }
-//     }
-
-//     /**
-//      * Deletes the list item.
-//      */
-//     delete() {
-//         const component = this?.layout?.getComponent();
-//         /** @type {ListResource} */
-//         const list = component?.listResource;
-//         if (!list) {
-//             super.delete();
-//         } else {
-//             list.removeItem(this._config);
-//         }
-//     }
-// }
 
 export default ListItem;

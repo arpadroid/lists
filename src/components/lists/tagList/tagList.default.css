@@ -1,17 +1,36 @@
-tag-list {
+.tagList.tagList {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
-
-    .arpaList__items {
-        display: flex;
-        flex-wrap: wrap;
-        flex-direction: row;
-        gap: 4px;
-    }
-
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
     .tag {
         flex: 1 1 auto;
-        width: calc(50% - 4px);
+        display: flex;
+        align-items: center;
+        width: calc(50% - 12px);
+        arpa-icon {
+            height: auto;
+            font-size: 20px;
+        }
+    }
+}
+
+.tagList.tagList[variant='compact'] {
+    width: auto;
+    gap: 4px;
+    .tag {
+        flex: 0 0 auto;
+        width: auto;
+        height: 24px;
+        gap: 4px;
+        padding: 4px 8px;
+        arpa-icon {
+            font-size: 20px;
+            height: 20px;
+            margin-left: -4px;
+            position: relative;
+        }
     }
 }

@@ -98,3 +98,9 @@ button.listItem__main {
     gap: 4px;
     flex: 0 1 auto;
 }
+
+.listItem__checkboxContainer {
+    display: flex;
+    align-items: center;
+    width: 42px;
+}

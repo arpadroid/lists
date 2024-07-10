@@ -12,7 +12,7 @@
     
 }
 
-.listItem--list-compact .listItem__imageContainer,
+.listItem--list-compact .listItem__image,
 .listItem--list-compact .listItem__image,
 .listItem--list-compact .listItem__icon {
     width: var(--listView--list-compact--imageWidth);
@@ -85,7 +85,7 @@
     min-height: 26px;
 }
 
-.listView--list-compact > .listComponent__body .listItem__imageContainer .circularPreloader {
+.listView--list-compact > .listComponent__body .listItem__image .circularPreloader {
     scale: 40%;
     margin-left: -9px;
 }

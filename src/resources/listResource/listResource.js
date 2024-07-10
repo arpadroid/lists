@@ -14,6 +14,7 @@ class ListResource extends Resource {
         super._initializeProperties(config);
         this.items = [];
         this.itemsById = {};
+        this.rawItemsById = {};
         this.itemIdMap = 'id';
         this.filters = {};
         this.hasActiveFilter = false;
@@ -105,7 +106,7 @@ class ListResource extends Resource {
         return this._payload.output?.find(item => item.code === 'no-results') !== undefined;
     }
 
-    setPreProcessItem(callback) {
+    mapItem(callback) {
         this._config.preProcessItem = callback;
         return this;
     }
@@ -305,6 +306,10 @@ class ListResource extends Resource {
         return this.itemsById[id];
     }
 
+    getRawItem(id) {
+        return this.rawItemsById[id];
+    }
+
     getItemId(item = {}) {
         if (typeof item[this.itemIdMap] !== 'undefined') {
             return item[this.itemIdMap];
@@ -368,18 +373,19 @@ class ListResource extends Resource {
     }
 
     preProcessItems(items = []) {
-        items.map(item => this.preProcessItem(item));
-        return items;
+        return items.map(item => this.preProcessItem(item));
     }
 
     preProcessItem(item = {}) {
+        const rawItem = item;
         const { preProcessItem } = this._config;
-        const id = item[this.itemIdMap] ?? Symbol('ITEM_ID');
-        item[this.itemIdMap] = id;
-        this.itemsById[item[this.itemIdMap]] = item;
         if (typeof preProcessItem === 'function') {
             item = preProcessItem(item);
         }
+        const id = item[this.itemIdMap] ?? Symbol('ITEM_ID');
+        item[this.itemIdMap] = id;
+        this.itemsById[item[this.itemIdMap]] = item;
+        this.rawItemsById[id] = rawItem;
         return item;
     }
 

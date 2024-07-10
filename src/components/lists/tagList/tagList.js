@@ -7,9 +7,15 @@ class TagList extends List {
     getDefaultConfig() {
         return mergeObjects(super.getDefaultConfig(), {
             className: 'tagList',
+            renderMode: 'minimal',
             itemComponent: TagItem,
             noItemsContent: html`<i18n-text key="components.tagList.txtNoTags"></i18n-text>`
         });
+    }
+
+    _onConnected() {
+        super._onConnected();
+        this.classList.add('tagList');
     }
 }
 
