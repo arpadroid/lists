@@ -8,7 +8,7 @@ list-multi-select {
     
 }
 
-.multiSelect__form {
+.listMultiSelect__form {
     min-width: 320px;
     display: flex;
     padding: 8px;

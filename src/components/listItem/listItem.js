@@ -8,11 +8,13 @@
  */
 
 import { ArpaElement } from '@arpadroid/ui';
-import { render, renderNode } from '@arpadroid/tools';
+import { render } from '@arpadroid/tools';
 
 const html = String.raw;
 class ListItem extends ArpaElement {
     // #region INITIALIZATION
+    
+    _bindings = ['_onImageLoaded', '_onImageError', 'setSelected'];
 
     constructor(config = {}, payload, map) {
         super(config);
@@ -25,7 +27,7 @@ class ListItem extends ArpaElement {
      * @returns {ListItemInterface}
      */
     getDefaultConfig() {
-        return {
+        return super.getDefaultConfig({
             lazyLoad: false,
             selectedClass: 'listItem--selected',
             truncateContent: 0,
@@ -35,7 +37,7 @@ class ListItem extends ArpaElement {
             imageConfig: {
                 showPreloader: true
             }
-        };
+        });
     }
 
     // #endregion
@@ -127,24 +129,12 @@ class ListItem extends ArpaElement {
         }
     }
 
-    setContent(content) {
-        this._config.content = content;
-        if (this.contentNode) {
-            if (typeof this.contentNode.setContent === 'function') {
-                this.contentNode.setContent(content);
-                return;
-            }
-            this.contentNode.innerHTML = content;
-        }
-    }
-
     setSelected() {
-        const item = this.listResource?.getItem(this.getId());
         if (this.checkbox.checked) {
-            this.listResource?.selectItem(item);
+            this.listResource?.selectItem(this.getPayload());
             this.classList.add(this.getSelectedClass());
         } else {
-            this.listResource.deselectItem(item);
+            this.listResource.deselectItem(this.getPayload());
             this.classList.remove(this.getSelectedClass());
         }
     }
@@ -189,7 +179,6 @@ class ListItem extends ArpaElement {
                     ${this.renderContent()}
                 </div>
                 <arpa-icon class="listItem__iconRight">{iconRight}</arpa-icon>
-                
             </${wrapperComponent}>
             ${this.renderRhs()}
         `;
@@ -305,10 +294,7 @@ class ListItem extends ArpaElement {
     }
 
     renderNav() {
-        if (!this.hasNav()) {
-            return '';
-        }
-        return html`<icon-menu class="listItem__nav"></icon-menu>`;
+        return this.hasNav() ? html`<icon-menu class="listItem__nav"></icon-menu>` : '';
     }
 
     renderContent() {
@@ -329,9 +315,8 @@ class ListItem extends ArpaElement {
      * @param {Event} event
      */
     _onImageLoaded(event) {
-        if (this._config.onImageLoaded) {
-            this._config.onImageLoaded(event, this);
-        }
+        const { onImageLoaded } = this._config;
+        typeof onImageLoaded === 'function' && onImageLoaded(event, this);
     }
 
     /**
@@ -339,9 +324,8 @@ class ListItem extends ArpaElement {
      * @param {Event} event
      */
     _onImageError(event) {
-        if (this._config.onImageError) {
-            this._config.onImageError(event, this);
-        }
+        const { onImageError } = this._config;
+        typeof onImageError === 'function' && this._config?.onImageError(event, this);
     }
 
     // #endregion
@@ -353,12 +337,36 @@ class ListItem extends ArpaElement {
         await this._initializeItem();
     }
 
-    _initializeItem() {}
+    async _initializeNodes() {
+        this.mainNode = this.querySelector('.listItem__main');
+        this.checkbox = this.querySelector('.listItem__checkbox');
+        this.imageNode = this.querySelector('.listItem__image');
+        await customElements.whenDefined('arpa-image');
+        this.imageNode?.addConfig({
+            onLoad: event => this._onImageLoaded(event),
+            onError: event => this._onImageError(event)
+        });
+    }
+
+    async _initializeItem() {
+        if (this.checkbox && this.hasSelection()) {
+            this.checkbox.removeEventListener('change', this.setSelected);
+            this.checkbox.addEventListener('change', this.setSelected);
+            this.setSelected();
+        }
+        const { action } = this._config;
+        const doAction = event => action(event, this);
+        if (this.mainNode && typeof action === 'function') {
+            this.mainNode.removeEventListener('click', doAction);
+            this.mainNode.addEventListener('click', doAction);
+        }
+    }
 
     initializeProperties() {
         super.initializeProperties();
         /** @type {List} */
         this.list = this.closest('.arpaList');
+        /** @type {ListResource} */
         this.listResource = this.list?.listResource;
         const selectedClass = this.getProperty('selected-class');
         this._initializeView();
@@ -381,65 +389,17 @@ class ListItem extends ArpaElement {
         this.view = this.viewsFilter?.getValue();
         this.viewsFilter?.listen('value', view => {
             this.view = view;
-            if (this.node?.isConnected) {
-                this.reRender();
-            }
+            this.node?.isConnected && this.reRender();
         });
     }
 
-    _onRendered() {
-        super._onRendered();
-        if (!this.isConnected) {
-            return;
-        }
-        const payload = { id: this.getId(), ...this.getPayload() };
-        this.listResource?.registerItem(payload, this);
-    }
-
-    async _initializeNodes() {
-        this.mainNode = this.querySelector('.listItem__main');
-        this.checkbox = this.querySelector('.listItem__checkbox');
-        this.imageNode = this.querySelector('.listItem__image');
-        await customElements.whenDefined('arpa-image');
-        this.imageNode?.addConfig({
-            onLoad: event => this._onImageLoaded(event),
-            onError: event => this._onImageError(event)
-        });
-    }
-
-    async _onInitialized() {
-        await this.onReady();
-        this._initializeContent();
-        if (this.checkbox && this.hasSelection()) {
-            this.checkbox.addEventListener('change', () => this.setSelected());
-            this.setSelected();
-        }
-        const { action } = this._config;
-        const doAction = event => action(event, this);
-        if (this.mainNode && typeof action === 'function') {
-            this.mainNode.removeEventListener('click', doAction);
-            this.mainNode.addEventListener('click', doAction);
+    _onRenderComplete() {
+        super._onRenderComplete();
+        if (this.isConnected) {
+            const payload = { id: this.getId(), ...this.getPayload() };
+            this.listResource?.registerItem(payload, this);
         }
     }
-
-    _initializeContent() {
-        this.contentNode = this.querySelector('.listItem__content');
-        if (!this.contentNode) {
-            return;
-        }
-        const content = this.getContent();
-        if (content) {
-            this.contentNode.textContent = content;
-        } else if (this._childNodes?.length) {
-            this.contentNode.append(...this._childNodes);
-        }
-        const i18n = this.getProperty('i18n');
-        if (i18n) {
-            this.i18nNode = this.i18nNode ?? renderNode(html`<i18n-text key="${i18n}"></i18n-text>`);
-            this.contentNode?.appendChild(this.i18nNode);
-        }
-    }
-
     // #endregion
 
     // #region ACTIONS
@@ -449,10 +409,7 @@ class ListItem extends ArpaElement {
      * @returns {Promise<void>}
      */
     delete() {
-        if (this.listResource) {
-            return this.listResource.removeItem(this._config);
-        }
-        return this.remove();
+        return this.listResource ? this.listResource.removeItem(this._config) : this.remove();
     }
 
     // #endregion

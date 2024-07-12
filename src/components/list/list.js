@@ -240,7 +240,7 @@ class List extends ArpaElement {
         this.listResource.listen('ITEMS_UPDATED', this.onResourceItemsUpdated);
         this.listResource.listen('SET_ITEMS', this.onResourceSetItems);
         this.listResource.listen('ITEMS', this.onResourceSetItems);
-        // this.listResource.listen('UPDATE_ITEM', payload => this.layout.updateNode(payload));
+        this.listResource.listen('UPDATE_ITEM', payload => this.layout.updateNode(payload));
     }
 
     // #endregion
@@ -423,8 +423,7 @@ class List extends ArpaElement {
     /////////////////////
 
     async update() {
-        await this.onReady();
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await this.promise;
         if (!this.getItems()?.length) {
             this.noItemsNode = this.noItemsNode || renderNode(this.renderNoItemsContent());
             this.noItemsNode && this.bodyMainNode?.appendChild(this.noItemsNode);

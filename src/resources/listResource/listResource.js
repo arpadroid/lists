@@ -191,7 +191,7 @@ class ListResource extends Resource {
         return payload?.resultCount ?? this.getItems().length;
     }
 
-    async _initializePayload(payload = {}, headers = {}) {
+    async _initializePayload(payload = {}, headers = {}, update = true) {
         payload = await super._initializePayload(payload, headers);
         const items = this.getItemsFromPayload(payload);
         this.items = this.preProcessItems(items);
@@ -206,8 +206,10 @@ class ListResource extends Resource {
             this._config.perPage = this.perPageFilter.getValue();
         }
         this.initializeSelectedItems();
-        this.signal('ITEMS', this.items);
-        this.signal('ITEMS_UPDATED', this.items);
+        if (update) {
+            this.signal('ITEMS', this.items);
+            this.signal('ITEMS_UPDATED', this.items);
+        }
         return payload;
     }
 
@@ -693,7 +695,7 @@ class ListResource extends Resource {
         return rv;
     }
 
-    getTotalSelectedItems() {
+    getSelectedCount() {
         if (this.hasSelectionSave()) {
             return parseInt(localStorage.getItem(this.selectionLengthKey), 10);
         }
@@ -815,12 +817,13 @@ class ListResource extends Resource {
 
     filterBySelections() {
         const selected = this.getSelectedItems();
-        this._initializePayload({
+        const payload = {
             results: selected,
             resultCount: selected.length,
             totalPages: 1,
             currentPage: 1
-        });
+        };
+        this._initializePayload(payload, {}, false);
         this.update();
     }
 
