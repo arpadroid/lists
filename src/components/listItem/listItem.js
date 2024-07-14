@@ -68,6 +68,18 @@ class ListItem extends ArpaElement {
         return this._content || this._config?.content;
     }
 
+    setContent(content) {
+        if (!this.contentNode) {
+            return;
+        }
+        if (typeof content === 'string') {
+            this.contentNode.innerHTML = content;
+        } else if (content instanceof HTMLElement) {
+            this.contentNode.innerHTML = '';
+            this.contentNode.appendChild(content);
+        }
+    }
+
     getSelectedClass() {
         return this.getProperty('selected-class');
     }
@@ -232,10 +244,7 @@ class ListItem extends ArpaElement {
     renderRhs(content = this._config.rhsContent) {
         const nav = this.renderNav();
         const checkbox = this.renderCheckbox();
-        return render(
-            nav || checkbox || content,
-            html`<div class="listItem__rhs">${checkbox}${nav}${content}</div>`
-        );
+        return render(nav || checkbox || content, html`<div class="listItem__rhs">${checkbox}${nav}${content}</div>`);
     }
 
     renderCheckbox() {
@@ -259,8 +268,7 @@ class ListItem extends ArpaElement {
             title || subTitle,
             html`
                 <div class="listItem__titleWrapper">
-                    ${this.renderTitle()}
-                    ${render(subTitle, html`<span class="listItem__subTitle">${subTitle}</span>`)}
+                    ${this.renderTitle()} ${render(subTitle, html`<span class="listItem__subTitle">${subTitle}</span>`)}
                 </div>
             `
         );
@@ -282,10 +290,7 @@ class ListItem extends ArpaElement {
     }
 
     renderImage(image = this.getImage(), alt = this.getImageAlt()) {
-        return render(
-            image,
-            html`<arpa-image class="listItem__image" src="${image}" alt="${alt}"></arpa-image>`
-        );
+        return render(image, html`<arpa-image class="listItem__image" src="${image}" alt="${alt}"></arpa-image>`);
     }
 
     renderSubTitle() {
@@ -341,6 +346,7 @@ class ListItem extends ArpaElement {
         this.mainNode = this.querySelector('.listItem__main');
         this.checkbox = this.querySelector('.listItem__checkbox');
         this.imageNode = this.querySelector('.listItem__image');
+        this.contentNode = this.querySelector('.listItem__content');
         await customElements.whenDefined('arpa-image');
         this.imageNode?.addConfig({
             onLoad: event => this._onImageLoaded(event),

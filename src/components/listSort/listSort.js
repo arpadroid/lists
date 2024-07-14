@@ -20,6 +20,7 @@ class ListSort extends ArpaElement {
     _bindings = ['renderSelectValue', 'onSelectChange', 'onRouteChanged', 'onSortClick'];
 
     getDefaultConfig() {
+        this.i18nKey = 'modules.list.listSort';
         return {
             lblNoSelection: I18n.getText('modules.list.listSort.lblNoSelection'),
             lblSortAsc: I18n.getText('modules.list.listSort.lblSortAsc'),
@@ -76,10 +77,12 @@ class ListSort extends ArpaElement {
     // #region LIFECYCLE
     /////////////////////
     onRouteChanged() {
-        if (this.sortButton) {
-            this.sortButton.setAttribute('label', this.getSortDirTooltip());
-            this.sortButton.setAttribute('icon', this.getSortDirIcon());
-        }
+        this.update();
+    }
+
+    update() {
+        this.sortButton?.setAttribute('label', this.getSortDirTooltip());
+        this.sortButton?.setAttribute('icon', this.getSortDirIcon());
     }
 
     ////////////////////
@@ -109,7 +112,7 @@ class ListSort extends ArpaElement {
         button.addEventListener('click', this.onSortClick);
         return button;
     }
-    
+
     onSortClick() {
         const value = this.sortDirFilter.getValue();
         const newValue = value === 'asc' ? 'desc' : 'asc';
@@ -144,9 +147,11 @@ class ListSort extends ArpaElement {
     renderSelectValue(option) {
         const icon = option?.getAttribute('icon');
         return html`
-            ${icon ? html`<arpa-icon>${icon}</arpa-icon>` : ''}
-            <i18n-text className="selectComboInput__label" key="modules.list.listSort.lblSortBy"></i18n-text>
-            <span className="selectComboInput__title"> ${option?.getProperty('label') ?? this.getProperty('lbl-no-selection')} </span>
+            <arpa-icon>${icon}</arpa-icon>
+            ${this.i18n('lblSortBy')}
+            <span className="selectComboInput__title">
+                ${option?.getProperty('label') ?? this.i18n('lblNoSelection')}
+            </span>
         `;
     }
 

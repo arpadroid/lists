@@ -11,21 +11,24 @@ const html = String.raw;
 class MultiSelect extends ArpaElement {
     // #region INITIALIZATION
 
-    getDefaultConfig() {
+    _preInitialize() {
         this.i18nKey = 'modules.list.multiSelect';
         this.list = this.closest('.arpaList');
-        this.listResource = this.list?.listResource;
+        this.resource = this.list?.listResource;
+    }
+
+    getDefaultConfig() {
         return super.getDefaultConfig({
             className: 'listMultiSelect',
             icon: 'check_box_outline_blank',
             actions: this.list._config.actions,
-            tooltip: this.getText('txtSelections')
+            tooltip: this.getText('txtNoItemsSelected')
         });
     }
 
     initializeProperties() {
         super.initializeProperties();
-        this.listResource.listen('SELECTION_CHANGE', () => this.update());
+        this.resource.listen('SELECTION_CHANGE', () => this.update());
     }
 
     // #endregion
@@ -33,12 +36,20 @@ class MultiSelect extends ArpaElement {
     // #region GETTERS
 
     getIcon() {
-        return this.listResource?.hasSelections() ? 'check_box' : 'check_box_outline_blank';
+        return this.resource?.hasSelections() ? 'check_box' : 'check_box_outline_blank';
     }
 
     getTooltip() {
-        const count = this?.listResource?.getSelectedCount();
+        const count = this?.resource?.getSelectedCount();
         return count ? this.i18n('txtItemsSelected', { count }) : this.i18n('txtNoItemsSelected');
+    }
+
+    getInfoNode() {
+        if (this.infoNode?.isConnected) {
+            return this.infoNode;
+        }
+        this.infoNode = this.querySelector('.listMultiSelect__infoMessage');
+        return this.infoNode;
     }
 
     // #endregion
@@ -47,14 +58,22 @@ class MultiSelect extends ArpaElement {
 
     async render() {
         const menuProps = this.getProperties('icon', 'tooltip');
-        const formId = this.list.id + '-form';
+        const formId = this.list.id + '-multiSelectForm';
         this.innerHTML = html`
             <icon-menu class="listMultiSelect__nav" close-on-click="false" ${attrString(menuProps)}>
-                <slot name="menu-tooltip"> ${this.i18n('txtNoItemsSelected')} </slot>
-                <form id="${formId}" class="listMultiSelect__form" is="arpa-form" variant="compact" has-submit-button="false">
+                <slot name="menu-tooltip"> ${this.getProperty('tooltip')} </slot>
+                <form
+                    id="${formId}"
+                    class="listMultiSelect__form"
+                    is="arpa-form"
+                    variant="compact"
+                    has-submit-button="false"
+                >
                     <slot name="title"> ${this.i18n('txtBatchOperations')} </slot>
                     <slot name="messages">
-                        <info-message class="listMultiSelect__infoMessage"> ${this.i18n('txtNoItemsSelected')} </info-message>
+                        <info-message id="info-message" class="listMultiSelect__infoMessage">
+                            ${this.getTooltip()}
+                        </info-message>
                     </slot>
                     <checkbox-field id="toggleAll" value="select-all" icon="select_all">
                         <slot name="checkbox-label"> ${this.i18n('txtSelectAll')} </slot>
@@ -81,7 +100,8 @@ class MultiSelect extends ArpaElement {
         await customElements.whenDefined('arpa-form', 'icon-menu');
         /** @type {FormComponent} */
         this.form = this.querySelector('.listMultiSelect__form');
-        this.messageResource = this.form.messages?.resource;
+        this.messages = this.querySelector('arpa-messages');
+
         /** @type {IconMenu} */
         this.menu = this.querySelector('.listMultiSelect__nav');
         this._initializeActions();
@@ -89,24 +109,17 @@ class MultiSelect extends ArpaElement {
         this._initializeSelectionFilter();
     }
 
-    async _onComplete() {
-        this.infoMessage = this.querySelector('.listMultiSelect__infoMessage');
-    }
-
     _initializeSelectionFilter() {
         this.selectedFilterField = this.form.getField('selectFilter');
         this.selectedFilterField?.listen('onChange', checked => {
-            if (checked) {
-                this.listResource?.filterBySelections();
-            } else {
-                this.listResource?.fetch();
-            }
+            const action = checked ? 'filterBySelections' : 'fetch';
+            this.resource?.[action]();
         });
     }
 
     _initializeToggle() {
         this.toggleAllField = this.form.getField('toggleAll');
-        this.toggleAllField?.listen('onChange', checked => this.listResource.setSelections(checked));
+        this.toggleAllField?.listen('onChange', checked => this.resource.setSelections(checked));
     }
 
     async _initializeActions() {
@@ -118,7 +131,7 @@ class MultiSelect extends ArpaElement {
         this.actionsField.listen('onChange', async (value, field, event) => {
             const option = this.actionsField.getSelectedOption();
             if (typeof option.action === 'function') {
-                // option.action(this.listResource.getSelectedItems(), this.renderItemList());
+                // option.action(this.resource.getSelectedItems(), this.renderItemList());
             }
             // this.actionsField.removeSelectedOption();
             // event.stopImmediatePropagation();
@@ -142,30 +155,20 @@ class MultiSelect extends ArpaElement {
     }
 
     updateClassNames() {
-        if (this.listResource?.hasSelections()) {
-            this.classList.add('listMultiSelect--active');
-        } else {
-            this.classList.remove('listMultiSelect--active');
-        }
+        const action = this.resource?.hasSelections() ? 'add' : 'remove';
+        this.classList[action]('listMultiSelect--active');
     }
 
     updateDisabledState() {
-        const items = this.listResource.getSelectedItems();
-        if (items.length) {
-            this.selectedFilterField.enable();
-            this.actionsField.enable();
-        } else {
-            this.selectedFilterField.disable();
-            this.actionsField.disable();
-        }
+        const items = this.resource.getSelectedItems();
+        const fn = items?.length ? 'enable' : 'disable';
+        this.actionsField[fn]();
+        this.selectedFilterField[fn]();
     }
 
     updateMessage() {
-        // this.messageResource.deleteMessages();
-        // this.messageResource.info(this.getTooltip());
-        if (this.infoMessage) {
-            this.infoMessage.innerHTML = this.getTooltip();
-        }
+        const msg = this.form?.messages?.resource?.getById('info-message');
+        msg?.node?.setContent(this.getTooltip());
     }
 
     // #endregion
@@ -189,7 +192,7 @@ class MultiSelect extends ArpaElement {
     //     this.listNode.style.display = 'none';
     //     wrapper.appendChild(this.listNode);
 
-    //     const items = this.listResource.getSelectedItems();
+    //     const items = this.resource.getSelectedItems();
     //     items.forEach(item => {
     //         const node = document.createElement('li');
     //         node.innerText = item.title;
