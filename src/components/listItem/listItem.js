@@ -307,7 +307,11 @@ class ListItem extends ArpaElement {
         const content = this.getContent();
         return render(
             content,
-            html`<truncate-text max-length="${truncate}" class="listItem__content">${content}</truncate-text>`
+            html`
+                <truncate-text max-length="${truncate}" class="listItem__content">
+                    ${content}
+                </truncate-text>
+            `
         );
     }
 
