@@ -4,12 +4,12 @@
  * @typedef {import('../../../../types').AbstractContentInterface} AbstractContentInterface
  */
 
+import { ListResource } from '@arpadroid/resources';
 import { ArpaElement } from '@arpadroid/ui';
 import ListItem from '../listItem/listItem.js';
 import { I18nTool } from '@arpadroid/i18n';
 import { mergeObjects, getScrollableParent, isInView } from '@arpadroid/tools';
 import { sanitizeSearchInput, render, renderNode, renderAttr } from '@arpadroid/tools';
-import ListResource from '../../resources/listResource/listResource.js';
 
 const html = String.raw;
 class List extends ArpaElement {
@@ -356,7 +356,13 @@ class List extends ArpaElement {
         const urlParam = this.listResource?.pageFilter?.getUrlName();
         return render(
             this.hasPager(),
-            html` <arpa-pager total-pages="${totalPages}" current-page="${currentPage}" url-param="${urlParam}"></arpa-pager> `
+            html`
+                <arpa-pager
+                    total-pages="${totalPages}"
+                    current-page="${currentPage}"
+                    url-param="${urlParam}"
+                ></arpa-pager>
+            `
         );
     }
 

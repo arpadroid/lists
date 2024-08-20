@@ -47,6 +47,7 @@
         "@arpadroid/tools": "file:../tools",
         "@arpadroid/ui": "file:../ui",
         "@arpadroid/navigation": "file:../navigation",
-        "@arpadroid/messages": "file:../messages"
+        "@arpadroid/messages": "file:../messages",
+        "@arpadroid/resources": "file:../resources"
     }
 }

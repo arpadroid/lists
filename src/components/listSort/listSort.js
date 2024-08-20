@@ -1,7 +1,7 @@
 /**
  * @typedef {import('../list-item/listItemInterface.d.ts').ListItemInterface} ListItemInterface
  * @typedef {import('./listInterface.js').ListInterface} ListInterface
- * @typedef {import('@arpadroid/application/src/resources/listResource/listResource.js').default} ListResource
+ * @typedef {import('@arpadroid/resources').ListResource} ListResource
  * @typedef {import('../list/list.js').default} List
  * @typedef {import('../../../form/components/fields/searchField/searchField.js').default} SearchField
  * @typedef {import('../../../form/components/fields/selectCombo/selectCombo.js').default} SelectCombo
@@ -26,7 +26,8 @@ class ListSort extends ArpaElement {
             lblSortAsc: I18n.getText('modules.list.listSort.lblSortAsc'),
             lblSortDesc: I18n.getText('modules.list.listSort.lblSortDesc'),
             iconAsc: 'keyboard_double_arrow_up',
-            iconDesc: 'keyboard_double_arrow_down'
+            iconDesc: 'keyboard_double_arrow_down',
+            iconSort: 'sort'
         };
     }
 
@@ -94,7 +95,9 @@ class ListSort extends ArpaElement {
         this.selectField = this.querySelector('select-combo');
         await customElements.whenDefined('select-combo');
         this.selectField.onRendered(() => {
-            this.configureSelect(this.selectField);
+            const options = this.list.getSortOptions();
+            this.selectField?.optionsNode?.setAttribute('slot', 'sort-options');
+            this.configureSelect(this.selectField, options);
         });
     }
 
@@ -126,12 +129,7 @@ class ListSort extends ArpaElement {
         return html`<select-combo id="sortBy" class="sortByField" icon-right="none"></select-combo>`;
     }
 
-    configureSelect(
-        field,
-        options = this.list.getSortOptions(),
-        value = this.sortFilter?.getValue() || this.list?.getSortDefault(),
-        config = {}
-    ) {
+    configureSelect(field, options, value = this.sortFilter?.getValue() || this.list?.getSortDefault(), config = {}) {
         field.listen('onChange', this.onSelectChange);
         field.addConfig({
             icon: this.getProperty('sort-icon'),
@@ -145,13 +143,13 @@ class ListSort extends ArpaElement {
     }
 
     renderSelectValue(option) {
-        const icon = option?.getAttribute('icon');
+        const icon = option?.getAttribute('icon') || this.getProperty('iconSort');
+        const optionContent = option?.querySelector('.fieldOption__content')?.innerText || option?.innerText;
+        const optionLabel = option?.getProperty('label') || optionContent || this.i18n('lblNoSelection');
         return html`
             <arpa-icon>${icon}</arpa-icon>
             ${this.i18n('lblSortBy')}
-            <span className="selectComboInput__title">
-                ${option?.getProperty('label') ?? this.i18n('lblNoSelection')}
-            </span>
+            <span className="selectComboInput__title"> ${optionLabel} </span>
         `;
     }
 

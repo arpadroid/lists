@@ -1,5 +1,5 @@
 /**
- * @typedef {import('@arpadroid/application/dist/index.js').ListResource} ListResource
+ * @typedef {import('@arpadroid/resources/src').ListResource} ListResource
  * @typedef {import('../list/list.js').default} List
  */
 import { mergeObjects, attrString } from '@arpadroid/tools';

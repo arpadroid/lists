@@ -1,7 +1,7 @@
 /**
  * @typedef {import('@arpadroid/forms').SelectCombo} SelectCombo
  * @typedef {import('@arpadroid/forms').FormComponent} FormComponent
- * @typedef {import('@arpadroid/lists').ListResource} ListResource
+ * @typedef {import('@arpadroid/resources').ListResource} ListResource
  * @typedef {import('@arpadroid/navigation').IconMenu} IconMenu
  */
 import { ArpaElement } from '@arpadroid/ui';
@@ -130,11 +130,11 @@ class MultiSelect extends ArpaElement {
         // eslint-disable-next-line no-unused-vars
         this.actionsField.listen('onChange', async (value, field, event) => {
             const option = this.actionsField.getSelectedOption();
-            if (typeof option.action === 'function') {
-                // option.action(this.resource.getSelectedItems(), this.renderItemList());
+            if (typeof option?.action === 'function') {
+                option.action(this.resource.getSelectedItems(), this.renderItemList());
             }
             // this.actionsField.removeSelectedOption();
-            // event.stopImmediatePropagation();
+            event.stopImmediatePropagation();
         });
     }
 

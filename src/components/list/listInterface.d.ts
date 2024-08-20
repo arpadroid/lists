@@ -1,5 +1,5 @@
 import { AbstractContentInterface } from '../../../../types';
-import { ListResource } from '@arpadroid/application';
+import { ListResource } from '@arpadroid/resources/src';
 import { NavLinkInterface } from '../../../navigation/components/navLink/navLinkInterface';
 
 export interface ListInterface extends AbstractComponentInterface {

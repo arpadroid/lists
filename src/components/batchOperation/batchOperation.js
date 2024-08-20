@@ -1,18 +1,14 @@
-import { SelectOption } from '@arpadroid/forms';
-import { mergeObjects } from '@arpadroid/tools';
-// const html = String.raw;
-class BatchOperation extends SelectOption {
-    initializeProperties() {
-        super.initializeProperties();
-    }
-    getDefaultConfig() {
-        return mergeObjects(super.getDefaultConfig(), {
-            className: 'comboBox__item'
-        });
-    }
+import { ArpaFragment } from '@arpadroid/ui';
 
-    render() {
-        super.render();
+const html = String.raw;
+class BatchOperation extends ArpaFragment {
+    constructor() {
+        super();
+        this.innerHTML = html`<select-option class="comboBox__item" ${this.getAttributes()}>
+            ${this.innerHTML}
+        </select-option>`;
+        this.node = this.querySelector('select-option');
+        this.node.append(...this._childNodes);
     }
 }
 

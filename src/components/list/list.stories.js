@@ -73,18 +73,24 @@ export const ResourceDriven = {
                 <slot name="batch-operations">
                     <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>
                 </slot>
+                <slot name="sort-options">
+                    <select-option value="name" icon="sort_by_alpha"> Name </select-option>
+                    <select-option value="date" icon="calendar_month" default> Date </select-option>
+                </slot>
             </arpa-list>
             <script type="module">
                 import { editURL, getInitials } from '/arpadroid-tools.js';
                 customElements.whenDefined('arpa-list').then(() => {
-                    const sortOptions = [
-                        { label: 'Name', value: 'name', icon: 'sort_by_alpha' },
-                        { label: 'Date', value: 'date', icon: 'calendar_month' }
-                    ];
                     const list = document.getElementById('resource-list');
-                    list.setSortOptions(sortOptions, 'date');
                     const resource = list.listResource;
                     resource.setUrl('/api/gallery/item/get-items?&galleryList-perPage=10');
+                    /**
+                     * Configure Resource.
+                     *  list.setSortOptions([{ label: 'Name', value: 'name', icon: 'sort_by_alpha' }, { label: 'Date', value: 'date', icon: 'calendar_month' } ], 'date' );
+                     */
+                    /**
+                     * Map item data to list item properties.
+                     */
                     resource.mapItem(item => {
                         const { id, title } = item;
                         const author = item.author_name + ' ' + item.author_surname;

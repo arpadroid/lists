@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 /**
  * @typedef {import('./listItemInterface').ListItemInterface} ListItemInterface
- * @typedef {import('../../resources/listResource/listResource.js').default} ListResource
+ * @typedef {import('@arpadroid/resources/src').ListResource} ListResource
  * @typedef {import('../../resources/listResource/listFilter.js').default} ListFilter
  * @typedef {import('../list/list.js').default} List
  * @typedef {import('../../../../components/tag/tagInterface.js').TagInterface} TagInterface
