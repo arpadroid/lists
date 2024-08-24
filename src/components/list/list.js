@@ -256,7 +256,9 @@ class List extends ArpaElement {
 
     async onResourceSetItems(items = []) {
         await this.onReady();
-        this.itemsNode.innerHTML = '';
+        if (this.itemsNode) {
+            this.itemsNode.innerHTML = '';
+        }
         this.onResourceAddItems(items);
     }
 
