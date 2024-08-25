@@ -10,8 +10,7 @@
         "build": "node ./node_modules/@arpadroid/arpadroid/scripts/build-project.mjs --project=lists --minify",
         "prepublish": "npm run build",
         "storybook": "npm run build -- --storybook=6008 --deps=forms,navigation,messages --watch",
-        "test": "npm run storybook:test",
-        "test:storybook": "test-storybook"
+        "test": "node ./node_modules/@arpadroid/arpadroid/scripts/test-project.mjs --project=lists --storybook --jest --port=6008"
     },
     "repository": {
         "type": "git",
@@ -34,6 +33,7 @@
         "@babel/core": "^7.23.9",
         "@babel/plugin-syntax-import-assertions": "^7.23.3",
         "@babel/preset-env": "^7.23.9",
+        "@ungap/custom-elements": "^1.3.0",
         "babel-jest": "^29.7.0",
         "babel-loader": "^9.1.3",
         "dts-bundle-generator": "^9.3.1",
@@ -44,10 +44,10 @@
         "@arpadroid/application": "file:../application",
         "@arpadroid/forms": "file:../forms",
         "@arpadroid/i18n": "file:../i18n",
-        "@arpadroid/tools": "file:../tools",
-        "@arpadroid/ui": "file:../ui",
-        "@arpadroid/navigation": "file:../navigation",
         "@arpadroid/messages": "file:../messages",
-        "@arpadroid/resources": "file:../resources"
+        "@arpadroid/navigation": "file:../navigation",
+        "@arpadroid/resources": "file:../resources",
+        "@arpadroid/tools": "file:../tools",
+        "@arpadroid/ui": "file:../ui"
     }
 }

@@ -308,7 +308,7 @@ class ListItem extends ArpaElement {
         return render(
             content,
             html`
-                <truncate-text max-length="${truncate}" class="listItem__content">
+                <truncate-text has-button max-length="${truncate}" class="listItem__content">
                     ${content}
                 </truncate-text>
             `
