@@ -1,7 +1,7 @@
 /**
  * @typedef {import('./list.js').default} List
  */
-import { attrString } from '@arpadroid/tools';
+import { attrString, editURL, getInitials } from '@arpadroid/tools';
 // import { waitFor, expect, within } from '@storybook/test';
 
 const html = String.raw;
@@ -23,7 +23,6 @@ const ListStory = {
         return {
             id: { control: { type: 'text' }, table: { category } },
             title: { control: { type: 'text' }, table: { category } },
-
             allControls: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
             hasSearch: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
             hasMultiSelect: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
@@ -67,50 +66,48 @@ export const ResourceDriven = {
     argTypes: ListStory.getArgTypes(),
     args: { ...ListStory.getArgs(), id: 'resource-list', allControls: true, title: 'Resource Driven List' },
     render: args => {
-        delete args.text;
         return html`
-            <arpa-list ${attrString(args)} views="grid, list">
+            <arpa-list ${attrString(args)} views="grid,list" url="api/gallery/item/get-items?&galleryList-perPage=10">
                 <slot name="batch-operations">
                     <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>
                 </slot>
+
                 <slot name="sort-options">
                     <select-option value="name" icon="sort_by_alpha"> Name </select-option>
                     <select-option value="date" icon="calendar_month" default> Date </select-option>
                 </slot>
+
+                <slot name="filters">
+                    <text-field id="advanced search" label="Search" icon="search" placeholder="Search"></text-field>
+                </slot>
+
+                <template
+                    template-id="list-item-template"
+                    id="{id}"
+                    image="/api/image/convert?source={image_url}&width=400&height=400&quality=70'"
+                >
+                    <slot name="tags">
+                        <tag-item label="{author_initials}" icon="person"></tag-item>
+                        <tag-item label="{date}" icon="calendar_month"></tag-item>
+                    </slot>
+
+                    <slot name="nav">
+                        <nav-link link="/gallery/{id}" icon-right="visibility">View</nav-link>
+                        <nav-link link="/gallery/{id}/edit" icon-right="edit">Edit</nav-link>
+                    </slot>
+                </template>
             </arpa-list>
+
             <script type="module">
                 import { editURL, getInitials } from '/arpadroid-tools.js';
                 customElements.whenDefined('arpa-list').then(() => {
                     const list = document.getElementById('resource-list');
                     const resource = list.listResource;
-                    resource.setUrl('/api/gallery/item/get-items?&galleryList-perPage=10');
-                    /**
-                     * Configure Resource.
-                     *  list.setSortOptions([{ label: 'Name', value: 'name', icon: 'sort_by_alpha' }, { label: 'Date', value: 'date', icon: 'calendar_month' } ], 'date' );
-                     */
-                    /**
-                     * Map item data to list item properties.
-                     */
                     resource.mapItem(item => {
-                        const { id, title } = item;
-                        const author = item.author_name + ' ' + item.author_surname;
-                        const tags = [
-                            { label: getInitials(author), icon: 'person' },
-                            { label: item.date ?? '?', icon: 'calendar_month' }
-                        ];
-                        const links = [
-                            { content: 'View', link: '/gallery/' + item.id, iconRight: 'visibility' },
-                            { content: 'Edit', link: '/gallery/' + item.id + '/edit', iconRight: 'edit' }
-                        ];
-                        const image = editURL('/api/image/convert', {
-                            source: item.image_url,
-                            width: 400,
-                            height: 400,
-                            quality: 70
-                        });
-                        return { id, title, nav: { links }, image, tags };
+                        item.author_initials = getInitials(item.author_name + ' ' + item.author_surname);
+                        item.date = item.date ?? '?';
+                        return item;
                     });
-
                     resource.fetch();
                 });
             </script>

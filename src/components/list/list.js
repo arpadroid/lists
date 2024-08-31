@@ -19,6 +19,11 @@ class List extends ArpaElement {
     // #region INITIALIZATION
     //////////////////////////
 
+    _preInitialize() {
+        this.itemTemplate = this.querySelector(':scope > template[template-id="list-item-template"]');
+        this.itemTemplate?.remove();
+    }
+
     setConfig(config = {}) {
         config.id = config.id || this.id;
         if (!config.id) {
@@ -82,35 +87,12 @@ class List extends ArpaElement {
         return this.getProperty('render-mode');
     }
 
-    /**
-     * Sets the heading.
-     * @param {AbstractContentInterface} heading
-     */
-    setHeading(heading) {
-        this._config.heading = heading;
-        if (this.headingComponent) {
-            this.headingNode = this.headingComponent.setContent(heading);
-        }
-    }
-
     mapItem(callback) {
         this.listResource?.mapItem(callback);
     }
 
     preProcessNode(callback) {
         this.listResource?.setPreProcessNode(callback);
-    }
-
-    /**
-     * Returns the heading.
-     * @returns {import('../list-item/listItem.js').AbstractContentInterface}
-     */
-    getHeading() {
-        return this._config.heading;
-    }
-
-    getListNode() {
-        return this.layout.getRootNode()?.node;
     }
 
     hasAllControls() {
@@ -305,11 +287,6 @@ class List extends ArpaElement {
         };
     }
 
-    // renderNoItemsContent() {
-    //     const content = ;
-    //     return render(content, content);
-    // }
-
     render() {
         const renderMode = this.getRenderMode();
         const template = renderMode === 'minimal' ? this.renderMinimal() : this.renderFull();
@@ -388,42 +365,6 @@ class List extends ArpaElement {
         return Boolean(this.preloaderNode && this.isLoading);
     }
 
-    // _render() {
-    //     const node = super._render();
-    //     node?.classList?.add('listComponent');
-    //     if (this._canShowPreloader()) {
-    //         node.appendChild(this.preloaderNode);
-    //     }
-    //     this.bodyNode = this.renderBody();
-    //     node.insertBefore(this.bodyNode, node.firstChild);
-    //     this.controlsNode = this.rendeControls();
-    //     if (this.controlsNode) {
-    //         node.insertBefore(this.controlsNode, node.firstChild);
-    //     }
-    //     this.renderControls();
-    //     this.pagerNode = this.renderPager();
-    //     if (this.pagerNode) {
-    //         this.bodyMainNode.appendChild(this.pagerNode);
-    //     }
-    //     this._initializeFilters();
-    //     const { title } = this._config;
-    //     if (title) {
-    //         this.titleNode = document.createElement('h2');
-    //         this.titleNode.className = 'list__title';
-    //         this.titleNode.textContent = title;
-    //         node.prepend(this.titleNode);
-    //     }
-    //     return node;
-    // }
-
-    renderControls() {
-        this._initializeSearch();
-    }
-
-    rendeControls() {
-        return this.controlsComponent.render();
-    }
-
     // #endregion
 
     /////////////////////
@@ -497,7 +438,7 @@ class List extends ArpaElement {
      */
     resetScroll() {
         const { resetScrollOnLoad } = this._config;
-        const scrollable = getScrollableParent(this.node);
+        const scrollable = getScrollableParent(this);
         if (scrollable?.scrollTop > 0 && resetScrollOnLoad && !isInView(this.node)) {
             // this.node.style.scrollMarginTop = Context.UIService.uiType === 'mobile' ? '60px' : '20px';
             this.node?.scrollIntoView({});
@@ -515,28 +456,11 @@ class List extends ArpaElement {
         };
     }
 
-    _initializeProperties() {
-        super._initializeProperties();
-        this._controls = {};
-        /** @type {ListResource} */
-        this.listResource = this.listResource || this._config?.listResource;
-    }
-
     _initialize() {
         this._onSearch = this._onSearch.bind(this);
-        this._initializeHeading();
         super._initialize();
         this._initializeListResource();
-        this._initializeControls();
-        this._initializeViews();
         this._initializeSelections();
-    }
-
-    _initializeHeading() {
-        // this.headingComponent = new ListHeading(this._id + '-heading', {
-        //     content: this._config.heading,
-        //     context: this._getContext()
-        // });
     }
 
     getDefaultView() {
@@ -549,13 +473,6 @@ class List extends ArpaElement {
         //         context: this._getContext()
         //     });
         //     this.addControl({ id: 'selectionsControl', content: this.listSelection.render() });
-        // }
-    }
-
-    _initializeViews() {
-        // if (this._config.hasViews) {
-        //     this.viewsComponent = new ListViews(this._id + '-views', this._getContext());
-        //     this.addControl({ id: 'viewsControl', content: this.viewsComponent.render() });
         // }
     }
 
@@ -593,21 +510,19 @@ class List extends ArpaElement {
         // });
     }
 
-    _initializeControls() {
-        // this.controlsComponent = new ListControls(this._id + 'controls', {
-        //     context: this._getContext()
-        // });
-    }
-
     _initializeListResource() {
         this.listResource = this.getResource();
         if (this.listResource) {
-            // this.preloader = new CircularPreloader(this._id + '-preloader');
+            this.preloader = renderNode(html`<circular-preloader></circular-preloader>`);
             this.listResource.listen('PAYLOAD', () => {
-                this._initalizeList();
+                this._initializeList();
             });
             this._handleItems();
-            // this._handlePreloading();
+            this._handlePreloading();
+            const url = this.getProperty('url');
+            if (url) {
+                this.listResource.setUrl(url);
+            }
         }
     }
 
@@ -619,25 +534,25 @@ class List extends ArpaElement {
         this.listResource = listResource;
     }
 
-    _handlePreloading() {
-        this.preloaderNode = this.preloader.render();
+    async _handlePreloading() {
+        await this.promise;
         this.listResource.listen('FETCH', () => {
             this.isLoading = true;
             if (this.isLoading && this._hasRendered) {
-                this.node.appendChild(this.preloaderNode);
+                this.appendChild(this.preloader);
             }
         });
 
         this.listResource.listen('READY', () => {
             this.isLoading = false;
-            if (this.preloaderNode.parentNode) {
-                this.preloaderNode.parentNode.removeChild(this.preloaderNode);
+            if (this.preloader.parentNode) {
+                this.preloader.parentNode.removeChild(this.preloader);
             }
         });
     }
 
-    _initalizeList() {
-        // this.resetScroll();
+    _initializeList() {
+        this.resetScroll();
         // this.pagerNode = this?.pagerComponent.set(
         //     this.listResource.getCurrentPage(),
         //     this.listResource.getTotalPages()
@@ -645,7 +560,6 @@ class List extends ArpaElement {
         // // if (this._config.fixPager) {
         // //     NodePosition.absoluteFix(this.pagerNode, this.bodyMainNode);
         // // }
-        // this.renderNoItemsContent();
         // if (this?.listResource) {
         //     this.setList(this.listResource.items);
         // }

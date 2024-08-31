@@ -27,7 +27,7 @@ class TagItem extends ListItem {
     render() {
         const tooltip = this.getProperty('tooltip');
         const tooltipPosition = this.getProperty('tooltip-position');
-        const text = this.getProperty('text');
+        const text = this.getProperty('text') || this.getProperty('label');
         const template = html`
             <arpa-icon>{icon}</arpa-icon>
             <div class="tag__text">${text}</div>
