@@ -43,6 +43,7 @@ class ListControls extends ArpaElement {
         this.search = this.querySelector('list-search');
         this.views = this.querySelector('list-views');
         this.multiSelect = this.querySelector('list-multi-select');
+        this.append(...this._childNodes);
         // super.postRender();
         // const { hasStickyControls } = this._config;
         // if (hasStickyControls) {

@@ -99,6 +99,10 @@ class List extends ArpaElement {
         return this.hasProperty('all-controls');
     }
 
+    hasFilters() {
+        return this.hasAllControls() || this.hasProperty('has-filters');
+    }
+
     /**
      * Whether the list has search.
      * @returns {boolean}
@@ -148,7 +152,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasPager() {
-        return Boolean(this.listResource?.getTotalPages() > 1 && this.hasProperty('has-pager'));
+        return this.hasAllControls() || Boolean(this.hasProperty('has-pager'));
     }
 
     /**
@@ -162,6 +166,8 @@ class List extends ArpaElement {
     getChildren() {
         return this.itemsNode?.children ?? [];
     }
+
+    // #region ITEM CRUD
 
     /**
      * Adds an item to the list.
@@ -197,10 +203,6 @@ class List extends ArpaElement {
         this.itemsNode?.append(...items);
     }
 
-    getTitle() {
-        return this.getProperty('title');
-    }
-
     removeItem(item) {
         return this?.listResource?.removeItem(item);
     }
@@ -212,6 +214,12 @@ class List extends ArpaElement {
     createItem(config = {}, payload = {}, mapping = {}) {
         const { itemComponent } = this._config;
         return new itemComponent(config, payload, mapping);
+    }
+
+    // #endregion
+
+    getTitle() {
+        return this.getProperty('title');
     }
 
     _handleItems() {
@@ -275,10 +283,6 @@ class List extends ArpaElement {
             aside: this.renderAside(),
             id: this._config.id,
             title: this.getProperty('title'),
-            // search: this.controlsComponent?.getControl('searchControl')?.render(),
-            // views: this.controlsComponent?.getControl('viewsControl')?.render(),
-            // filters: this.controlsComponent?.getControl('filtersControl')?.render(),
-            // preloader: this.preloaderNode,
             items: this.renderItems(),
             heading: this.renderHeading(),
             noItemsIcon: this.getProperty('no-items-icon'),
@@ -300,7 +304,9 @@ class List extends ArpaElement {
     renderFull() {
         return html`
             ${this.renderTitle()}
-            <list-controls></list-controls>
+            <list-controls slot="controls">
+                ${this.hasFilters() ? html`<list-filters slot="list-filters"></list-filters>` : ''}
+            </list-controls>
             <div class="arpaList__body">
                 <div class="arpaList__bodyMain">{heading} {items} {pager}</div>
                 {aside}
@@ -330,34 +336,35 @@ class List extends ArpaElement {
     }
 
     renderPager() {
-        const totalPages = this.listResource?.getTotalPages();
+        const totalPages = this.listResource.getTotalPages();
         const currentPage = this.listResource?.getCurrentPage();
         const urlParam = this.listResource?.pageFilter?.getUrlName();
-        return render(
-            this.hasPager(),
-            html`
-                <arpa-pager
-                    total-pages="${totalPages}"
-                    current-page="${currentPage}"
-                    url-param="${urlParam}"
-                ></arpa-pager>
-            `
-        );
+        if (!this.hasPager()) {
+            return '';
+        }
+        return html`
+            <arpa-pager
+                id="${this.id}-listPager"
+                total-pages="${totalPages}"
+                current-page="${currentPage}"
+                url-param="${urlParam}"
+            ></arpa-pager>
+        `;
     }
 
     renderNoItemsContent(items = this.listResource.getItems()) {
         const notItemsContent = this.getProperty('no-items-content');
-        return render(
-            notItemsContent && !items?.length,
-            I18nTool.processTemplate(
-                html`
-                    <div class="arpaList__noItems">
-                        <arpa-icon>{noItemsIcon}</arpa-icon>
-                        <div class="arpaList__noItemsText">{noItemsContent}</div>
-                    </div>
-                `,
-                this.getTemplateVars()
-            )
+        if (!items?.length || !notItemsContent) {
+            return '';
+        }
+        return I18nTool.processTemplate(
+            html`
+                <div class="arpaList__noItems">
+                    <arpa-icon>{noItemsIcon}</arpa-icon>
+                    <div class="arpaList__noItemsText">{noItemsContent}</div>
+                </div>
+            `,
+            this.getTemplateVars()
         );
     }
 
@@ -399,40 +406,14 @@ class List extends ArpaElement {
 
     // #endregion
 
-    // /**
-    //  * Sets the list items and deletes existing ones.
-    //  * @param {LayoutNodeInterface[]} items
-    //  */
-    // setList(items) {
-    //     this.layout.setNodes(items);
-    // }
+    /**
+     * Sets the list items and deletes existing ones.
+     * @param {ListItemInterface[]} items
+     */
+    setList(items) {
+        this.listResource.setItems(items);
+    }
 
-    // /**
-    //  * Removes an item by index.
-    //  * @param {number} index
-    //  * @returns {LayoutNode}
-    //  */
-    // removeItemIndex(index) {
-    //     return this.layout.deleteNodeIndex(index);
-    // }
-
-    // /**
-    //  * Adds a control.
-    //  * @param {LayoutNodeInterface} control
-    //  * @param {boolean} unshift
-    //  * @returns {LayoutNodeInterface}
-    //  */
-    // addControl(control, unshift = false) {
-    //     const existing = control?.id ? this._controls[control.id] : null;
-    //     if (existing) {
-    //         return existing;
-    //     }
-    //     const node = this.controlsComponent.layout.addNode(control, unshift);
-    //     if (control.id) {
-    //         this._controls[control.id] = node;
-    //     }
-    //     return node;
-    // }
     /**
      * Scrolls list to the top.
      */
@@ -511,6 +492,7 @@ class List extends ArpaElement {
     }
 
     _initializeListResource() {
+        /** @type {ListResource} */
         this.listResource = this.getResource();
         if (this.listResource) {
             this.preloader = renderNode(html`<circular-preloader></circular-preloader>`);
@@ -531,6 +513,7 @@ class List extends ArpaElement {
     }
 
     setListResource(listResource) {
+        /** @type {ListResource} */
         this.listResource = listResource;
     }
 
