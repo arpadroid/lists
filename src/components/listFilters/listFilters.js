@@ -10,12 +10,17 @@ class ListFilters extends ArpaElement {
     // #region INITIALIZATION
     getDefaultConfig() {
         return mergeObjects(super.getDefaultConfig(), {
-            icon: 'filter_list',
+            icon: 'filter_list'
         });
     }
-    render() {
+    async render() {
         const props = this.getProperties('icon', 'label');
         this.innerHTML = html`<icon-menu ${attrString(props)}></icon-menu>`;
+        this.menuNode = this.querySelector('icon-menu');
+        await customElements.whenDefined('icon-menu');
+        await this.menuNode.promise;
+        const itemsNode = this.menuNode?.navigation?.itemsNode;
+        itemsNode?.setAttribute('slot', 'list-filters');
     }
 
     initializeProperties() {

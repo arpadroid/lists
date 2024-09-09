@@ -105,10 +105,11 @@ class ListSearch extends ArpaElement {
             const searchValue = this.searchField.getValue() || '';
             this.searchFilter.setValue(searchValue);
             const url = editURL(Context.Router.getRoute(), {
-                [this.searchFilter.getUrlName()]: searchValue,
-                [this.listResource.pageFilter.getUrlName()]: 1
+                [this.list.getParamName('search')]: searchValue,
+                [this.list.getParamName('page')]: 1
             });
-            Context.Router.go(url);
+            window.history.pushState({}, '', url);
+            this.listResource?.fetch();
         }
     }
 }

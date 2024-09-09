@@ -67,7 +67,12 @@ export const ResourceDriven = {
     args: { ...ListStory.getArgs(), id: 'resource-list', allControls: true, title: 'Resource Driven List' },
     render: args => {
         return html`
-            <arpa-list ${attrString(args)} views="grid,list" url="api/gallery/item/get-items?&galleryList-perPage=10">
+            <arpa-list
+                ${attrString(args)}
+                views="grid,list"
+                url="api/gallery/item/get-items"
+                filter-namespace="galleryList-"
+            >
                 <slot name="batch-operations">
                     <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>
                 </slot>
@@ -77,7 +82,7 @@ export const ResourceDriven = {
                     <select-option value="date" icon="calendar_month" default> Date </select-option>
                 </slot>
 
-                <slot name="filters">
+                <slot name="list-filters">
                     <text-field id="advanced search" label="Search" icon="search" placeholder="Search"></text-field>
                 </slot>
 
