@@ -36,8 +36,8 @@ const ListStory = {
             <arpa-list ${attrString(args)} views="grid, list">
                 <list-item
                     title="Some title"
-                    title-link="http://museovaquero.local/api/image/convert?source=%2Fcmsx%2Fassets%2Fhqrvutmy_museovaquero_assets%2Fgallery%2Fimages%2F449.jpg&width=400&height=400&quality=70"
-                    image="http://museovaquero.local/api/image/convert?source=%2Fcmsx%2Fassets%2Fhqrvutmy_museovaquero_assets%2Fgallery%2Fimages%2F449.jpg&width=400&height=400&quality=70"
+                    title-link="/some-link"
+                    image="/some-image.jpg"
                 >
                     A Demo list item.
                 </list-item>
@@ -72,13 +72,14 @@ export const ResourceDriven = {
                 views="grid,list"
                 url="api/gallery/item/get-items"
                 filter-namespace="galleryList-"
+                items-per-page="5"
             >
                 <slot name="batch-operations">
                     <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>
                 </slot>
 
                 <slot name="sort-options">
-                    <select-option value="name" icon="sort_by_alpha"> Name </select-option>
+                    <select-option value="title" icon="sort_by_alpha"> Title </select-option>
                     <select-option value="date" icon="calendar_month" default> Date </select-option>
                 </slot>
 

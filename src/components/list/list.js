@@ -72,7 +72,11 @@ class List extends ArpaElement {
             renderMode: 'full',
             title: '',
             pageParam: 'page',
-            searchParam: 'search'
+            perPageParam: 'perPage',
+            sortByParam: 'sortBy',
+            sortDirParam: 'sortDir',
+            searchParam: 'search',
+            itemsPerPage: 50
             // selectors: {
             //     searchNodes: '.listItem__titleText, .listItem__subTitle'
             // }
@@ -397,7 +401,6 @@ class List extends ArpaElement {
      * @param {Pager} node
      */
     async updatePager(node = this.querySelector('arpa-pager')) {
-        node?.promise && (await node.promise);
         node.setPager(this.listResource.getCurrentPage(), this.listResource.getTotalPages());
     }
 
@@ -480,7 +483,11 @@ class List extends ArpaElement {
             new ListResource({
                 id: this._config.id,
                 pageParam: this.getParamName('page'),
-                searchParam: this.getParamName('search')
+                searchParam: this.getParamName('search'),
+                perPageParam: this.getParamName('perPage'),
+                sortByParam: this.getParamName('sortBy'),
+                sortDirParam: this.getParamName('sortDir'),
+                itemsPerPage: this.getProperty('items-per-page')
             })
         );
     }
@@ -515,7 +522,7 @@ class List extends ArpaElement {
     _initializeList() {
         this.resetScroll();
         this._initializePager();
-        if (this.hasFixedPager()) {
+        if (!this._hasRendered && this.hasFixedPager()) {
             Promise.all([this.promise, this.pagerNode.promise]).then(() => {
                 absoluteFix(this.pagerNode, this.bodyMainNode);
             });

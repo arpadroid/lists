@@ -120,9 +120,11 @@ class ListSort extends ArpaElement {
         const value = this.sortDirFilter.getValue();
         const newValue = value === 'asc' ? 'desc' : 'asc';
         const newURL = editURL(Context.Router.getRoute(), {
-            [this.sortDirFilter.getUrlName()]: newValue
+            [this.list.getParamName('sortDir')]: newValue
         });
-        Context.Router.go(newURL);
+        window.history.pushState({}, '', newURL);
+        this.listResource.fetch();
+        // Context.Router.go(newURL);
     }
 
     async renderSelect() {
@@ -162,10 +164,12 @@ class ListSort extends ArpaElement {
     onSelectChange(value) {
         this.sortFilter.setValue(value);
         const newURL = editURL(Context.Router.getRoute(), {
-            [this.sortFilter.getUrlName()]: value,
-            [this.listResource.pageFilter.getUrlName()]: 1
+            [this.list.getParamName('sortBy')]: value,
+            [this.list.getParamName('page')]: 1
         });
-        Context.Router.go(newURL);
+        window.history.pushState({}, '', newURL);
+        this.listResource.fetch();
+        // Context.Router.go(newURL);
     }
 }
 
