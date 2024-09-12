@@ -2,7 +2,7 @@
  * @typedef {import('./list.js').default} List
  */
 import { attrString } from '@arpadroid/tools';
-// import { waitFor, expect, within } from '@storybook/test';
+import { within, userEvent } from '@storybook/test';
 
 const html = String.raw;
 const ListStory = {
@@ -34,11 +34,7 @@ const ListStory = {
         delete args.text;
         return html`
             <arpa-list ${attrString(args)} views="grid, list">
-                <list-item
-                    title="Some title"
-                    title-link="/some-link"
-                    image="/some-image.jpg"
-                >
+                <list-item title="Some title" title-link="/some-link" image="/some-image.jpg">
                     A Demo list item.
                 </list-item>
             </arpa-list>
@@ -64,16 +60,19 @@ export const ResourceDriven = {
     name: 'Resource Driven',
     parameters: {},
     argTypes: ListStory.getArgTypes(),
-    args: { ...ListStory.getArgs(), id: 'resource-list', allControls: true, title: 'Resource Driven List' },
+    args: {
+        ...ListStory.getArgs(),
+        id: 'resource-list',
+        allControls: true,
+        title: 'Resource Driven List',
+        view: 'grid, list',
+        url: 'api/gallery/item/get-items',
+        filterNamespace: 'galleryList-',
+        itemsPerPage: 5
+    },
     render: args => {
         return html`
-            <arpa-list
-                ${attrString(args)}
-                views="grid,list"
-                url="api/gallery/item/get-items"
-                filter-namespace="galleryList-"
-                items-per-page="5"
-            >
+            <arpa-list ${attrString(args)}>
                 <slot name="batch-operations">
                     <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>
                 </slot>
@@ -83,9 +82,7 @@ export const ResourceDriven = {
                     <select-option value="date" icon="calendar_month" default> Date </select-option>
                 </slot>
 
-                <slot name="list-filters">
-                    <text-field id="advanced search" label="Search" icon="search" placeholder="Search"></text-field>
-                </slot>
+                <slot name="list-filters"> </slot>
 
                 <template
                     id="{id}"
@@ -121,6 +118,35 @@ export const ResourceDriven = {
     }
 };
 
+export const ResourceDrivenTest = {
+    ...ResourceDriven,
+    parameters: {},
+    args: {
+        ...ResourceDriven.args
+    },
+    parameters: {
+        controls: { disable: true },
+        usage: { disable: true },
+        options: { selectedPanel: 'storybook/interactions/panel' }
+    },
+    playSetup: async canvasElement => {
+        const canvas = within(canvasElement);
+        await customElements.whenDefined('arpa-list');
+        const listNode = canvasElement.querySelector('arpa-list');
+        await listNode.promise;
+        return { canvas, listNode };
+    },
+    play: async ({ canvasElement, step }) => {
+        const setup = await ResourceDrivenTest.playSetup(canvasElement);
+        const { canvas } = setup;
+
+        await step('Clicks on filters menu', async () => {
+            const filtersMenu = canvas.getByRole('button', { name: /Filters/i });
+            userEvent.click(filtersMenu);
+        });
+    }
+};
+
 export const Test = {
     args: Default.args,
     parameters: {},
@@ -131,17 +157,16 @@ export const Test = {
         controls: { disable: true },
         usage: { disable: true },
         options: { selectedPanel: 'storybook/interactions/panel' }
+    },
+    playSetup: async canvasElement => {
+        const canvas = within(canvasElement);
+        await customElements.whenDefined('arpa-list');
+        const listNode = canvasElement.querySelector('arpa-list');
+        return { canvas, listNode };
     }
-    // playSetup: async canvasElement => {
-    //     const canvas = within(canvasElement);
-    //     await customElements.whenDefined('arpa-list');
-    //     const listNode = canvasElement.querySelector('arpa-list');
-    //     return { canvas, listNode };
-    // }
     // play: async ({ canvasElement, step }) => {
     //     const setup = await Test.playSetup(canvasElement);
-    //     const { canvas, listNode } = setup;
-    //     console.log('listNode', listNode);
+    //     // const { canvas, listNode } = setup;
     // }
 };
 

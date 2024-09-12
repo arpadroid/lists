@@ -11,6 +11,7 @@ import ListItem from '../listItem/listItem.js';
 import { I18nTool } from '@arpadroid/i18n';
 import { mergeObjects, getScrollableParent, isInView, editURL } from '@arpadroid/tools';
 import { sanitizeSearchInput, render, renderNode, renderAttr, absoluteFix } from '@arpadroid/tools';
+import { Context } from '@arpadroid/application';
 
 const html = String.raw;
 class List extends ArpaElement {
@@ -337,7 +338,7 @@ class List extends ArpaElement {
     }
 
     renderTitle(title = this.getTitle()) {
-        return render(title, html`<h2 class="arpaList__title">${title}</h2>`);
+        return title ? html`<h2 class="arpaList__title">${title}</h2>` : '';
     }
 
     renderHeading() {
@@ -408,8 +409,7 @@ class List extends ArpaElement {
         this.pagerNode = this.querySelector('arpa-pager');
         this.pagerNode?.onChange(({ page }) => {
             const newURL = editURL(window.location.href, { [this.getParamName('page')]: page });
-            window.history.pushState({ page }, '', newURL);
-            this.listResource?.fetch();
+            Context.Router.go(newURL);
         });
     }
 

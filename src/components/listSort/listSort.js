@@ -63,7 +63,7 @@ class ListSort extends ArpaElement {
 
     getSortDirIcon() {
         const value = this.listResource.getSortDirection();
-        return value === 'asc' ? this.getProperty('icon-desc') : this.getProperty('icon-asc');
+        return value === 'asc' ? this.getProperty('icon-asc') : this.getProperty('icon-desc');
     }
 
     getSortDirTooltip() {
@@ -120,11 +120,10 @@ class ListSort extends ArpaElement {
         const value = this.sortDirFilter.getValue();
         const newValue = value === 'asc' ? 'desc' : 'asc';
         const newURL = editURL(Context.Router.getRoute(), {
-            [this.list.getParamName('sortDir')]: newValue
+            [this.list.getParamName('sortDir')]: newValue,
+            [this.list.getParamName('page')]: 1
         });
-        window.history.pushState({}, '', newURL);
-        this.listResource.fetch();
-        // Context.Router.go(newURL);
+        Context.Router.go(newURL);
     }
 
     async renderSelect() {
@@ -167,9 +166,7 @@ class ListSort extends ArpaElement {
             [this.list.getParamName('sortBy')]: value,
             [this.list.getParamName('page')]: 1
         });
-        window.history.pushState({}, '', newURL);
-        this.listResource.fetch();
-        // Context.Router.go(newURL);
+        Context.Router.go(newURL);
     }
 }
 
