@@ -24,7 +24,6 @@ class ListFilters extends ArpaElement {
     }
 
     initializeProperties() {
-        console.log('initializeProperties');
         super.initializeProperties();
         /** @type {List} */
         this.list = this.closest('.arpaList');
@@ -43,7 +42,6 @@ class ListFilters extends ArpaElement {
     }
 
     async render() {
-        console.log('hasrender', this._hasRendered, this);
         const props = {
             ...this.getProperties('icon', 'label'),
             tooltip: this.getProperty('btn-label')
@@ -65,11 +63,7 @@ class ListFilters extends ArpaElement {
 
         /** @type {Field} */
         this.perPageField = this.form.getField('perPage');
-        this.perPageField.listen('onChange', (value, field, event) => {
-            console.log('value', value);
-            console.log('event', event);
-            this.form.submitForm(event);
-        });
+        this.perPageField.listen('onChange', (value, field, event) => this.form.submitForm(event));
     }
 
     /**

@@ -2,6 +2,7 @@
  * List.
  */
 export { default as List } from './components/list/list.js';
+export { default as ListInfo } from './components/listInfo/listInfo.js';
 export { default as ListItem } from './components/listItem/listItem.js';
 export { default as ListControls } from './components/listControls/listControls.js';
 export { default as ListSearch } from './components/listSearch/listSearch.js';

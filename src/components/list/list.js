@@ -46,13 +46,14 @@ class List extends ArpaElement {
         this.onResourceSetItems = this.onResourceSetItems.bind(this);
         this.onResourceAddItems = this.onResourceAddItems.bind(this);
         return mergeObjects(super.getDefaultConfig(), {
-            filterNamespace: '',
             allControls: false,
             defaultView: 'list',
-            hasFixedPager: false,
+            filterNamespace: '',
             hasFilters: false,
-            hasMiniSearch: true,
+            hasFixedPager: false,
             hasFixedPager: true,
+            hasInfo: false,
+            hasMiniSearch: true,
             hasPager: true,
             hasSearch: false,
             hasSelection: false,
@@ -61,23 +62,23 @@ class List extends ArpaElement {
             hasViews: false,
             isCollapsed: true,
             itemComponent: ListItem,
+            itemsPerPage: 50,
             noItemsContent: html`<i18n-text key="modules.list.txtNoItemsFound"></i18n-text>`,
             noItemsIcon: 'info',
+            pageParam: 'page',
+            perPageParam: 'perPage',
+            preProcessItem: undefined,
+            renderMode: 'full',
             resetScrollOnLoad: false,
+            searchParam: 'search',
             showResultsText: true,
+            sortByParam: 'sortBy',
             sortDefault: null,
+            sortDirParam: 'sortDir',
             sortOptions: [],
             stickyControls: false,
             template: List.template,
-            preProcessItem: undefined,
-            renderMode: 'full',
-            title: '',
-            pageParam: 'page',
-            perPageParam: 'perPage',
-            sortByParam: 'sortBy',
-            sortDirParam: 'sortDir',
-            searchParam: 'search',
-            itemsPerPage: 50
+            title: ''
             // selectors: {
             //     searchNodes: '.listItem__titleText, .listItem__subTitle'
             // }
@@ -123,6 +124,10 @@ class List extends ArpaElement {
 
     hasFixedPager() {
         return this.hasProperty('has-fixed-pager');
+    }
+
+    hasInfo() {
+        return this.hasAllControls() || this.hasProperty('has-info');
     }
 
     hasSearch() {
@@ -331,7 +336,9 @@ class List extends ArpaElement {
                 ${this.hasFilters() ? html`<list-filters></list-filters>` : ''}
             </list-controls>
             <div class="arpaList__body">
-                <div class="arpaList__bodyMain">{heading} {items} {pager}</div>
+                <div class="arpaList__bodyMain">
+                    ${this.hasInfo() ? html`<list-info></list-info>` : ''} {heading} {items} {pager}
+                </div>
                 {aside}
             </div>
         `;

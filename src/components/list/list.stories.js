@@ -68,7 +68,7 @@ export const ResourceDriven = {
         view: 'grid, list',
         url: 'api/gallery/item/get-items',
         filterNamespace: 'galleryList-',
-        itemsPerPage: 5
+        itemsPerPage: 50
     },
     render: args => {
         return html`
