@@ -10,7 +10,7 @@ import { ArpaElement } from '@arpadroid/ui';
 import ListItem from '../listItem/listItem.js';
 import { I18nTool } from '@arpadroid/i18n';
 import { mergeObjects, getScrollableParent, isInView, editURL } from '@arpadroid/tools';
-import { sanitizeSearchInput, render, renderNode, renderAttr } from '@arpadroid/tools';
+import { render, renderNode, renderAttr } from '@arpadroid/tools';
 import { Context } from '@arpadroid/application';
 
 const html = String.raw;
@@ -232,6 +232,10 @@ class List extends ArpaElement {
         this.listResource.listen('SET_ITEMS', this.onResourceSetItems);
         this.listResource.listen('ITEMS', this.onResourceSetItems);
         this.listResource.listen('UPDATE_ITEM', payload => this.layout.updateNode(payload));
+        this.listResource.listen(
+            'FETCH',
+            () => (this.fetchPromise = new Promise(resolve => (this.resolveFetch = resolve)))
+        );
     }
 
     /**
@@ -279,10 +283,9 @@ class List extends ArpaElement {
     async onResourceSetItems(items = []) {
         this.updatePager();
         await this.onReady();
-        if (this.itemsNode) {
-            this.itemsNode.innerHTML = '';
-        }
+        this.itemsNode && (this.itemsNode.innerHTML = '');
         this.onResourceAddItems(items);
+        setTimeout(() => this.resolveFetch?.(), 20);
     }
 
     onResourceItemsUpdated() {
@@ -404,7 +407,7 @@ class List extends ArpaElement {
             ? html`
                   <arpa-pager
                       id="${this.id}-listPager"
-                      total-pages="${this.listResource.getTotalPages()}"
+                      total-pages="${this.listResource?.getTotalPages()}"
                       current-page="${this.listResource?.getCurrentPage()}"
                       url-param="${this.getParamName('page')}"
                   ></arpa-pager>
@@ -469,7 +472,6 @@ class List extends ArpaElement {
     }
 
     _initialize() {
-        this._onSearch = this._onSearch.bind(this);
         super._initialize();
         this._initializeListResource();
     }
@@ -537,78 +539,6 @@ class List extends ArpaElement {
     _initializeList() {
         this.resetScroll();
         this._initializePager();
-    }
-
-    /**
-     * SEARCH.
-     */
-
-    _initializeSearch() {
-        this.searchInput = this._config?.searchInput;
-        if (this.hasSearch() && this.controlsComponent && !this.isSearchInitialized) {
-            this.isSearchInitialized = true;
-            this.listSearch = this.controlsComponent.getComponent('ListSearch');
-            this.searchInput = this.listSearch?.searchField?.inputNode;
-        }
-        if (this.searchInput) {
-            this.layout.initializeSearch(this.searchInput, {
-                onSearch: this._onSearch
-            });
-        }
-    }
-
-    /**
-     * Handles search results.
-     * @param {HTMLElement[]} matches
-     * @param {HTMLElement[]} nonMatches
-     */
-    _onSearch(matches, nonMatches) {
-        if (matches.length) {
-            matches.forEach(match => this._handleSearchMatch(match));
-        }
-        nonMatches.forEach(nonMatch => this._resetSearchNode(nonMatch));
-    }
-
-    /**
-     * Returns the nodes within the list element where search is allowed'.
-     * @param {HTMLElement} node
-     * @returns {HTMLElement[]}
-     */
-    _getSearchNodes(node) {
-        return Array.from(node.querySelectorAll(this._config.selectors.searchNodes));
-    }
-
-    /**
-     * Resets node to its original content.
-     * @param {HTMLElement} node
-     */
-    _resetSearchNode(node) {
-        const nodes = this._getSearchNodes(node);
-        nodes.forEach(node => {
-            if (node.originalContent) {
-                node.innerHTML = node.originalContent;
-            }
-        });
-    }
-
-    /**
-     * Hilights the search match in the node.
-     * @param {HTMLElement} node
-     */
-    _handleSearchMatch(node) {
-        const nodes = this._getSearchNodes(node);
-        nodes.forEach(node => {
-            node.originalContent = node.originalContent ?? node.innerHTML;
-            let content = node.originalContent;
-            const value = sanitizeSearchInput(this.searchInput?.value);
-            if (value.length > 2) {
-                // eslint-disable-next-line security/detect-non-literal-regexp
-                content = node.originalContent.replace(new RegExp(value, 'gi'), match => {
-                    return `<mark class="searchHighlight">${match}</mark>`;
-                });
-            }
-            node.innerHTML = content;
-        });
     }
 }
 
