@@ -33,18 +33,53 @@ class ListInfo extends ArpaElement {
     }
 
     render() {
-        const isEmpty = this.listResource?.isEmpty();
+        const hasSearchResults = this.listResource?.hasResults();
         const query = this.searchFilter.getValue();
         this.innerHTML = '';
         let _html = '';
         if (this.listResource) {
             if (query?.length) {
-                _html += isEmpty ? this.renderNoResults() : this.renderSearchResults();
+                _html += !hasSearchResults ? this.renderNoResults() : this.renderSearchResults();
             } else {
                 _html += this.renderResults();
             }
         }
-        this.innerHTML = _html;
+        this.innerHTML = _html + this.renderButtons();
+        this.handleRefresh();
+        this.handlePreviousPage();
+        this.handleNextPage();
+    }
+
+    handlePreviousPage() {
+        this.previousBtn = this.querySelector('.listInfo__previous');
+        this.previousBtn?.addEventListener('click', () => {
+            this.listResource?.previousPage();
+        });
+    }
+
+    handleNextPage() {
+        this.nextBtn = this.querySelector('.listInfo__next');
+        this.nextBtn.addEventListener('click', () => {
+            this.listResource?.nextPage();
+        });
+    }
+
+    handleRefresh() {
+        this.refreshBtn = this.querySelector('.listInfo__refresh');
+        this.refreshBtn.addEventListener('click', () => {
+            this.listResource?.refresh();
+        });
+    }
+
+
+    renderButtons() {
+        return html`
+            <div class="listInfo__buttons">
+                <button class="listInfo__refresh" is="icon-button" icon="refresh"></button>
+                <button class="listInfo__previous" is="icon-button" icon="skip_previous"></button>
+                <button class="listInfo__next" is="icon-button" icon="skip_next"></button>
+            </div>
+        `;
     }
 
     /**

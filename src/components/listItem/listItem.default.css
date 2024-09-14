@@ -27,7 +27,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 8px 4px;
+    padding: 8px 0px;
     min-width: 0;
     flex: 1 1 auto;
     background-color: transparent;
@@ -60,7 +60,8 @@ button.listItem__main {
 .listItem__title {
     padding-top: 2px;
     font-weight: 600;
-    /* font-size: .9rem; */
+    font-size: 1.1rem;
+    letter-spacing: 0.4px;
     line-height: 20px;
     display: flex;
     align-items: center;
@@ -88,9 +89,11 @@ button.listItem__main {
     font-family: var(--primary-font);
     font-size: 1rem;
     line-height: 1rem;
-    gap: 4px;
+    gap: 0.5rem;
+    align-self: flex-start;
+    justify-content: space-between;
+    padding: 0.25rem 0 0;
 }
-
 
 .listItem__rhs {
     display: flex;
@@ -103,4 +106,5 @@ button.listItem__main {
     display: flex;
     align-items: center;
     width: 42px;
+    justify-content: center;
 }

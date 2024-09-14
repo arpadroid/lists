@@ -353,7 +353,7 @@ class ListItem extends ArpaElement {
     renderContent() {
         const truncate = this.getProperty('truncate-content');
         const content = this.getContent();
-        if (!content && !this.templateNodes?.length) {
+        if (!content?.trim()) {
             return '';
         }
         return html`

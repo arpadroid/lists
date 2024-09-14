@@ -3,4 +3,6 @@
     align-items: center;
     gap: 4px;
     z-index: 4;
+    position: sticky;
+    top: 0;
 }

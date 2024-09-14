@@ -73,6 +73,7 @@ export const ResourceDriven = {
     render: args => {
         return html`
             <arpa-list ${attrString(args)}>
+                <!--<info-message> some message </info-message>-->
                 <slot name="batch-operations">
                     <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>
                 </slot>
@@ -108,7 +109,7 @@ export const ResourceDriven = {
                     const resource = list.listResource;
                     resource.mapItem(item => {
                         item.author_initials = getInitials(item.author_name + ' ' + item.author_surname);
-                        item.date = item.date ?? '?';
+                        item.date = new Date(item.date)?.getFullYear() ?? '?';
                         return item;
                     });
                     resource.fetch();

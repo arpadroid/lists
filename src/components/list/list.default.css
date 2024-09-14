@@ -15,10 +15,9 @@
 .arpaList__items {
     display: flex;
     flex-direction: column;
-    padding: 0px 0px;
+    padding: .5rem 0;
     margin: 0px 0px;
     position: relative;
-    padding-bottom: 8px;
     width: 100%;
 }
 
@@ -111,10 +110,6 @@
 .arpaList .pager.pager {
     margin: 12px auto;
     margin-top: auto;
-}
-
-.arpaList .pager.absoluteFix {
-    margin-bottom: 0;
 }
 
 .arpaList[variant='mini'] {

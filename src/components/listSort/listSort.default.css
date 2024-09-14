@@ -1,5 +1,9 @@
 list-sort {
     display: flex;
     align-items: center;
-    gap: 20px
+    gap: 1.25rem;
+}
+
+list-sort i18n-text[key='modules.list.listSort.lblSortBy'] {
+    min-width: 54px;
 }

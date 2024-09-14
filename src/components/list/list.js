@@ -10,7 +10,7 @@ import { ArpaElement } from '@arpadroid/ui';
 import ListItem from '../listItem/listItem.js';
 import { I18nTool } from '@arpadroid/i18n';
 import { mergeObjects, getScrollableParent, isInView, editURL } from '@arpadroid/tools';
-import { sanitizeSearchInput, render, renderNode, renderAttr, absoluteFix } from '@arpadroid/tools';
+import { sanitizeSearchInput, render, renderNode, renderAttr } from '@arpadroid/tools';
 import { Context } from '@arpadroid/application';
 
 const html = String.raw;
@@ -49,6 +49,7 @@ class List extends ArpaElement {
             allControls: false,
             defaultView: 'list',
             filterNamespace: '',
+            hasControls: true,
             hasFilters: false,
             hasFixedPager: false,
             hasFixedPager: true,
@@ -120,6 +121,10 @@ class List extends ArpaElement {
 
     hasFilters() {
         return this.hasAllControls() || this.hasProperty('has-filters');
+    }
+
+    hasControls() {
+        return this.hasAllControls() || this.hasProperty('has-controls') || this.hasSlot('controls');
     }
 
     hasFixedPager() {
@@ -332,9 +337,12 @@ class List extends ArpaElement {
     renderFull() {
         return html`
             ${this.renderTitle()}
-            <list-controls slot="controls">
-                ${this.hasFilters() ? html`<list-filters></list-filters>` : ''}
-            </list-controls>
+            ${this.hasControls()
+                ? html`<list-controls slot="controls">
+                      ${this.hasFilters() ? html`<list-filters></list-filters>` : ''}
+                  </list-controls>`
+                : ''}
+
             <div class="arpaList__body">
                 <div class="arpaList__bodyMain">
                     ${this.hasInfo() ? html`<list-info></list-info>` : ''} {heading} {items} {pager}
@@ -409,7 +417,7 @@ class List extends ArpaElement {
      * @param {Pager} node
      */
     async updatePager(node = this.querySelector('arpa-pager')) {
-        node.setPager(this.listResource.getCurrentPage(), this.listResource.getTotalPages());
+        node?.setPager(this.listResource?.getCurrentPage(), this.listResource?.getTotalPages());
     }
 
     _initializePager() {
@@ -529,11 +537,6 @@ class List extends ArpaElement {
     _initializeList() {
         this.resetScroll();
         this._initializePager();
-        if (!this._hasRendered && this.hasFixedPager()) {
-            Promise.all([this.promise, this.pagerNode.promise]).then(() => {
-                absoluteFix(this.pagerNode, this.bodyMainNode);
-            });
-        }
     }
 
     /**
