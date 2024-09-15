@@ -66,6 +66,10 @@ class ListItem extends ArpaElement {
 
     // #region ACCESSORS
 
+    getContent() {
+        return this._content || this._config?.content || '';
+    }
+
     getId() {
         return this.payload?.id || this.getProperty('id');
     }
@@ -90,18 +94,49 @@ class ListItem extends ArpaElement {
         return 'list-item';
     }
 
-    hasSelection() {
-        return this.list?.hasMultiSelect() ?? this.getProperty('has-selection');
+    getSelectedClass() {
+        return this.getProperty('selected-class');
+    }
+
+    getSubTitle() {
+        return this.getProperty('sub-title');
+    }
+
+    getTitleLink() {
+        const titleLink = this.getProperty('title-link');
+        if (titleLink) {
+            this.titleLink = titleLink;
+            this.removeAttribute('title-link');
+        }
+        return this.titleLink;
+    }
+
+    getTitle() {
+        return this.getProperty('title');
+    }
+
+    /**
+     * Returns the payload for the list item.
+     * Each item has a unique payload. When using the listResource, the payload may be what is returned from the server.
+     * Otherwise, it is the config object.
+     * @returns {Record<string, unknown> | unknown}
+     */
+    getPayload() {
+        return this.payload ?? this._config;
     }
 
     hasNav() {
         return Boolean(this._config.nav);
     }
 
-    getContent() {
-        return this._content || this._config?.content || '';
+    hasSelection() {
+        return this.list?.hasMultiSelect() ?? this.getProperty('has-selection');
     }
 
+    /**
+     * Sets the content of the list item.
+     * @param {string | HTMLElement} content
+     */
     setContent(content) {
         if (!this.contentNode) {
             return;
@@ -114,31 +149,6 @@ class ListItem extends ArpaElement {
         }
     }
 
-    getSelectedClass() {
-        return this.getProperty('selected-class');
-    }
-
-    getPayload() {
-        return this.payload ?? this._config;
-    }
-
-    getSubTitle() {
-        return this.getProperty('sub-title');
-    }
-
-    getTitle() {
-        return this.getProperty('title');
-    }
-
-    getTitleLink() {
-        const titleLink = this.getProperty('title-link');
-        if (titleLink) {
-            this.titleLink = titleLink;
-            this.removeAttribute('title-link');
-        }
-        return this.titleLink;
-    }
-
     setAction(action) {
         if (typeof action !== 'function') {
             throw new Error('Action must be a function');
@@ -146,17 +156,16 @@ class ListItem extends ArpaElement {
         this._config.action = action;
     }
 
-    setViewClass() {
-        if (this.view) {
-            this.classList.add('listItem--' + this.view);
-            if (this.view === 'grid-compact') {
-                this.classList.add('listItem--grid');
-            }
-        }
+    setViewClass(view = this.view) {
+        view && this.classList.add('listItem--' + view);
     }
 
-    setSelected() {
-        if (this.checkbox.checked) {
+    /**
+     * Sets the selected state of the list item.
+     * @param {boolean} checked
+     */
+    setSelected(checked = this.checkbox?.checked) {
+        if (checked) {
             this.listResource?.selectItem(this.getPayload());
             this.classList.add(this.getSelectedClass());
         } else {
@@ -165,6 +174,10 @@ class ListItem extends ArpaElement {
         }
     }
 
+    /**
+     * Returns the wrapper tag for the list item.
+     * @returns {string}
+     */
     getWrapperComponent() {
         const { action } = this._config;
         if (this.link) {
@@ -180,6 +193,11 @@ class ListItem extends ArpaElement {
 
     // #region RENDERING
 
+    /**
+     * Returns the template node for the list item.
+     * The template attributes and content are applied to the list item when it is rendered.
+     * @returns {HTMLTemplateElement | undefined}
+     */
     getTemplateNode() {
         const list = this.closest('.arpaList');
         if (list?.itemTemplate) {
@@ -190,8 +208,8 @@ class ListItem extends ArpaElement {
     getTemplateVars() {
         return {
             ...this.getPayload(),
-            icon: this.getProperty('icon'),
-            iconRight: this.getProperty('icon-right'),
+            icon: this.getIcon(),
+            iconRight: this.getIconRight(),
             titleIcon: this.getProperty('title-icon'),
             title: this.getTitle(),
             subTitle: this.getSubTitle()
@@ -212,6 +230,9 @@ class ListItem extends ArpaElement {
         this.initializeNav();
         this.setViewClass();
         action && this.button?.addEventListener('click', event => action(event, this));
+        /**
+         * @todo Add support for nested list items.
+         */
         // if (this.hasChildren()) {
         // this.childrenNode.classList.add('listItem__children');
         // this.itemWrapperNode = document.createElement('div');
@@ -223,8 +244,13 @@ class ListItem extends ArpaElement {
         // }
     }
 
+    /**
+     * Returns the template for the list item.
+     * @returns {string}
+     */
     getTemplate() {
         const wrapperComponent = this.link ? 'a' : this.getWrapperComponent();
+        const isGrid = this.view?.indexOf('grid') === 0;
         const attrs = attrString({
             href: this.link,
             class: classNames('listItem__main', { listItem__link: this.link })
@@ -232,10 +258,11 @@ class ListItem extends ArpaElement {
         return html`
             <${wrapperComponent} ${attrs}>
                 <arpa-icon class="listItem__icon">{icon}</arpa-icon>
-                ${this.renderImage()}
+                ${!isGrid ? this.renderImage() : ''}
                 <div class="listItem__contentWrapper">
                     ${this.renderTitleContainer()} 
-                    ${this.renderTags()} 
+                    ${isGrid ? this.renderImage() : ''}
+                    ${this.renderTags()}
                     ${this.renderContent()}
                 </div>
                 <arpa-icon class="listItem__iconRight">{iconRight}</arpa-icon>
@@ -331,6 +358,12 @@ class ListItem extends ArpaElement {
         `;
     }
 
+    /**
+     * Renders the image for the list item.
+     * @param {string} image - The image URL.
+     * @param {string} alt
+     * @returns {string} - The rendered image as a string.
+     */
     renderImage(image = this.getImage(), alt = this.getImageAlt()) {
         return render(image, html`<arpa-image class="listItem__image" src="${image}" alt="${alt}"></arpa-image>`);
     }
@@ -350,9 +383,7 @@ class ListItem extends ArpaElement {
 
     // #endregion RENDER NAV
 
-    renderContent() {
-        const truncate = this.getProperty('truncate-content');
-        const content = this.getContent();
+    renderContent(truncate = this.getProperty('truncate-content'), content = this.getContent()) {
         if (!content?.trim()) {
             return '';
         }
@@ -383,6 +414,9 @@ class ListItem extends ArpaElement {
         });
     }
 
+    /**
+     * Initializes event listeners and actions for the list item.
+     */
     async _initializeItem() {
         if (this.checkbox && this.hasSelection()) {
             this.checkbox.removeEventListener('change', this.setSelected);
@@ -397,16 +431,26 @@ class ListItem extends ArpaElement {
         }
     }
 
+    /**
+     * Initializes the view filter.
+     * An item can have a view filter that changes the view of the list: grid, list, compact etc...
+     */
     _initializeView() {
         /** @type {ListFilter} */
         this.viewsFilter = this.listResource?.filters?.views;
         this.view = this.viewsFilter?.getValue();
         this.viewsFilter?.listen('value', view => {
             this.view = view;
-            this.node?.isConnected && this.reRender();
+            /**
+             * @todo Optimize reRender of list item.
+             */
+            // this?.isConnected && this.reRender();
         });
     }
 
+    /**
+     * Once the item is rendered, it registers itself with the list resource.
+     */
     _onRenderComplete() {
         super._onRenderComplete();
         if (this.isConnected) {

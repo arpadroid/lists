@@ -1,3 +1,7 @@
+:root {
+    --list-control-gap: 0.5rem;
+}
+
 .arpaList {
     position: relative;
     display: flex;
@@ -103,13 +107,19 @@
     flex: 0 1 auto;
 }
 
+.arpaList__footer {
+    margin-top: auto;
+    position: sticky;
+    bottom: 0;
+}
+
 .arpaList__bodyAside:empty {
     display: none;
 }
 
-.arpaList .pager.pager {
-    margin: 12px auto;
-    margin-top: auto;
+.arpaList__pager {
+    background-color: var(--overlay);
+    border-radius: 0;
 }
 
 .arpaList[variant='mini'] {
@@ -119,3 +129,4 @@
         height: 20px;
     }
 }
+

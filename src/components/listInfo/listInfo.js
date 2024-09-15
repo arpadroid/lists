@@ -14,6 +14,8 @@ class ListInfo extends ArpaElement {
         this.i18nKey = 'modules.list';
         return mergeObjects(super.getDefaultConfig(), {
             className: 'listInfo',
+            hasPrevNext: true,
+            hasRefresh: true,
             i18nAllResults: 'txtAllResults',
             i18nSearchResults: 'txtSearchResults',
             i18nNoResults: 'txtNoResults'
@@ -30,6 +32,14 @@ class ListInfo extends ArpaElement {
         /** @type {ListFilter} */
         this.searchFilter = this.listResource?.searchFilter;
         return true;
+    }
+
+    hasRefresh() {
+        return this.getProperty('has-refresh');
+    }
+
+    hasPrevNext() {
+        return this.getProperty('has-prev-next');
     }
 
     render() {
@@ -59,25 +69,28 @@ class ListInfo extends ArpaElement {
 
     handleNextPage() {
         this.nextBtn = this.querySelector('.listInfo__next');
-        this.nextBtn.addEventListener('click', () => {
+        this.nextBtn?.addEventListener('click', () => {
             this.listResource?.nextPage();
         });
     }
 
     handleRefresh() {
         this.refreshBtn = this.querySelector('.listInfo__refresh');
-        this.refreshBtn.addEventListener('click', () => {
+        this.refreshBtn?.addEventListener('click', () => {
             this.listResource?.refresh();
         });
     }
 
-
     renderButtons() {
         return html`
             <div class="listInfo__buttons">
-                <button class="listInfo__refresh" is="icon-button" icon="refresh"></button>
-                <button class="listInfo__previous" is="icon-button" icon="skip_previous"></button>
-                <button class="listInfo__next" is="icon-button" icon="skip_next"></button>
+                ${(this.hasRefresh() &&
+                    html`<button class="listInfo__refresh" is="icon-button" icon="refresh"></button>`) ||
+                ''}
+                ${(this.hasPrevNext() &&
+                    html`<button class="listInfo__previous" is="icon-button" icon="skip_previous"></button>
+                        <button class="listInfo__next" is="icon-button" icon="skip_next"></button> `) ||
+                ''}
             </div>
         `;
     }

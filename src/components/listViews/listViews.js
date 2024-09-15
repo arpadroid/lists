@@ -60,6 +60,7 @@ class ListViews extends ArpaElement {
         this._initializeViewsConfig();
 
         this.viewClasses = this._config.links.map(link => 'listView--' + link.value);
+        this.itemViewClasses = this._config.links.map(link => 'listItem--' + link.value);
         Context.Router.listen('ROUTE_CHANGED', () => this.initializeView());
         return true;
     }
@@ -89,7 +90,7 @@ class ListViews extends ArpaElement {
     }
 
     getViewsConfig() {
-        return this.list._config?.views ?? this.getProperty('views') ?? [];
+        return this.list.getArrayProperty('views') ?? this.getArrayProperty('views') ?? [];
     }
 
     addView(view) {
@@ -124,6 +125,10 @@ class ListViews extends ArpaElement {
         if (view === 'grid-compact') {
             this.list?.classList.add('listView--grid');
         }
+        const items = this.list?.getItems().forEach(item => {
+            item?.node?.classList.remove(...this.itemViewClasses);
+            item?.node?.classList.add('listItem--' + view);
+        });
         const prevSelected = this.navigation.querySelectorAll('[aria-current]');
         prevSelected.forEach(node => node.removeAttribute('aria-current'));
         const selected = this.navigation.querySelector(`[data-value="${view}"]`);

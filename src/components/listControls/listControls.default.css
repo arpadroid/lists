@@ -1,8 +1,10 @@
 .listControls {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--list-control-gap);
     z-index: 4;
     position: sticky;
     top: 0;
+    background-color: var(--overlay);
+    padding: .5rem 0;
 }

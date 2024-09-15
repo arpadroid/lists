@@ -1,5 +1,5 @@
 :root {
-    --img-size: 64px;
+    --listItem-imgSize: 64px;
 }
 
 .listItem {
@@ -10,10 +10,12 @@
     width: 100%;
 
     arpa-image {
-        width: var(--img-size);
-        height: var(--img-size);
-        max-width: var(--img-size);
-        min-width: var(--img-size);
+        width: var(--listItem-imgSize);
+        height: var(--listItem-imgSize);
+        max-width: var(--listItem-imgSize);
+        min-width: var(--listItem-imgSize);
+        max-height: var(--listItem-imgSize);
+        min-height: var(--listItem-imgSize);
     }
 
     arpa-icon {
@@ -98,13 +100,19 @@ button.listItem__main {
 .listItem__rhs {
     display: flex;
     flex-direction: row;
-    gap: 4px;
+    gap: var(--list-control-gap);
     flex: 0 1 auto;
+    align-items: center;
 }
 
 .listItem__checkboxContainer {
     display: flex;
     align-items: center;
-    width: 42px;
+    width: var(--icon-button-width);
+    font-size: 24px;
     justify-content: center;
+}
+.listItem__checkbox::after {
+    font-size: 26px;
+    font-weight: 300;
 }

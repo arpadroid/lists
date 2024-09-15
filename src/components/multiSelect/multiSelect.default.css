@@ -1,13 +1,3 @@
-list-multi-select {
-    padding: 8px;
-}
-
-
-.multiSelect__nav {
-    /* display: block !important; */
-    
-}
-
 .listMultiSelect__form {
     min-width: 320px;
     display: flex;

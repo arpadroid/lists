@@ -13,7 +13,7 @@ class ListControls extends ArpaElement {
         return {
             className: 'listControls',
             hasStickyControls: this.list?.hasStickyControls(),
-            template: html`{search}{multiSelect}{views}`
+            template: html`{search}{views}{multiSelect}`
         };
     }
 

@@ -65,7 +65,6 @@ export const ResourceDriven = {
         id: 'resource-list',
         allControls: true,
         title: 'Resource Driven List',
-        view: 'grid, list',
         url: 'api/gallery/item/get-items',
         filterNamespace: 'galleryList-',
         itemsPerPage: 50

@@ -131,6 +131,10 @@ class List extends ArpaElement {
         return this.hasProperty('has-fixed-pager');
     }
 
+    hasFooter() {
+        return this.hasProperty('has-footer') || this.hasSlot('footer') || this.hasPager();
+    }
+
     hasInfo() {
         return this.hasAllControls() || this.hasProperty('has-info');
     }
@@ -323,7 +327,8 @@ class List extends ArpaElement {
             heading: this.renderHeading(),
             noItemsIcon: this.getProperty('no-items-icon'),
             noItemsContent: this.getProperty('no-items-content'),
-            pager: this.renderPager()
+            pager: this.renderPager(),
+            footer: this.renderFooter()
         };
     }
 
@@ -348,10 +353,11 @@ class List extends ArpaElement {
 
             <div class="arpaList__body">
                 <div class="arpaList__bodyMain">
-                    ${this.hasInfo() ? html`<list-info></list-info>` : ''} {heading} {items} {pager}
+                    ${this.hasInfo() ? html`<list-info></list-info>` : ''} {heading} {items}
                 </div>
                 {aside}
             </div>
+            {footer}
         `;
     }
 
@@ -374,6 +380,10 @@ class List extends ArpaElement {
 
     renderAside() {
         return html`<div class="arpaList__aside" slot="aside"></div>`;
+    }
+
+    renderFooter() {
+        return this.hasFooter() ? html`<div class="arpaList__footer">${this.renderPager()}</div>` : '';
     }
 
     renderNoItemsContent(items = this.listResource.getItems()) {
@@ -407,6 +417,7 @@ class List extends ArpaElement {
             ? html`
                   <arpa-pager
                       id="${this.id}-listPager"
+                      class="arpaList__pager"
                       total-pages="${this.listResource?.getTotalPages()}"
                       current-page="${this.listResource?.getCurrentPage()}"
                       url-param="${this.getParamName('page')}"
