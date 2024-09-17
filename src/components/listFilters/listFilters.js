@@ -100,8 +100,7 @@ class ListFilters extends ArpaElement {
                     icon=""
                     id="page"
                     label="Page"
-                    max="${this.listResource.getTotalPages()}"
-                    min="${1}"
+                    ${attrString({ min: 1, max: this.listResource?.getTotalPages()})}
                     value="${page}"
                     variant="small"
                 ></number-field>
@@ -115,9 +114,9 @@ class ListFilters extends ArpaElement {
      */
     async update(listResource = this.listResource) {
         await this.promise;
-        this.pageField?.setValue(listResource.getPage());
-        this.pageField?.setMax(listResource.getTotalPages());
-        this.perPageField?.setValue(listResource.getPerPage());
+        this.pageField?.setValue(listResource?.getPage());
+        this.pageField?.setMax(listResource?.getTotalPages());
+        this.perPageField?.setValue(listResource?.getPerPage());
     }
 
     onSubmit(payload) {

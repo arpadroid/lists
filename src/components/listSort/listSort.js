@@ -62,12 +62,12 @@ class ListSort extends ArpaElement {
     }
 
     getSortDirIcon() {
-        const value = this.listResource.getSortDirection();
+        const value = this.listResource?.getSortDirection() || 'asc';
         return value === 'asc' ? this.getProperty('icon-asc') : this.getProperty('icon-desc');
     }
 
     getSortDirTooltip() {
-        const value = this.listResource.getSortDirection();
+        const value = this.listResource?.getSortDirection() || 'asc';
         const prop = value === 'asc' ? 'lbl-sort-desc' : 'lbl-sort-asc';
         return this.getProperty(prop);
     }

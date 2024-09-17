@@ -106,12 +106,12 @@ export const ResourceDriven = {
                 customElements.whenDefined('arpa-list').then(() => {
                     const list = document.getElementById('resource-list');
                     const resource = list.listResource;
-                    resource.mapItem(item => {
+                    resource?.mapItem(item => {
                         item.author_initials = getInitials(item.author_name + ' ' + item.author_surname);
                         item.date = new Date(item.date)?.getFullYear() ?? '?';
                         return item;
                     });
-                    resource.fetch();
+                    resource?.fetch();
                 });
             </script>
         `;

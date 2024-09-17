@@ -1,18 +1,48 @@
-import { AbstractContentInterface } from '../../../../types';
 import { ListResource } from '@arpadroid/resources/src';
-import { NavLinkInterface } from '../../../navigation/components/navLink/navLinkInterface';
+import { ListItemInterface } from '../../types.compiled';
+import ListItem from '../listItem/listItem.js';
 
-export interface ListInterface extends AbstractComponentInterface {
-    isCollapsed?: boolean;
+export interface ListInterface {
+    allControls?: boolean;
     canCollapse?: boolean;
-    hasSearch?: boolean;
+    defaultView?: string;
+    filterNamespace?: string;
+    hasControls?: boolean;
+    hasFilters?: boolean;
+    hasInfo?: boolean;
+    hasMiniSearch?: boolean;
     hasPager?: boolean;
-    listResource?: ListResource;
+    hasResource?: boolean;
+    hasSearch?: boolean;
+    hasSelection?: boolean;
+    hasSort?: boolean;
+    hasStickyFilters?: boolean;
+    hasViews?: boolean;
     heading?: string;
+    isCollapsed?: boolean;
+    itemComponent?: typeof ListItem;
+    items?: ListItemInterface[];
+    itemsPerPage?: number;
+    itemTag?: string;
+    listResource?: ListResource;
+    noItemsContent?: string;
+    noItemsIcon?: string;
     onSearch?: (value: string) => void;
-    filters?: AbstractContentInterface;
-    preProcessItem?: (item) => void;
+    pageParam?: string;
+    perPageParam?: string;
+    preProcessItem?: (item: ListInterface) => void;
     renderMode?: 'minimal' | 'full';
-    views?: string[],
+    renderMode?: string;
+    resetScrollOnLoad?: boolean;
+    searchParam?: string;
+    showResultsText?: boolean;
+    sortByParam?: string;
+    sortDefault?: string;
+    sortDirParam?: string;
+    sortOptions?: any[];
+    stickyControls?: boolean;
+    template?: string;
+    title?: string;
     viewOptions?: NavLinkInterface[];
+    views?: string[];
 }

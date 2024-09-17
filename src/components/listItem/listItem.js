@@ -56,6 +56,7 @@ class ListItem extends ArpaElement {
                 this.classList.remove(selectedClass);
             });
         }
+        return true;
     }
 
     getTemplateContent(template = this._config.template) {
@@ -378,7 +379,7 @@ class ListItem extends ArpaElement {
             const itemsNode = this.navNode?.navigation?.itemsNode;
             itemsNode && itemsNode.setAttribute('slot', 'nav');
         });
-        return html`<icon-menu class="listItem__nav"> </icon-menu>`;
+        return html`<icon-menu id="${this.getId()}" class="listItem__nav"> </icon-menu>`;
     }
 
     // #endregion RENDER NAV
@@ -406,6 +407,7 @@ class ListItem extends ArpaElement {
         this.checkbox = this.querySelector('.listItem__checkbox');
         this.imageNode = this.querySelector('.listItem__image');
         this.contentNode = this.querySelector('.listItem__content');
+        this.titleNode = this.querySelector('.listItem__title');
         this.contentWrapperNode = this.querySelector('.listItem__contentWrapper');
         await customElements.whenDefined('arpa-image');
         this.imageNode?.addConfig({
@@ -444,8 +446,21 @@ class ListItem extends ArpaElement {
             /**
              * @todo Optimize reRender of list item.
              */
-            // this?.isConnected && this.reRender();
+            this?.isConnected && this.update();
         });
+    }
+
+    update() {
+        const isGrid = this.view?.indexOf('grid') === 0;
+        if (isGrid) {
+            if (this.titleNode) {
+                this.imageNode && this.titleNode?.after(this.imageNode);
+            } else {
+                this.imageNode && this.contentWrapperNode?.prepend(this.imageNode);
+            }
+        } else {
+            this.imageNode && this.mainNode?.prepend(this.imageNode);
+        }
     }
 
     /**

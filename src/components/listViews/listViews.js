@@ -71,7 +71,7 @@ class ListViews extends ArpaElement {
 
     _initializeViewFilter() {
         const defaultView = this.list?.getDefaultView();
-        this.viewFilter = this.listResource.getViewFilter({
+        this.viewFilter = this.listResource?.getViewFilter({
             defaultValue: defaultView ?? 'list'
         });
     }
@@ -108,7 +108,7 @@ class ListViews extends ArpaElement {
     async setView(view) {
         const viewExists = this.viewExists(view);
         if (!viewExists) {
-            view = this?.viewFilter.getDefaultValue();
+            view = this?.viewFilter?.getDefaultValue();
         }
         this?.viewFilter?.setValue(view);
         this.list && (await this.list.onReady());
@@ -122,10 +122,8 @@ class ListViews extends ArpaElement {
     async applyView(view) {
         this.list?.classList.remove(...this.viewClasses);
         this.list?.classList.add('listView--' + view);
-        if (view === 'grid-compact') {
-            this.list?.classList.add('listView--grid');
-        }
-        const items = this.list?.getItems().forEach(item => {
+        view === 'grid-compact' && this.list?.classList.add('listView--grid');
+        this.list?.getItems().forEach(item => {
             item?.node?.classList.remove(...this.itemViewClasses);
             item?.node?.classList.add('listItem--' + view);
         });

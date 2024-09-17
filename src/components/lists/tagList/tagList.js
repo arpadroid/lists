@@ -8,6 +8,7 @@ class TagList extends List {
         return mergeObjects(super.getDefaultConfig(), {
             className: 'tagList',
             renderMode: 'minimal',
+            hasResource: false,
             itemComponent: TagItem,
             noItemsContent: html`<i18n-text key="components.tagList.txtNoTags"></i18n-text>`
         });

@@ -28,7 +28,7 @@ class MultiSelect extends ArpaElement {
 
     initializeProperties() {
         super.initializeProperties();
-        this.resource.listen('SELECTION_CHANGE', () => this.update());
+        this.resource?.listen('SELECTION_CHANGE', () => this.update());
     }
 
     // #endregion
@@ -153,7 +153,7 @@ class MultiSelect extends ArpaElement {
     }
 
     updateDisabledState() {
-        const items = this.resource.getSelectedItems();
+        const items = this.resource?.getSelectedItems();
         const fn = items?.length ? 'enable' : 'disable';
         this.actionsField[fn]();
         this.selectedFilterField[fn]();

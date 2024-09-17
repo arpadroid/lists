@@ -43,9 +43,12 @@ class ListInfo extends ArpaElement {
     }
 
     render() {
-        const hasSearchResults = this.listResource?.hasResults();
-        const query = this.searchFilter.getValue();
         this.innerHTML = '';
+        if (!this.listResource) {
+            return;
+        }
+        const hasSearchResults = this.listResource?.hasResults();
+        const query = this.searchFilter?.getValue();
         let _html = '';
         if (this.listResource) {
             if (query?.length) {
