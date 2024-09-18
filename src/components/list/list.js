@@ -372,17 +372,26 @@ class List extends ArpaElement {
      * Preprocess a list item node.
      * @param {(node: ListItem) => void} callback
      */
-    preProcessNode(callback) {
-        this.listResource?.setPreProcessNode(callback);
+    setPreProcessNode(callback) {
+        if (this.listResource) {
+            this.listResource?.setPreProcessNode(callback);
+        } else {
+            this._config.preProcessNode = callback;
+        }
+    }
+
+    preProcessNode(node) {
+        const { preProcessNode } = this._config;
+        return preProcessNode && preProcessNode(node);
     }
 
     /**
      * Adds an item to the list.
      * @param {ListItemInterface} item
-     * @returns {ListItem}
+     * @returns {ListItem | ListItemInterface}
      */
     addItem(item) {
-        return this?.listResource?.addItem(item) || this.appendChild(this.createItem(item));
+        return this.listResource ? this.listResource.addItem(item) : this.appendChild(this.createItem(item));
     }
 
     /**
@@ -390,7 +399,8 @@ class List extends ArpaElement {
      * @param {ListItemInterface[]} items
      */
     addItems(items) {
-        this.listResource?.addItems(items) ?? items.forEach(item => this.addItem(item));
+        this.listResource?.addItems(items);
+        !this.listResource && items.forEach(item => this.addItem(item));
     }
 
     /**
@@ -411,6 +421,10 @@ class List extends ArpaElement {
      */
     getItems() {
         return this.listResource?.getItems() ?? this._config.items;
+    }
+
+    getItemNodes() {
+        return Array.from(this.itemsNode?.children);
     }
 
     /**
@@ -443,6 +457,9 @@ class List extends ArpaElement {
      * @param {ListItemInterface[]} items
      */
     async setItems(items) {
+        if (!items?.length) {
+            return;
+        }
         if (this.listResource) {
             this.listResource?.setItems(items);
         } else {
@@ -672,16 +689,6 @@ class List extends ArpaElement {
     // #region Lifecycle
     /////////////////////
 
-    async update() {
-        await this.promise;
-        if (!this.getItems()?.length) {
-            this.noItemsNode = this.noItemsNode || renderNode(this.renderNoItemsContent());
-            this.noItemsNode && this.bodyMainNode?.appendChild(this.noItemsNode);
-        } else {
-            this.noItemsNode?.remove();
-        }
-    }
-
     _onConnected() {
         const renderMode = this.getProperty('render-mode');
         this.classList.add('arpaList');
@@ -691,6 +698,16 @@ class List extends ArpaElement {
         this.controls = this.querySelector('list-controls');
         this.noItemsNode = this.querySelector('.arpaList__noItems');
         this.addItemNodes(this.getInitialItems());
+    }
+
+    async update() {
+        await this.promise;
+        if (!this.getItems()?.length) {
+            this.noItemsNode = this.noItemsNode || renderNode(this.renderNoItemsContent());
+            this.noItemsNode && this.bodyMainNode?.appendChild(this.noItemsNode);
+        } else {
+            this.noItemsNode?.remove();
+        }
     }
 
     async _handlePreloading() {

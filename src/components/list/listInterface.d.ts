@@ -19,6 +19,7 @@ export interface ListInterface {
     hasStickyFilters?: boolean;
     hasViews?: boolean;
     heading?: string;
+    id?: string;
     isCollapsed?: boolean;
     itemComponent?: typeof ListItem;
     items?: ListItemInterface[];
@@ -31,6 +32,7 @@ export interface ListInterface {
     pageParam?: string;
     perPageParam?: string;
     preProcessItem?: (item: ListInterface) => void;
+    preProcessNode?: (node: HTMLElement) => void;
     renderMode?: 'minimal' | 'full';
     renderMode?: string;
     resetScrollOnLoad?: boolean;

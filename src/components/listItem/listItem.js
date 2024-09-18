@@ -43,6 +43,7 @@ class ListItem extends ArpaElement {
         this.list = this.closest('.arpaList');
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
+        !this.listResource && this.list?.preProcessNode(this);
         const selectedClass = this.getProperty('selected-class');
         this._initializeView();
         const id = this.getId();
