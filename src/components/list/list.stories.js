@@ -87,7 +87,7 @@ export const ResourceDriven = {
                 <template
                     id="{id}"
                     template-id="list-item-template"
-                    image="/api/image/convert?source={image_url}&width=400&height=400&quality=70'"
+                    image="/api/image/convert?width=[width]&height=[height]&quality=[quality]&source={image_url}"
                 >
                     <slot name="tags">
                         <tag-item label="{author_initials}" icon="person"></tag-item>

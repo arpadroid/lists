@@ -2,7 +2,7 @@
  * @typedef {import('@arpadroid/resources/src').ListResource} ListResource
  * @typedef {import('../list/list.js').default} List
  */
-import { mergeObjects, attrString } from '@arpadroid/tools';
+import { mergeObjects, attrString, clearLazyQueue } from '@arpadroid/tools';
 import { ArpaElement } from '@arpadroid/ui';
 import { Context } from '@arpadroid/application';
 
@@ -110,6 +110,7 @@ class ListViews extends ArpaElement {
         if (!viewExists) {
             view = this?.viewFilter?.getDefaultValue();
         }
+        clearLazyQueue();
         this?.viewFilter?.setValue(view);
         this.list && (await this.list.onReady());
         this.applyView(view);

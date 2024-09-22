@@ -63,17 +63,18 @@ class List extends ArpaElement {
         return namespace + this.getProperty(`${$param}-param`);
     }
 
-    instantiateResource() {
+    instantiateResource(id = this.getId()) {
         return (
-            getResource(this._config.id) ||
+            getResource(id) ||
             new ListResource({
-                id: this._config.id,
+                id,
                 pageParam: this.getParamName('page'),
                 searchParam: this.getParamName('search'),
                 perPageParam: this.getParamName('perPage'),
                 sortByParam: this.getParamName('sortBy'),
                 sortDirParam: this.getParamName('sortDir'),
-                itemsPerPage: this.getProperty('items-per-page')
+                itemsPerPage: this.getProperty('items-per-page'),
+                mapItemId: this._config.mapItemId
             })
         );
     }
@@ -99,48 +100,53 @@ class List extends ArpaElement {
 
     /**
      * Returns the default configuration for this component.
+     * @param {ListInterface} config
      * @returns {ListInterface}
      */
-    getDefaultConfig() {
-        return mergeObjects(super.getDefaultConfig(), {
-            allControls: false,
-            canCollapse: false,
-            defaultView: 'list',
-            filterNamespace: '',
-            hasControls: true,
-            hasFilters: false,
-            hasInfo: false,
-            hasMiniSearch: true,
-            hasPager: true,
-            hasResource: false,
-            hasSearch: false,
-            hasSelection: false,
-            hasSort: false,
-            hasStickyFilters: false,
-            hasViews: false,
-            isCollapsed: false,
-            itemComponent: ListItem,
-            items: [],
-            itemsPerPage: 50,
-            itemTag: 'list-item',
-            noItemsContent: html`<i18n-text key="modules.list.txtNoItemsFound"></i18n-text>`,
-            noItemsIcon: 'info',
-            pageParam: 'page',
-            perPageParam: 'perPage',
-            renderMode: 'full',
-            resetScrollOnLoad: false,
-            searchParam: 'search',
-            showResultsText: true,
-            sortByParam: 'sortBy',
-            sortDefault: undefined,
-            sortDirParam: 'sortDir',
-            sortOptions: [],
-            template: List.template,
-            title: ''
-            // selectors: {
-            //     searchNodes: '.listItem__titleText, .listItem__subTitle'
-            // }
-        });
+    getDefaultConfig(config = {}) {
+        return mergeObjects(
+            super.getDefaultConfig({
+                allControls: false,
+                canCollapse: false,
+                defaultView: 'list',
+                filterNamespace: '',
+                hasControls: true,
+                hasFilters: false,
+                hasInfo: false,
+                hasMiniSearch: true,
+                hasPager: true,
+                hasResource: false,
+                hasSearch: false,
+                hasSelection: false,
+                hasSort: false,
+                hasStickyFilters: false,
+                hasViews: false,
+                isCollapsed: false,
+                itemComponent: ListItem,
+                items: [],
+                itemsPerPage: 50,
+                itemTag: 'list-item',
+                noItemsContent: html`<i18n-text key="modules.list.txtNoItemsFound"></i18n-text>`,
+                noItemsIcon: 'info',
+                pageParam: 'page',
+                perPageParam: 'perPage',
+                renderMode: 'full',
+                resetScrollOnLoad: false,
+                searchParam: 'search',
+                showResultsText: true,
+                sortByParam: 'sortBy',
+                sortDefault: undefined,
+                sortDirParam: 'sortDir',
+                mapItemId: undefined,
+                sortOptions: [],
+                template: List.template,
+                title: ''
+                // selectors: {
+                //     searchNodes: '.listItem__titleText, .listItem__subTitle'
+                // }
+            }),
+            config
+        );
     }
 
     // #endregion
@@ -154,7 +160,7 @@ class List extends ArpaElement {
      * @returns {string}
      */
     getId() {
-        return this._config.id;
+        return this.getProperty('id');
     }
 
     getDefaultView() {
@@ -541,7 +547,7 @@ class List extends ArpaElement {
     getTemplateVars() {
         return {
             aside: this.renderAside(),
-            id: this._config.id,
+            id: this.getId(),
             controls: this.renderControls(),
             title: this.renderTitle(),
             items: this.renderItems(),
@@ -610,7 +616,7 @@ class List extends ArpaElement {
         }
         const ariaLabel = I18nTool.processTemplate(this.getProperty('heading'), {}, 'text');
         return html`<div class="arpaList__items" role="list" ${renderAttr('aria-label', ariaLabel)}>
-            ${mapHTML(items, item => this.renderItem(item))}
+            ${mapHTML(items, item => this.renderItem(item) || '')}
         </div>`;
     }
 

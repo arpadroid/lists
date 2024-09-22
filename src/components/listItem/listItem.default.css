@@ -1,5 +1,5 @@
 :root {
-    --listItem-imgSize: 64px;
+    --listItem-imgSize: 4rem;
 }
 
 .listItem {
@@ -12,10 +12,7 @@
     arpa-image {
         width: var(--listItem-imgSize);
         height: var(--listItem-imgSize);
-        max-width: var(--listItem-imgSize);
-        min-width: var(--listItem-imgSize);
-        max-height: var(--listItem-imgSize);
-        min-height: var(--listItem-imgSize);
+        flex: none;
     }
 
     arpa-icon {

@@ -2,15 +2,14 @@
     .listItem__main {
         padding: 0;
     }
+
     .listItem__contentWrapper {
         flex-direction: row;
         padding: 0;
     }
+
     arpa-image {
-        --preloader-width: 1rem;
-        --preloader-border-width: 1.5px;
-        --preloader-outline-width: 1.5px;
-        width: 0.5rem;
+        --image-size: 0.5rem;
     }
 
     .listItem {

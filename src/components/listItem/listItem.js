@@ -6,7 +6,7 @@
  */
 
 import { ArpaElement } from '@arpadroid/ui';
-import { render, classNames, attrString } from '@arpadroid/tools';
+import { render, classNames, attrString, getViewportWidth, getViewportHeight } from '@arpadroid/tools';
 
 const html = String.raw;
 class ListItem extends ArpaElement {
@@ -31,6 +31,14 @@ class ListItem extends ArpaElement {
             wrapperComponent: 'div',
             rhsContent: '',
             role: 'listitem',
+            imageSizes: {
+                list_compact: { width: 24, height: 24 },
+                list: { width: 64, height: 64 },
+                grid_compact: { width: 180, height: 180 },
+                grid: { width: 350, height: 350 },
+                grid_large: { width: 480, height: 480 },
+                full_screen: { width: getViewportWidth(), height: getViewportHeight() }
+            },
             imageConfig: {
                 showPreloader: true
             }
@@ -221,6 +229,7 @@ class ListItem extends ArpaElement {
     render() {
         const templateNode = this.getTemplateNode();
         templateNode && this.setTemplate(templateNode, () => this.contentWrapperNode);
+        this.imageURL = this.getProperty('image');
         const { role, action } = this._config;
         this.classList.add('listItem');
         role && this.setAttribute('role', role);
@@ -257,9 +266,10 @@ class ListItem extends ArpaElement {
             href: this.link,
             class: classNames('listItem__main', { listItem__link: this.link })
         });
+        const icon = this.getIcon();
         return html`
             <${wrapperComponent} ${attrs}>
-                <arpa-icon class="listItem__icon">{icon}</arpa-icon>
+                ${icon ? html`<arpa-icon class="listItem__icon">${icon}</arpa-icon>` : ''}
                 ${!isGrid ? this.renderImage() : ''}
                 <div class="listItem__contentWrapper">
                     ${this.renderTitleContainer()} 
@@ -367,7 +377,21 @@ class ListItem extends ArpaElement {
      * @returns {string} - The rendered image as a string.
      */
     renderImage(image = this.getImage(), alt = this.getImageAlt()) {
-        return render(image, html`<arpa-image class="listItem__image" src="${image}" alt="${alt}"></arpa-image>`);
+        const { width } = this.getImageDimensions();
+        return image
+            ? html`<arpa-image
+                  lazy-load
+                  class="listItem__image"
+                  size="${width}"
+                  src="${image}"
+                  alt="${alt}"
+              ></arpa-image>`
+            : '';
+    }
+
+    getImageDimensions() {
+        const { imageSizes = { list: { width: 100 } } } = this._config;
+        return imageSizes[this.view?.replace(/-/g, '_')] || imageSizes.list;
     }
 
     // #region RENDER NAV
@@ -406,12 +430,12 @@ class ListItem extends ArpaElement {
     async _initializeNodes() {
         this.mainNode = this.querySelector('.listItem__main');
         this.checkbox = this.querySelector('.listItem__checkbox');
-        this.imageNode = this.querySelector('.listItem__image');
+        this.image = this.querySelector('.listItem__image');
         this.contentNode = this.querySelector('.listItem__content');
         this.titleNode = this.querySelector('.listItem__title');
         this.contentWrapperNode = this.querySelector('.listItem__contentWrapper');
         await customElements.whenDefined('arpa-image');
-        this.imageNode?.addConfig({
+        this.image?.addConfig({
             onLoad: event => this._onImageLoaded(event),
             onError: event => this._onImageError(event)
         });
@@ -444,9 +468,6 @@ class ListItem extends ArpaElement {
         this.view = this.viewsFilter?.getValue();
         this.viewsFilter?.listen('value', view => {
             this.view = view;
-            /**
-             * @todo Optimize reRender of list item.
-             */
             this?.isConnected && this.update();
         });
     }
@@ -455,12 +476,16 @@ class ListItem extends ArpaElement {
         const isGrid = this.view?.indexOf('grid') === 0;
         if (isGrid) {
             if (this.titleNode) {
-                this.imageNode && this.titleNode?.after(this.imageNode);
+                this.image && this.titleNode?.after(this.image);
             } else {
-                this.imageNode && this.contentWrapperNode?.prepend(this.imageNode);
+                this.image && this.contentWrapperNode?.prepend(this.image);
             }
         } else {
-            this.imageNode && this.mainNode?.prepend(this.imageNode);
+            this.image && this.mainNode?.prepend(this.image);
+        }
+        const { width, height } = this.getImageDimensions();
+        if (this._hasRendered) {
+            this.image?.setSize(width, height);
         }
     }
 
