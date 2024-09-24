@@ -21,9 +21,13 @@
     .listItem__title {
         flex-direction: row;
         align-items: center;
-        font-size: 1rem;
-        flex: 1 1 auto;
         justify-content: space-between;
+    }
+
+    .listItem__titleWrapper {
+        min-width: 0;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .listItem__image {
@@ -37,6 +41,7 @@
 
     .listItem__tags {
         flex-direction: row-reverse;
+        flex-wrap: nowrap;
     }
 
     .listItem__tags .tag {

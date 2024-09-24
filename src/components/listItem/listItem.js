@@ -56,15 +56,20 @@ class ListItem extends ArpaElement {
         this._initializeView();
         const id = this.getId();
         if (this.list?.hasMultiSelect()) {
-            this.listResource.listen(`ITEM-SELECTED-${id}`, () => {
-                this.checkbox.checked = true;
-                this.classList.add(selectedClass);
-            });
-            this.listResource.listen(`ITEM-DESELECTED-${id}`, () => {
-                this.checkbox.checked = false;
-                this.classList.remove(selectedClass);
-            });
+            this._unsubscribes.push(
+                this.listResource.listen(`ITEM-SELECTED-${id}`, () => {
+                    this.checkbox.checked = true;
+                    this.classList.add(selectedClass);
+                })
+            );
+            this._unsubscribes.push(
+                this.listResource.listen(`ITEM-DESELECTED-${id}`, () => {
+                    this.checkbox.checked = false;
+                    this.classList.remove(selectedClass);
+                })
+            );
         }
+
         return true;
     }
 
@@ -172,9 +177,10 @@ class ListItem extends ArpaElement {
 
     /**
      * Sets the selected state of the list item.
-     * @param {boolean} checked
+     * @param {Event} event
      */
-    setSelected(checked = this.checkbox?.checked) {
+    setSelected(event) {
+        const checked = event?.target?.checked ?? this.checkbox?.checked;
         if (checked) {
             this.listResource?.selectItem(this.getPayload());
             this.classList.add(this.getSelectedClass());
@@ -430,6 +436,8 @@ class ListItem extends ArpaElement {
     async _initializeNodes() {
         this.mainNode = this.querySelector('.listItem__main');
         this.checkbox = this.querySelector('.listItem__checkbox');
+        this.checkboxContainer = this.querySelector('.listItem__checkboxContainer');
+        this.rhs = this.querySelector('.listItem__rhs');
         this.image = this.querySelector('.listItem__image');
         this.contentNode = this.querySelector('.listItem__content');
         this.titleNode = this.querySelector('.listItem__title');
@@ -466,10 +474,12 @@ class ListItem extends ArpaElement {
         /** @type {ListFilter} */
         this.viewsFilter = this.listResource?.filters?.views;
         this.view = this.viewsFilter?.getValue();
-        this.viewsFilter?.listen('value', view => {
-            this.view = view;
-            this?.isConnected && this.update();
-        });
+        this._unsubscribes.push(
+            this.viewsFilter?.listen('value', view => {
+                this.view = view;
+                this?.isConnected && this.update();
+            })
+        );
     }
 
     update() {
@@ -483,10 +493,19 @@ class ListItem extends ArpaElement {
         } else {
             this.image && this.mainNode?.prepend(this.image);
         }
-        const { width, height } = this.getImageDimensions();
-        if (this._hasRendered) {
-            this.image?.setSize(width, height);
+        if (this.checkboxContainer) {
+            if (this.view === 'list-compact') {
+                this.mainNode.prepend(this.checkboxContainer);
+            } else {
+                this.rhs?.prepend(this.checkboxContainer);
+            }
         }
+        this.image && this.updateImageSize();
+    }
+
+    updateImageSize() {
+        const { width, height } = this.getImageDimensions();
+        this.image?.setSize(width, height);
     }
 
     /**

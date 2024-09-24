@@ -6,7 +6,7 @@
 
 
 .listItem--grid-compact.listItem--grid-compact {
-    gap: 0;
+    gap: 12px;
 
     .listItem__title {
         

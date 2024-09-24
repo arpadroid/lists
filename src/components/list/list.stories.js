@@ -71,6 +71,15 @@ export const ResourceDriven = {
     },
     render: args => {
         return html`
+            <style>
+                #storybook-root {
+                    height: 100%;
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                }
+            </style>
+
             <arpa-list ${attrString(args)}>
                 <!--<info-message> some message </info-message>-->
                 <slot name="batch-operations">

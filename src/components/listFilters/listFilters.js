@@ -60,7 +60,6 @@ class ListFilters extends ArpaElement {
         this.form?.onSubmit(this.onSubmit);
         /** @type {Field} */
         this.pageField = this.form.getField('page');
-
         /** @type {Field} */
         this.perPageField = this.form.getField('perPage');
         this.perPageField.listen('onChange', (value, field, event) => this.form.submitForm(event));

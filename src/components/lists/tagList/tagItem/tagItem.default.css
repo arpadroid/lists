@@ -23,15 +23,16 @@
     overflow: hidden;
     flex: 1 1 auto;
     text-align: center;
+    font-family: var(--font-quicksand-bold);
+    
 }
 
 .tagItem,
 .tagItem__text,
 .tagItem__text + .tooltip {
-    font-family: var(--font-family-avant-garde-demi);
     letter-spacing: 0px;
-    color: var(--text-color);
-    font-size: 0.7rem;
+    color: var(--grey-500);
+    font-size: 0.8rem;
 }
 
 .tagItem__text + .tooltip {
