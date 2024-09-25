@@ -10,7 +10,7 @@ const ListStory = {
     tags: [],
     getArgs: () => {
         return {
-            id: 'test-list',
+            id: 'static-list',
             title: '',
             hasSearch: false,
             hasSort: false,
@@ -81,14 +81,13 @@ export const ResourceDriven = {
             </style>
 
             <arpa-list ${attrString(args)}>
-                <!--<info-message> some message </info-message>-->
                 <slot name="batch-operations">
                     <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>
                 </slot>
 
                 <slot name="sort-options">
-                    <select-option value="title" icon="sort_by_alpha"> Title </select-option>
-                    <select-option value="date" icon="calendar_month" default> Date </select-option>
+                    <nav-link param-value="title" icon-right="sort_by_alpha"> Title </nav-link>
+                    <nav-link param-value="date" icon-right="calendar_month" default> Date </nav-link>
                 </slot>
 
                 <slot name="list-filters"> </slot>
@@ -113,7 +112,7 @@ export const ResourceDriven = {
             <script type="module">
                 import { editURL, getInitials } from '/arpadroid-tools.js';
                 customElements.whenDefined('arpa-list').then(() => {
-                    const list = document.getElementById('resource-list');
+                    const list = document.getElementById('${args.id}');
                     const resource = list.listResource;
                     resource?.mapItem(item => {
                         item.author_initials = getInitials(item.author_name + ' ' + item.author_surname);
@@ -131,7 +130,8 @@ export const ResourceDrivenTest = {
     ...ResourceDriven,
     parameters: {},
     args: {
-        ...ResourceDriven.args
+        ...ResourceDriven.args,
+        id: 'resource-driven-test-list'
     },
     parameters: {
         controls: { disable: true },
@@ -160,7 +160,8 @@ export const Test = {
     args: Default.args,
     parameters: {},
     args: {
-        ...Default.args
+        ...Default.args,
+        id: 'test-list'
     },
     parameters: {
         controls: { disable: true },

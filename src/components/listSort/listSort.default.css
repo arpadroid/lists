@@ -1,7 +1,7 @@
 list-sort {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
+    gap: var(--list-control-gap);
 }
 
 list-sort i18n-text[key='modules.list.listSort.lblSortBy'] {

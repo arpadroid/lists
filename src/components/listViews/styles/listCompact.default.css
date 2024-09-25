@@ -15,6 +15,10 @@
     .listItem {
         padding-left: 4px;
     }
+
+    > .arpaList__body > .arpaList__bodyMain > .arpaList__items.arpaList__items { 
+        gap: 2px;
+    }
 }
 
 .listItem--list-compact {
@@ -37,6 +41,11 @@
     .listItem__checkboxContainer,
     .iconButton {
         --icon-button-width: 25px;
+    }
+
+    .listItem__checkboxContainer {
+        width: 1rem;
+        margin-left: .25rem;
     }
 
     .listItem__tags {

@@ -60,7 +60,7 @@ class MultiSelect extends ArpaElement {
         const menuProps = this.getProperties('icon', 'tooltip');
         const formId = this.list.id + '-multiSelectForm';
         this.innerHTML = html`
-            <icon-menu class="listMultiSelect__nav" nav-class="listMultiSelect__combo" close-on-blur="false"  ${attrString(menuProps)}>
+            <icon-menu class="listMultiSelect__nav" nav-class="listMultiSelect__combo"  ${attrString(menuProps)}>
                 <form id="${formId}" class="listMultiSelect__form" is="arpa-form" variant="compact" has-submit="false">
                     <slot name="form-title"> ${this.i18n('txtBatchOperations')} </slot>
                     <slot name="messages">

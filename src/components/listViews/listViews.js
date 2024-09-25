@@ -34,20 +34,20 @@ class ListViews extends ArpaElement {
                 },
                 {
                     title: 'Grid',
-                    iconRight: 'view_module',
+                    iconRight: 'grid_view',
                     value: LIST_VIEW_GRID
                 },
                 {
                     title: 'Grid Compact',
-                    iconRight: 'view_comfy',
+                    iconRight: 'view_module',
                     value: LIST_VIEW_GRID_COMPACT
                 }
             ]
         });
     }
     render() {
-        const props = this.getProperties('icon', 'label');
-        this.innerHTML = html`<icon-menu ${attrString(props)}></icon-menu>`;
+        const { label, icon } = this.getProperties('icon', 'label');
+        this.innerHTML = html`<icon-menu ${attrString({ tooltip: label, icon })}></icon-menu>`;
     }
 
     initializeProperties() {

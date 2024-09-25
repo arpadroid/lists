@@ -25,11 +25,12 @@
         width: auto;
         height: 24px;
         gap: 4px;
-        padding: 4px 8px;
+        padding: .25rem .5rem;
+        
         arpa-icon {
-            font-size: 20px;
-            height: 20px;
-            margin-left: -4px;
+            font-size: 1.25rem;
+            height: 1.25rem;
+            width: 1.25rem;
             position: relative;
         }
     }

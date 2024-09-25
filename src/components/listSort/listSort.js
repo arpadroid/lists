@@ -8,47 +8,41 @@
  * @typedef {import('@arpadroid/application/src/resources/listResource/listFilter').default} ListFilter
  */
 
-import { editURL, renderNode } from '@arpadroid/tools';
+import { mapHTML, attr } from '@arpadroid/tools';
 import { Context } from '@arpadroid/application';
 import { ArpaElement } from '@arpadroid/ui';
-import { I18n } from '@arpadroid/i18n';
 const html = String.raw;
 class ListSort extends ArpaElement {
     //////////////////////////
     // #region INITIALIZATION
     //////////////////////////
-    _bindings = ['renderSelectValue', 'onSelectChange', 'onRouteChanged', 'onSortClick'];
+    _bindings = ['renderSelectValue', 'onSelectChange', 'update', 'onSortClick'];
 
     getDefaultConfig() {
         this.i18nKey = 'modules.list.listSort';
         return {
-            lblNoSelection: I18n.getText('modules.list.listSort.lblNoSelection'),
-            lblSortAsc: I18n.getText('modules.list.listSort.lblSortAsc'),
-            lblSortDesc: I18n.getText('modules.list.listSort.lblSortDesc'),
+            lblNoSelection: this.i18nText('lblNoSelection'),
+            lblSortAsc: this.i18n('lblSortAsc'),
+            lblSortDesc: this.i18n('lblSortDesc'),
+            lblSortedBy: this.i18n('lblSortedBy'),
             iconAsc: 'keyboard_double_arrow_up',
             iconDesc: 'keyboard_double_arrow_down',
-            iconSort: 'sort'
+            iconSort: 'sort',
+            paramAsc: 'asc',
+            paramDesc: 'desc'
         };
     }
 
-    _initialize() {}
-
-    _onConnected() {
-        Context.Router.listen('ROUTE_CHANGED', this.onRouteChanged);
-    }
-
     async initializeProperties() {
+        /** @type {List} */
         this.list = this.closest('.arpaList');
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
         /** @type {ListFilter} sortDirFilter */
         this.sortDirFilter = this.listResource?.getSortDirFilter();
+        /** @type {ListFilter} sortDirFilter */
         this.sortFilter = this.listResource?.getSortFilter();
         return true;
-    }
-
-    async onReady() {
-        return await customElements.whenDefined('arpa-form');
     }
 
     // #endregion
@@ -57,18 +51,16 @@ class ListSort extends ArpaElement {
     // #region ACCESSORS
     ////////////////////
 
-    getFiltersWrapper() {
-        return this.listComponent?.node?.querySelector('.list__filtersMenu');
+    getSortDir() {
+        return this.listResource?.getSortDirection() || 'asc';
     }
 
-    getSortDirIcon() {
-        const value = this.listResource?.getSortDirection() || 'asc';
-        return value === 'asc' ? this.getProperty('icon-asc') : this.getProperty('icon-desc');
+    getSortDirIcon(dir = this.getSortDir()) {
+        return dir === 'asc' ? this.getProperty('icon-asc') : this.getProperty('icon-desc');
     }
 
-    getSortDirTooltip() {
-        const value = this.listResource?.getSortDirection() || 'asc';
-        const prop = value === 'asc' ? 'lbl-sort-desc' : 'lbl-sort-asc';
+    getSortDirTooltip(dir = this.getSortDir()) {
+        const prop = dir === 'asc' ? 'lbl-sort-asc' : 'lbl-sort-desc';
         return this.getProperty(prop);
     }
 
@@ -77,13 +69,20 @@ class ListSort extends ArpaElement {
     /////////////////////
     // #region LIFECYCLE
     /////////////////////
-    onRouteChanged() {
-        this.update();
+
+    async onReady() {
+        return await customElements.whenDefined('arpa-form');
     }
 
-    update() {
-        this.sortButton?.setAttribute('label', this.getSortDirTooltip());
-        this.sortButton?.setAttribute('icon', this.getSortDirIcon());
+    _onConnected() {
+        this._unsubscribes.push(Context.Router.listen('ROUTE_CHANGED', () => this.updateSortLink()));
+    }
+
+    updateSortLink() {
+        const sortDir = this.getSortDir();
+        this.sortLink?.querySelector('arpa-icon')?.setIcon(this.getSortDirIcon());
+        this.sortLink?.setAttribute('param-value', sortDir === 'asc' ? 'desc' : 'asc');
+        this.sortLink?.querySelector('arpa-tooltip')?.setContent(this.getSortDirTooltip());
     }
 
     ////////////////////
@@ -91,83 +90,54 @@ class ListSort extends ArpaElement {
     ////////////////////
 
     async render() {
-        this.innerHTML = await this.renderSelect();
-        this.selectField = this.querySelector('select-combo');
-        await customElements.whenDefined('select-combo');
-        this.selectField.onRendered(() => {
-            const options = this.list.getSortOptions();
-            this.selectField?.optionsNode?.setAttribute('slot', 'sort-options');
-            this.configureSelect(this.selectField, options);
-        });
-    }
-
-    renderSortButton() {
-        const button = renderNode(
-            html`<button
+        const sortDir = this.listResource?.getSortDirection() === 'asc' ? 'desc' : 'asc';
+        this.innerHTML = html`
+            <icon-menu class="sortMenu" icon="sort_by_alpha" tooltip="Sort">
+                ${mapHTML(this.list?.getSortOptions(), ({ value, icon, label }) => {
+                    return html`<nav-link link="${value}" icon-left="${icon}" label="${label}"></nav-link>`;
+                })}
+            </icon-menu>
+            <nav-link
                 class="sortDirButton iconButton"
-                is="icon-button"
+                param-name="${this.list?.getParamName('sortDir')}"
+                param-value="${sortDir}"
+                param-clear="${this.list?.getParamName('page')}"
                 icon="${this.getSortDirIcon()}"
-                tooltip-position="left"
-                variant="minimal"
-                label="${this.getSortDirTooltip()}"
-            ></button>`
-        );
-        button.addEventListener('click', this.onSortClick);
-        return button;
-    }
-
-    onSortClick() {
-        const value = this.sortDirFilter.getValue();
-        const newValue = value === 'asc' ? 'desc' : 'asc';
-        const newURL = editURL(Context.Router.getRoute(), {
-            [this.list.getParamName('sortDir')]: newValue,
-            [this.list.getParamName('page')]: 1
-        });
-        Context.Router.go(newURL);
-    }
-
-    async renderSelect() {
-        return html`<select-combo id="sortBy" class="sortByField" icon-right="none"></select-combo>`;
-    }
-
-    configureSelect(field, options, value = this.sortFilter?.getValue() || this.list?.getSortDefault(), config = {}) {
-        field.listen('onChange', this.onSelectChange);
-        field.addConfig({
-            icon: this.getProperty('sort-icon'),
-            renderValue: this.renderSelectValue,
-            ...config
-        });
-        options && field.setOptions(options);
-        this.sortButton = this.renderSortButton();
-        field.inputMask.addRhs('sortButton', this.sortButton);
-        field.setValue(value);
-    }
-
-    renderSelectValue(option) {
-        const icon = option?.getAttribute('icon') || this.getProperty('iconSort');
-        const optionContent = option?.querySelector('.fieldOption__content')?.innerText || option?.innerText;
-        const optionLabel = option?.getProperty('label') || optionContent || this.i18n('lblNoSelection');
-        return html`
-            <arpa-icon>${icon}</arpa-icon>
-            ${this.i18n('lblSortBy')}
-            <span className="selectComboInput__title"> ${optionLabel} </span>
+                use-router
+            >
+                <slot name="tooltip"> ${this.getSortDirTooltip()} </slot>
+            </nav-link>
         `;
+        this.sortLink = this.querySelector('.sortDirButton');
+        this._initializeNav();
     }
 
-    getTemplateVars() {
-        return {};
+    async _initializeNav() {
+        this.sortByMenu = this.querySelector('icon-menu');
+        if (!this.sortByMenu) {
+            return;
+        }
+        this.sortByMenu?.promise && (await this.sortByMenu.promise);
+        this.sortNav = this.sortByMenu.navigation;
+        this.sortNav && attr(this.sortNav, {
+            slot: 'sort-options',
+            'param-name': this.list?.getParamName('sortBy'),
+            'use-router': '',
+            'param-clear': this.list?.getParamName('page')
+        });
+        this._unsubscribes.push(
+            this.sortNav?.listen('onSelected', item => {
+                const icon = item.getProperty('icon') || item.getProperty('icon-right');
+                this.sortByMenu.setIcon(icon);
+                const tooltip = item.getProperty('label') || item.contentNode?.innerText?.trim();
+                this.sortByMenu.setTooltip(
+                    html`<span>${this.getProperty('lblSortedBy')}</span> <strong>${tooltip}</strong>`
+                );
+            })
+        );
     }
 
     // #endregion
-
-    onSelectChange(value) {
-        this.sortFilter.setValue(value);
-        const newURL = editURL(Context.Router.getRoute(), {
-            [this.list.getParamName('sortBy')]: value,
-            [this.list.getParamName('page')]: 1
-        });
-        Context.Router.go(newURL);
-    }
 }
 
 customElements.define('list-sort', ListSort);

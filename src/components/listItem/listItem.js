@@ -31,6 +31,7 @@ class ListItem extends ArpaElement {
             wrapperComponent: 'div',
             rhsContent: '',
             role: 'listitem',
+            listSelector: '.arpaList',
             imageSizes: {
                 list_compact: { width: 24, height: 24 },
                 list: { width: 64, height: 64 },
@@ -48,7 +49,7 @@ class ListItem extends ArpaElement {
     initializeProperties() {
         super.initializeProperties();
         /** @type {List} */
-        this.list = this.closest('.arpaList');
+        this.list = this.getList();
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
         !this.listResource && this.list?.preProcessNode(this);
@@ -71,10 +72,6 @@ class ListItem extends ArpaElement {
         }
 
         return true;
-    }
-
-    getTemplateContent(template = this._config.template) {
-        return super.getTemplateContent(template, this.getPayload());
     }
 
     // #endregion
@@ -103,6 +100,18 @@ class ListItem extends ArpaElement {
 
     getImageAlt() {
         return this.getProperty('image-alt');
+    }
+
+    getList() {
+        return this.closest(this.getProperty('list-selector'));
+    }
+
+    getLink() {
+        return this.getProperty('link');
+    }
+
+    getTemplateContent(template = this._config.template) {
+        return super.getTemplateContent(template, this.getPayload());
     }
 
     getTagName() {
@@ -217,7 +226,7 @@ class ListItem extends ArpaElement {
     getTemplateNode() {
         const list = this.closest('.arpaList');
         if (list?.itemTemplate) {
-            return this.list.itemTemplate.cloneNode(true);
+            return this.list?.itemTemplate.cloneNode(true);
         }
     }
 
@@ -239,7 +248,7 @@ class ListItem extends ArpaElement {
         const { role, action } = this._config;
         this.classList.add('listItem');
         role && this.setAttribute('role', role);
-        this.link = this.getProperty('link');
+        this.link = this.getLink();
         this.removeAttribute('link');
         const content = this.renderTemplate(this.getTemplate());
         this.innerHTML = content;

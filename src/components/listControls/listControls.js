@@ -13,7 +13,7 @@ class ListControls extends ArpaElement {
         return {
             className: 'listControls',
             hasStickyControls: this.list?.hasStickyControls(),
-            template: html`{search}{views}{multiSelect}`
+            template: html`{search}{sort}{views}{multiSelect}`
         };
     }
 
@@ -21,8 +21,13 @@ class ListControls extends ArpaElement {
         return {
             search: this.renderSearch(),
             views: this.renderViews(),
-            multiSelect: this.renderMultiSelect()
+            multiSelect: this.renderMultiSelect(),
+            sort: this.renderSort()
         };
+    }
+
+    renderSort() {
+        return this.list?.hasSort() ? html`<list-sort></list-sort>` : '';
     }
 
     renderMultiSelect() {
@@ -34,8 +39,7 @@ class ListControls extends ArpaElement {
     }
 
     renderSearch() {
-        const canRender = this.list?.hasSearch() || this.list?.hasSort();
-        return canRender ? html`<list-search></list-search>` : '';
+        return this.list?.hasSearch() || this.list?.hasSort() ? html`<list-search></list-search>` : '';
     }
 
     _onConnected() {
@@ -44,15 +48,6 @@ class ListControls extends ArpaElement {
         this.views = this.querySelector('list-views');
         this.multiSelect = this.querySelector('list-multi-select');
         this.append(...this._childNodes);
-        // super.postRender();
-        // const { hasStickyControls } = this._config;
-        // if (hasStickyControls) {
-        //     if (!this.stickyControls) {
-        //         this.stickyControls = new Sticky(this.node, {});
-        //     } else {
-        //         this.stickyControls.node = this.node;
-        //     }
-        // }
     }
 }
 
