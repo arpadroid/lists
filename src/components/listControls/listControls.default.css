@@ -11,3 +11,6 @@
         background-color: var(--color-background);
     }
 }
+.listControls:empty {
+    display: none;
+}

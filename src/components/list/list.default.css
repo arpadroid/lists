@@ -20,11 +20,11 @@
 .arpaList__items {
     display: flex;
     flex-direction: column;
-    padding: .5rem 0;
-    margin: 0px 0px;
+    padding: 0;
+    margin: 0;
     position: relative;
     width: 100%;
-    flex: 1 1 auto
+    flex: 1 1 auto;
 }
 
 .arpaList__header {
@@ -47,19 +47,10 @@
     padding: 4px 0px 16px;
 }
 
-.listHeading__resultsMessageText:empty {
-    display: none;
-}
-
-.arpaList__items:empty {
-    display: none;
-}
-
+.listHeading__resultsMessageText:empty,
+.arpaList__header:has(.listHeading:empty),
+.arpaList__items:empty,
 .arpaList__header:empty {
-    display: none;
-}
-
-.arpaList__header:has(.listHeading:empty) {
     display: none;
 }
 
@@ -125,10 +116,8 @@
 }
 
 .arpaList[variant='mini'] {
-    /* min-height: 32px; */
     .arpaList__noItems {
         flex-direction: row;
         height: 20px;
     }
 }
-

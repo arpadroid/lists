@@ -110,11 +110,11 @@ class List extends ArpaElement {
                 canCollapse: false,
                 defaultView: 'list',
                 filterNamespace: '',
-                hasControls: true,
+                hasControls: false,
                 hasFilters: false,
                 hasInfo: false,
                 hasMiniSearch: true,
-                hasPager: true,
+                hasPager: false,
                 hasResource: false,
                 hasSearch: false,
                 hasSelection: false,
@@ -280,7 +280,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasPager() {
-        return this.hasAllControls() || Boolean(this.hasProperty('has-pager'));
+        return this.hasAllControls() || this.hasProperty('has-pager');
     }
 
     /**
@@ -602,7 +602,7 @@ class List extends ArpaElement {
     }
 
     renderTitle(title = this.getTitle()) {
-        return title ? html`<h2 class="arpaList__title">${title}</h2>` : '';
+        return title || this.hasSlot('title') ? html`<h2 class="arpaList__title" slot="title">${title}</h2>` : '';
     }
 
     renderHeading() {
@@ -615,9 +615,8 @@ class List extends ArpaElement {
             return '';
         }
         const ariaLabel = I18nTool.processTemplate(this.getProperty('heading'), {}, 'text');
-        return html`<div class="arpaList__items" role="list" ${renderAttr('aria-label', ariaLabel)}>
-            ${mapHTML(items, item => this.renderItem(item) || '')}
-        </div>`;
+        const itemsHTML = mapHTML(items, item => this.renderItem(item) || '');
+        return html`<div class="arpaList__items" role="list" ${renderAttr('aria-label', ariaLabel)}>${itemsHTML}</div>`;
     }
 
     renderItem(config) {

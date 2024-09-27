@@ -392,12 +392,13 @@ class ListItem extends ArpaElement {
      * @returns {string} - The rendered image as a string.
      */
     renderImage(image = this.getImage(), alt = this.getImageAlt()) {
-        const { width } = this.getImageDimensions();
+        const { width, height } = this.getImageDimensions();
         return image
             ? html`<arpa-image
                   lazy-load
                   class="listItem__image"
-                  size="${width}"
+                  width="${width}"
+                  height="${height}"
                   src="${image}"
                   alt="${alt}"
               ></arpa-image>`
@@ -405,6 +406,11 @@ class ListItem extends ArpaElement {
     }
 
     getImageDimensions() {
+        const width = this.getProperty('image-width');
+        const height = this.getProperty('image-height') || width;
+        if (width && height) {
+            return { width, height };
+        }
         const { imageSizes = { list: { width: 100 } } } = this._config;
         return imageSizes[this.view?.replace(/-/g, '_')] || imageSizes.list;
     }
