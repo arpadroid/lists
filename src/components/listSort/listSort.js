@@ -75,7 +75,7 @@ class ListSort extends ArpaElement {
     }
 
     _onConnected() {
-        this._unsubscribes.push(Context.Router.listen('ROUTE_CHANGED', () => this.updateSortLink()));
+        this._unsubscribes.push(Context.Router.on('route_changed', () => this.updateSortLink()));
     }
 
     updateSortLink() {
@@ -127,7 +127,7 @@ class ListSort extends ArpaElement {
                 'param-clear': this.list?.getParamName('page')
             });
         this._unsubscribes.push(
-            this.sortNav?.listen('onSelected', item => {
+            this.sortNav?.on('selected', item => {
                 const icon = item.getProperty('icon') || item.getProperty('icon-right');
                 this.sortByMenu.setIcon(icon);
                 const tooltip = item.getProperty('label') || item.contentNode?.innerText?.trim();

@@ -29,7 +29,7 @@ class ListFilters extends ArpaElement {
         this.list = this.closest('.arpaList');
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
-        this.listResource?.listen('PAYLOAD', () => this.update());
+        this.listResource?.on('payload', () => this.update());
         /** @type {ListFilter} */
         this.pageFilter = this.listResource?.pageFilter;
         /** @type {ListFilter} */
@@ -62,7 +62,7 @@ class ListFilters extends ArpaElement {
         this.pageField = this.form.getField('page');
         /** @type {Field} */
         this.perPageField = this.form.getField('perPage');
-        this.perPageField.listen('onChange', (value, field, event) => this.form.submitForm(event));
+        this.perPageField.on('change', (value, field, event) => this.form.submitForm(event));
     }
 
     /**

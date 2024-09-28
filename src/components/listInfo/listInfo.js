@@ -28,7 +28,7 @@ class ListInfo extends ArpaElement {
         this.list = this.closest('.arpaList');
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
-        this.listResource?.listen('PAYLOAD', () => this.reRender());
+        this.listResource?.on('payload', () => this.reRender());
         /** @type {ListFilter} */
         this.searchFilter = this.listResource?.searchFilter;
         return true;

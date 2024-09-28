@@ -49,7 +49,7 @@ class ListSearch extends ArpaElement {
         this.searchField = this.form.getField('search');
         if (this.searchFilter) {
             this.searchField.setValue(this.searchFilter.getValue());
-            this.searchFilter.listen('value', value => this.searchField.setValue(value));
+            this.searchFilter.on('value', value => this.searchField.setValue(value));
         }
         this.form.onSubmit(this._onSubmit);
         this.searchField?.promise.then(() => this.initializeSearch());

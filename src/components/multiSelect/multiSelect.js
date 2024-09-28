@@ -28,7 +28,7 @@ class MultiSelect extends ArpaElement {
 
     initializeProperties() {
         super.initializeProperties();
-        this.resource?.listen('SELECTION_CHANGE', () => this.update());
+        this.resource?.on('selection_change', () => this.update());
     }
 
     // #endregion
@@ -104,7 +104,7 @@ class MultiSelect extends ArpaElement {
 
     _initializeSelectionFilter() {
         this.selectedFilterField = this.form.getField('selectFilter');
-        this.selectedFilterField?.listen('onChange', checked => {
+        this.selectedFilterField?.on('change', checked => {
             const action = checked ? 'filterBySelections' : 'fetch';
             this.resource?.[action]();
         });
@@ -112,7 +112,7 @@ class MultiSelect extends ArpaElement {
 
     _initializeToggle() {
         this.toggleAllField = this.form.getField('toggleAll');
-        this.toggleAllField?.listen('onChange', checked => this.resource.setSelections(checked));
+        this.toggleAllField?.on('change', checked => this.resource.setSelections(checked));
     }
 
     async _initializeActions() {
@@ -121,7 +121,7 @@ class MultiSelect extends ArpaElement {
         await this.actionsField.onReady();
         this.actionsField.optionsNode.setAttribute('zone', 'batch-operations');
         // eslint-disable-next-line no-unused-vars
-        this.actionsField.listen('onChange', async (value, field, event) => {
+        this.actionsField.on('change', async (value, field, event) => {
             const option = this.actionsField.getSelectedOption();
             if (typeof option?.action === 'function') {
                 option.action(this.resource.getSelectedItems(), this.renderItemList());

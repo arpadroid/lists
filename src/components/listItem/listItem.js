@@ -58,13 +58,13 @@ class ListItem extends ArpaElement {
         const id = this.getId();
         if (this.list?.hasMultiSelect()) {
             this._unsubscribes.push(
-                this.listResource.listen(`ITEM-SELECTED-${id}`, () => {
+                this.listResource.on(`item_selected_${id}`, () => {
                     this.checkbox.checked = true;
                     this.classList.add(selectedClass);
                 })
             );
             this._unsubscribes.push(
-                this.listResource.listen(`ITEM-DESELECTED-${id}`, () => {
+                this.listResource.on(`item_deselected_${id}`, () => {
                     this.checkbox.checked = false;
                     this.classList.remove(selectedClass);
                 })
@@ -490,7 +490,7 @@ class ListItem extends ArpaElement {
         this.viewsFilter = this.listResource?.filters?.views;
         this.view = this.viewsFilter?.getValue();
         this._unsubscribes.push(
-            this.viewsFilter?.listen('value', view => {
+            this.viewsFilter?.on('value', view => {
                 this.view = view;
                 this?.isConnected && this.update();
             })

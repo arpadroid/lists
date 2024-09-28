@@ -61,7 +61,7 @@ class ListViews extends ArpaElement {
 
         this.viewClasses = this._config.links.map(link => 'listView--' + link.value);
         this.itemViewClasses = this._config.links.map(link => 'listItem--' + link.value);
-        Context.Router.listen('ROUTE_CHANGED', () => this.initializeView());
+        Context.Router.on('route_changed', () => this.initializeView());
         return true;
     }
 

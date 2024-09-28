@@ -42,7 +42,7 @@ class List extends ArpaElement {
         this.listResource = this.getResource();
         if (this.listResource) {
             this.preloader = renderNode(html`<circular-preloader></circular-preloader>`);
-            this.listResource.listen('PAYLOAD', () => this._initializeList());
+            this.listResource.on('payload', () => this._initializeList());
             this._handleItems();
             this._handlePreloading();
             const url = this.getProperty('url');
@@ -487,16 +487,16 @@ class List extends ArpaElement {
      * Handles the list items through the list resource events.
      */
     _handleItems() {
-        this.listResource.listen('ADD_ITEM', this.onResourceAddItem);
-        this.listResource.listen('ADD_ITEMS', this.onResourceAddItems);
-        this.listResource.listen('REMOVE_ITEMS', this.onResourceRemoveItems);
-        this.listResource.listen('REMOVE_ITEM', this.onResourceRemoveItem);
-        this.listResource.listen('ITEMS_UPDATED', this.onResourceItemsUpdated);
-        this.listResource.listen('SET_ITEMS', this.onResourceSetItems);
-        this.listResource.listen('ITEMS', this.onResourceSetItems);
-        this.listResource.listen('UPDATE_ITEM', payload => this.layout.updateNode(payload));
-        this.listResource.listen(
-            'FETCH',
+        this.listResource.on('add_item', this.onResourceAddItem);
+        this.listResource.on('add_items', this.onResourceAddItems);
+        this.listResource.on('remove_items', this.onResourceRemoveItems);
+        this.listResource.on('remove_item', this.onResourceRemoveItem);
+        this.listResource.on('items_updated', this.onResourceItemsUpdated);
+        this.listResource.on('set_items', this.onResourceSetItems);
+        this.listResource.on('items', this.onResourceSetItems);
+        this.listResource.on('update_item', payload => this.layout.updateNode(payload));
+        this.listResource.on(
+            'fetch',
             () => (this.fetchPromise = new Promise(resolve => (this.resolveFetch = resolve)))
         );
     }
@@ -717,14 +717,14 @@ class List extends ArpaElement {
 
     async _handlePreloading() {
         await this.promise;
-        this.listResource.listen('FETCH', () => {
+        this.listResource.on('fetch', () => {
             this.isLoading = true;
             if (this.isLoading && this._hasRendered) {
                 this.appendChild(this.preloader);
             }
         });
 
-        this.listResource.listen('READY', () => {
+        this.listResource.on('ready', () => {
             this.isLoading = false;
             if (this.preloader.parentNode) {
                 this.preloader.parentNode.removeChild(this.preloader);
