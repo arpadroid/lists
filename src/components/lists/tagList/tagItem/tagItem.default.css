@@ -52,7 +52,7 @@
 }
 
 .tagItem__delete.tagItem__delete:hover .iconButton__content {
-    color: var(--color-dark-red);
+    color: var(--red-dark);
 }
 
 .tagItem__delete .tooltip.tooltip.tooltip {
