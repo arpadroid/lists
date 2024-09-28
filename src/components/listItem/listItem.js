@@ -347,11 +347,11 @@ class ListItem extends ArpaElement {
 
     renderTags() {
         const { tags = [] } = this._config;
-        if (!tags?.length && !this.hasSlot('tags')) {
+        if (!tags?.length && !this.hasZone('tags')) {
             return '';
         }
         return html`
-            <tag-list id="item-${this.getId()}-tagList" variant="compact" class="listItem__tags" slot="tags">
+            <tag-list id="item-${this.getId()}-tagList" variant="compact" class="listItem__tags" zone="tags">
                 ${tags?.map(tag => this.renderTag(tag)) || ''}
             </tag-list>
         `;
@@ -418,12 +418,12 @@ class ListItem extends ArpaElement {
     // #region RENDER NAV
 
     renderNav() {
-        if (!this.hasNav() && !this.hasSlot('nav')) {
+        if (!this.hasNav() && !this.hasZone('nav')) {
             return '';
         }
         this.promise.then(() => {
             const itemsNode = this.navNode?.navigation?.itemsNode;
-            itemsNode && itemsNode.setAttribute('slot', 'nav');
+            itemsNode && itemsNode.setAttribute('zone', 'nav');
         });
         return html`<icon-menu id="${this.getId()}" class="listItem__nav"> </icon-menu>`;
     }

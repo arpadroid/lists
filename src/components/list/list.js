@@ -215,7 +215,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasControls() {
-        return this.hasAllControls() || this.hasProperty('has-controls') || this.hasSlot('controls');
+        return this.hasAllControls() || this.hasProperty('has-controls') || this.hasZone('controls');
     }
 
     /**
@@ -239,7 +239,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasFooter() {
-        return this.hasProperty('has-footer') || this.hasSlot('footer') || this.hasPager();
+        return this.hasProperty('has-footer') || this.hasZone('footer') || this.hasPager();
     }
 
     /**
@@ -595,14 +595,14 @@ class List extends ArpaElement {
 
     renderControls() {
         return this.hasControls()
-            ? html`<list-controls slot="controls">
+            ? html`<list-controls zone="controls">
                   ${this.hasFilters() ? html`<list-filters></list-filters>` : ''}
               </list-controls>`
             : '';
     }
 
     renderTitle(title = this.getTitle()) {
-        return title || this.hasSlot('title') ? html`<h2 class="arpaList__title" slot="title">${title}</h2>` : '';
+        return title || this.hasZone('title') ? html`<h2 class="arpaList__title" zone="title">${title}</h2>` : '';
     }
 
     renderHeading() {
@@ -625,7 +625,7 @@ class List extends ArpaElement {
     }
 
     renderAside() {
-        return html`<div class="arpaList__aside" slot="aside"></div>`;
+        return html`<div class="arpaList__aside" zone="aside"></div>`;
     }
 
     renderFooter() {
@@ -730,6 +730,10 @@ class List extends ArpaElement {
                 this.preloader.parentNode.removeChild(this.preloader);
             }
         });
+    }
+
+    _onDestroy() {
+        this.listResource?.destroy();
     }
 
     // #endregion

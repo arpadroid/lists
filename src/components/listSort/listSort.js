@@ -105,7 +105,7 @@ class ListSort extends ArpaElement {
                 icon="${this.getSortDirIcon()}"
                 use-router
             >
-                <slot name="tooltip"> ${this.getSortDirTooltip()} </slot>
+                <arpa-zone name="tooltip">${this.getSortDirTooltip()}</arpa-zone>
             </nav-link>
         `;
         this.sortLink = this.querySelector('.sortDirButton');
@@ -119,12 +119,13 @@ class ListSort extends ArpaElement {
         }
         this.sortByMenu?.promise && (await this.sortByMenu.promise);
         this.sortNav = this.sortByMenu.navigation;
-        this.sortNav && attr(this.sortNav, {
-            slot: 'sort-options',
-            'param-name': this.list?.getParamName('sortBy'),
-            'use-router': '',
-            'param-clear': this.list?.getParamName('page')
-        });
+        this.sortNav &&
+            attr(this.sortNav, {
+                zone: 'sort-options',
+                'param-name': this.list?.getParamName('sortBy'),
+                'use-router': '',
+                'param-clear': this.list?.getParamName('page')
+            });
         this._unsubscribes.push(
             this.sortNav?.listen('onSelected', item => {
                 const icon = item.getProperty('icon') || item.getProperty('icon-right');

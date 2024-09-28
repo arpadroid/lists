@@ -62,7 +62,7 @@ export const ResourceDriven = {
     argTypes: ListStory.getArgTypes(),
     args: {
         ...ListStory.getArgs(),
-        id: 'resource-list',
+        id: 'resource-driven-list',
         allControls: true,
         title: 'Resource Driven List',
         url: 'api/gallery/item/get-items',
@@ -81,31 +81,31 @@ export const ResourceDriven = {
             </style>
 
             <arpa-list ${attrString(args)}>
-                <slot name="batch-operations">
+                <arpa-zone name="batch-operations">
                     <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>
-                </slot>
+                </arpa-zone>
 
-                <slot name="sort-options">
+                <arpa-zone name="sort-options">
                     <nav-link param-value="title" icon-right="sort_by_alpha"> Title </nav-link>
                     <nav-link param-value="date" icon-right="calendar_month" default> Date </nav-link>
-                </slot>
+                </arpa-zone>
 
-                <slot name="list-filters"> </slot>
+                <arpa-zone name="list-filters"> </arpa-zone>
 
                 <template
                     id="{id}"
                     template-id="list-item-template"
                     image="/api/image/convert?width=[width]&height=[height]&quality=[quality]&source={image_url}"
                 >
-                    <slot name="tags">
+                    <arpa-zone name="tags">
                         <tag-item label="{author_initials}" icon="person"></tag-item>
                         <tag-item label="{date}" icon="calendar_month"></tag-item>
-                    </slot>
+                    </arpa-zone>
 
-                    <slot name="nav">
+                    <arpa-zone name="nav">
                         <nav-link link="/gallery/{id}" icon-right="visibility">View</nav-link>
                         <nav-link link="/gallery/{id}/edit" icon-right="edit">Edit</nav-link>
-                    </slot>
+                    </arpa-zone>
                 </template>
             </arpa-list>
 

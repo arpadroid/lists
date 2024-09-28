@@ -54,7 +54,7 @@ class ListFilters extends ArpaElement {
         await customElements.whenDefined('icon-menu');
         await this.menuNode.promise;
         const itemsNode = this.menuNode?.navigation?.itemsNode;
-        itemsNode?.setAttribute('slot', 'list-filters');
+        itemsNode?.setAttribute('zone', 'list-filters');
         /** @type {FormComponent} */
         this.form = this.querySelector('.listFilters__form');
         this.form?.onSubmit(this.onSubmit);

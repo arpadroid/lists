@@ -62,17 +62,17 @@ class MultiSelect extends ArpaElement {
         this.innerHTML = html`
             <icon-menu class="listMultiSelect__nav" nav-class="listMultiSelect__combo"  ${attrString(menuProps)}>
                 <form id="${formId}" class="listMultiSelect__form" is="arpa-form" variant="compact" has-submit="false">
-                    <slot name="form-title"> ${this.i18n('txtBatchOperations')} </slot>
-                    <slot name="messages">
+                    <arpa-zone name="form-title"> ${this.i18n('txtBatchOperations')} </arpa-zone>
+                    <arpa-zone name="messages">
                         <info-message id="info-message" class="listMultiSelect__infoMessage">
                             ${this.getTooltip()}
                         </info-message>
-                    </slot>
+                    </arpa-zone>
                     <checkbox-field id="toggleAll" value="select-all" icon="select_all">
-                        <slot name="checkbox-label"> ${this.i18n('txtSelectAll')} </slot>
+                        <arpa-zone name="checkbox-label"> ${this.i18n('txtSelectAll')} </arpa-zone>
                     </checkbox-field>
                     <checkbox-field id="selectFilter" icon="filter_alt">
-                        <slot name="checkbox-label"> ${this.i18n('txtShowSelectedOnly')} </slot>
+                        <arpa-zone name="checkbox-label"> ${this.i18n('txtShowSelectedOnly')} </arpa-zone>
                     </checkbox-field>
                     <select-combo
                         id="actions"
@@ -119,7 +119,7 @@ class MultiSelect extends ArpaElement {
         /** @type {SelectCombo} */
         this.actionsField = this.form.getField('actions');
         await this.actionsField.onReady();
-        this.actionsField.optionsNode.setAttribute('slot', 'batch-operations');
+        this.actionsField.optionsNode.setAttribute('zone', 'batch-operations');
         // eslint-disable-next-line no-unused-vars
         this.actionsField.listen('onChange', async (value, field, event) => {
             const option = this.actionsField.getSelectedOption();
