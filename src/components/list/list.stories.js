@@ -66,7 +66,7 @@ export const ResourceDriven = {
         allControls: true,
         title: 'Resource Driven List',
         url: 'api/gallery/item/get-items',
-        filterNamespace: 'galleryList-',
+        paramNamespace: 'galleryList-',
         itemsPerPage: 50
     },
     render: args => {
@@ -112,7 +112,9 @@ export const ResourceDriven = {
             <script type="module">
                 import { editURL, getInitials } from '/arpadroid-tools.js';
                 customElements.whenDefined('arpa-list').then(() => {
-                    const list = document.getElementById('${args.id}');
+                    const id = '${args.id}';
+                    const list = document.getElementById(id);
+                    if (!list) return;
                     const resource = list.listResource;
                     resource?.mapItem(item => {
                         item.author_initials = getInitials(item.author_name + ' ' + item.author_surname);
