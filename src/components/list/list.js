@@ -28,6 +28,7 @@ class List extends ArpaElement {
         this.onResourceItemsUpdated = this.onResourceItemsUpdated.bind(this);
         this.onResourceSetItems = this.onResourceSetItems.bind(this);
         this.onResourceAddItems = this.onResourceAddItems.bind(this);
+        this.onResourceFetch = this.onResourceFetch.bind(this);
         this.itemTemplate = this.querySelector(':scope > template[template-id="list-item-template"]');
         this.itemTemplate?.remove();
     }
@@ -59,7 +60,7 @@ class List extends ArpaElement {
     }
 
     getParamName($param) {
-        const namespace = this.getProperty('filter-namespace');
+        const namespace = this.getProperty('param-namespace');
         return namespace + this.getProperty(`${$param}-param`);
     }
 
@@ -109,7 +110,7 @@ class List extends ArpaElement {
                 allControls: false,
                 canCollapse: false,
                 defaultView: 'list',
-                filterNamespace: '',
+                paramNamespace: '',
                 hasControls: false,
                 hasFilters: false,
                 hasInfo: false,
@@ -494,11 +495,12 @@ class List extends ArpaElement {
         this.listResource.on('items_updated', this.onResourceItemsUpdated);
         this.listResource.on('set_items', this.onResourceSetItems);
         this.listResource.on('items', this.onResourceSetItems);
-        this.listResource.on('update_item', payload => this.layout.updateNode(payload));
-        this.listResource.on(
-            'fetch',
-            () => (this.fetchPromise = new Promise(resolve => (this.resolveFetch = resolve)))
-        );
+        this.listResource.on('update_item', payload => payload?.node?.reRender());
+        this.listResource.on('fetch', this.onResourceFetch);
+    }
+
+    onResourceFetch() {
+        this.fetchPromise = new Promise(resolve => (this.resolveFetch = resolve));
     }
 
     /**
@@ -590,7 +592,13 @@ class List extends ArpaElement {
     }
 
     renderInfo() {
-        return this.hasInfo() ? html`<list-info></list-info>` : '';
+        return this.hasInfo()
+            ? html`<list-info zone="list-info"
+                  ${attrString({
+                      'txt-all-results': this.getProperty('txt-all-results')
+                  })}
+              ></list-info>`
+            : '';
     }
 
     renderControls() {
@@ -717,18 +725,14 @@ class List extends ArpaElement {
 
     async _handlePreloading() {
         await this.promise;
-        this.listResource.on('fetch', () => {
+        this.listResource?.on('fetch', () => {
             this.isLoading = true;
-            if (this.isLoading && this._hasRendered) {
-                this.appendChild(this.preloader);
-            }
+            this.isLoading && this._hasRendered && this.appendChild(this.preloader);
         });
 
-        this.listResource.on('ready', () => {
+        this.listResource?.on('ready', () => {
             this.isLoading = false;
-            if (this.preloader.parentNode) {
-                this.preloader.parentNode.removeChild(this.preloader);
-            }
+            this.preloader?.remove();
         });
     }
 

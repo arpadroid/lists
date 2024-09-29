@@ -6,7 +6,7 @@ export interface ListInterface {
     allControls?: boolean;
     canCollapse?: boolean;
     defaultView?: string;
-    filterNamespace?: string;
+    paramNamespace?: string;
     hasControls?: boolean;
     hasFilters?: boolean;
     hasInfo?: boolean;

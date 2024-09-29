@@ -11,7 +11,7 @@ import { render, classNames, attrString, getViewportWidth, getViewportHeight } f
 const html = String.raw;
 class ListItem extends ArpaElement {
     // #region INITIALIZATION
-    _bindings = ['_onImageLoaded', '_onImageError', 'setSelected'];
+    _bindings = ['_onImageLoaded', '_onImageError', 'setSelected', '_onViewChange', '_onSelected', '_onDeselected'];
 
     constructor(config = {}, payload, map) {
         super(config);
@@ -53,25 +53,24 @@ class ListItem extends ArpaElement {
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
         !this.listResource && this.list?.preProcessNode(this);
-        const selectedClass = this.getProperty('selected-class');
         this._initializeView();
         const id = this.getId();
         if (this.list?.hasMultiSelect()) {
-            this._unsubscribes.push(
-                this.listResource.on(`item_selected_${id}`, () => {
-                    this.checkbox.checked = true;
-                    this.classList.add(selectedClass);
-                })
-            );
-            this._unsubscribes.push(
-                this.listResource.on(`item_deselected_${id}`, () => {
-                    this.checkbox.checked = false;
-                    this.classList.remove(selectedClass);
-                })
-            );
+            this.listResource.on(`item_selected_${id}`, this._onSelected, this._unsubscribes);
+            this.listResource.on(`item_deselected_${id}`, this._onDeselected, this._unsubscribes);
         }
 
         return true;
+    }
+
+    _onSelected() {
+        this.checkbox.checked = true;
+        this.classList.add(this.getSelectedClass());
+    }
+
+    _onDeselected() {
+        this.checkbox.checked = false;
+        this.classList.remove(this.getSelectedClass());
     }
 
     // #endregion
@@ -489,42 +488,45 @@ class ListItem extends ArpaElement {
         /** @type {ListFilter} */
         this.viewsFilter = this.listResource?.filters?.views;
         this.view = this.viewsFilter?.getValue();
-        /** @todo - Simplify usage of unsubscribes. */
-        this._unsubscribes.push(
-            this.viewsFilter?.on('value', view => {
-                if (this.view !== view) {
-                    this.view = view;
-                    this?.isConnected && this.update();
-                }
-            })
-        );
+        this.viewsFilter?.on('value', this._onViewChange, this._unsubscribes);
+    }
+
+    _onViewChange(view) {
+        if (this.view !== view) {
+            this.view = view;
+            this?.isConnected && this.update();
+        }
     }
 
     update() {
-        if (!this._hasRendered) {
-            return;
-        }
-        const isGrid = this.view?.indexOf('grid') === 0;
-        /** @todo - Try to simplify this logic while avoiding image rerenders. */
-        if (isGrid) {
-            if (this.titleNode) {
-                this.image && this.image.parentNode !== this.titleNode && this.titleNode?.after(this.image);
-            } else {
-                this.image &&
-                    this.image.parentNode !== this.contentWrapperNode &&
-                    this.contentWrapperNode?.prepend(this.image);
-            }
-        } else {
-            this.image && this.image.parentNode !== this.mainNode && this.mainNode?.prepend(this.image);
-        }
+        this.updateCheckbox();
+        this._hasRendered && this.updateImage();
+        this.image && this.updateImageSize();
+    }
+
+    updateCheckbox() {
         if (this.checkboxContainer) {
             if (this.view === 'list-compact') {
-                this.mainNode.prepend(this.checkboxContainer);
+                this.mainNode?.prepend(this.checkboxContainer);
             } else {
                 this.rhs?.prepend(this.checkboxContainer);
             }
         }
-        this.image && this.updateImageSize();
+    }
+
+    updateImage() {
+        const isGrid = this.view?.indexOf('grid') === 0;
+        let targetParentNode = this.mainNode;
+        if (isGrid) {
+            targetParentNode = this.titleNode ? this.titleNode : this.contentWrapperNode;
+        }
+        if (this.image && this.image.parentNode !== targetParentNode) {
+            if (isGrid && this.titleNode) {
+                this.titleNode.after(this.image);
+            } else {
+                targetParentNode.prepend(this.image);
+            }
+        }
     }
 
     updateImageSize() {

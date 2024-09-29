@@ -16,7 +16,7 @@ class ListSort extends ArpaElement {
     //////////////////////////
     // #region INITIALIZATION
     //////////////////////////
-    _bindings = ['renderSelectValue', 'onSelectChange', 'update', 'onSortClick'];
+    _bindings = ['renderSelectValue', 'onSelectChange', 'update', 'onSortClick', '_onRouteChange', '_onSortBySelected'];
 
     getDefaultConfig() {
         this.i18nKey = 'modules.list.listSort';
@@ -75,14 +75,18 @@ class ListSort extends ArpaElement {
     }
 
     _onConnected() {
-        this._unsubscribes.push(Context.Router.on('route_changed', () => this.updateSortLink()));
+        Context?.Router?.on('route_changed', this._onRouteChange, this._unsubscribes);
     }
 
-    updateSortLink() {
+    _onRouteChange() {
+        this.updateSortLink();
+    }
+
+    updateSortLink(sortLink = this.sortLink) {
         const sortDir = this.getSortDir();
-        this.sortLink?.querySelector('arpa-icon')?.setIcon(this.getSortDirIcon());
-        this.sortLink?.setAttribute('param-value', sortDir === 'asc' ? 'desc' : 'asc');
-        this.sortLink?.querySelector('arpa-tooltip')?.setContent(this.getSortDirTooltip());
+        sortLink?.querySelector('arpa-icon')?.setIcon(this.getSortDirIcon());
+        sortLink?.setAttribute('param-value', sortDir === 'asc' ? 'desc' : 'asc');
+        sortLink?.querySelector('arpa-tooltip')?.setContent(this.getSortDirTooltip());
     }
 
     ////////////////////
@@ -114,31 +118,25 @@ class ListSort extends ArpaElement {
 
     async _initializeNav() {
         this.sortByMenu = this.querySelector('icon-menu');
-        if (!this.sortByMenu) {
+        this.sortByMenu?.promise && (await this.sortByMenu.promise);
+        this.sortNav = this.sortByMenu?.navigation;
+        if (!this.sortByMenu || !this.sortNav) {
             return;
         }
-        this.sortByMenu?.promise && (await this.sortByMenu.promise);
-        this.sortNav = this.sortByMenu.navigation;
-        this.sortNav &&
-            attr(this.sortNav, {
-                zone: 'sort-options',
-                'param-name': this.list?.getParamName('sortBy'),
-                'use-router': '',
-                'param-clear': this.list?.getParamName('page')
-            });
+        attr(this.sortNav, {
+            zone: 'sort-options',
+            'param-name': this.list?.getParamName('sortBy'),
+            'use-router': '',
+            'param-clear': this.list?.getParamName('page')
+        });
+        this.sortNav?.on('selected', this._onSortBySelected, this._unsubscribes);
+    }
 
-        this.sortNav?.on(
-            'selected',
-            item => {
-                const icon = item.getProperty('icon') || item.getProperty('icon-right');
-                this.sortByMenu.setIcon(icon);
-                const tooltip = item.getProperty('label') || item.contentNode?.innerText?.trim();
-                this.sortByMenu.setTooltip(
-                    html`<span>${this.getProperty('lblSortedBy')}</span> <strong>${tooltip}</strong>`
-                );
-            },
-            this._unsubscribes
-        );
+    _onSortBySelected(item) {
+        const icon = item.getProperty('icon') || item.getProperty('icon-right');
+        this.sortByMenu.setIcon(icon);
+        const tooltip = item.getProperty('label') || item.contentNode?.innerText?.trim();
+        this.sortByMenu.setTooltip(html`<span>${this.getProperty('lblSortedBy')}</span> <strong>${tooltip}</strong>`);
     }
 
     // #endregion
