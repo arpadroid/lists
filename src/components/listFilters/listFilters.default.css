@@ -1,3 +1,7 @@
+.listFilters__form {
+    gap: 0;
+}
+
 .listFilters__content {
     min-width: 320px;
     width: 100%;

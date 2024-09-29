@@ -489,24 +489,33 @@ class ListItem extends ArpaElement {
         /** @type {ListFilter} */
         this.viewsFilter = this.listResource?.filters?.views;
         this.view = this.viewsFilter?.getValue();
+        /** @todo - Simplify usage of unsubscribes. */
         this._unsubscribes.push(
             this.viewsFilter?.on('value', view => {
-                this.view = view;
-                this?.isConnected && this.update();
+                if (this.view !== view) {
+                    this.view = view;
+                    this?.isConnected && this.update();
+                }
             })
         );
     }
 
     update() {
+        if (!this._hasRendered) {
+            return;
+        }
         const isGrid = this.view?.indexOf('grid') === 0;
+        /** @todo - Try to simplify this logic while avoiding image rerenders. */
         if (isGrid) {
             if (this.titleNode) {
-                this.image && this.titleNode?.after(this.image);
+                this.image && this.image.parentNode !== this.titleNode && this.titleNode?.after(this.image);
             } else {
-                this.image && this.contentWrapperNode?.prepend(this.image);
+                this.image &&
+                    this.image.parentNode !== this.contentWrapperNode &&
+                    this.contentWrapperNode?.prepend(this.image);
             }
         } else {
-            this.image && this.mainNode?.prepend(this.image);
+            this.image && this.image.parentNode !== this.mainNode && this.mainNode?.prepend(this.image);
         }
         if (this.checkboxContainer) {
             if (this.view === 'list-compact') {
