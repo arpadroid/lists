@@ -240,7 +240,7 @@ class ListItem extends ArpaElement {
         };
     }
 
-    render() {
+    async render() {
         const templateNode = this.getTemplateNode();
         templateNode && this.setTemplate(templateNode, () => this.contentWrapperNode);
         this.imageURL = this.getProperty('image');
@@ -252,9 +252,9 @@ class ListItem extends ArpaElement {
         const content = this.renderTemplate(this.getTemplate());
         this.innerHTML = content;
         this.button = this.querySelector('button.listItem__main');
-        this.initializeNav();
         this.setViewClass();
         action && this.button?.addEventListener('click', event => action(event, this));
+        await this.initializeNav();
         /**
          * @todo Add support for nested list items.
          */
@@ -299,6 +299,7 @@ class ListItem extends ArpaElement {
 
     async initializeNav() {
         this.navNode = this.querySelector('.listItem__nav');
+        await this.navNode?.promise;
         if (this.navNode) {
             await customElements.whenDefined('icon-menu');
             this.navNode.setConfig(this._config.nav);

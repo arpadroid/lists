@@ -109,7 +109,7 @@ class ListSort extends ArpaElement {
                 icon="${this.getSortDirIcon()}"
                 use-router
             >
-                <arpa-zone name="tooltip">${this.getSortDirTooltip()}</arpa-zone>
+                <arpa-zone name="tooltip-content">${this.getSortDirTooltip()}</arpa-zone>
             </nav-link>
         `;
         this.sortLink = this.querySelector('.sortDirButton');

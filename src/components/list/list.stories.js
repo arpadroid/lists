@@ -114,7 +114,6 @@ export const ResourceDriven = {
                 customElements.whenDefined('arpa-list').then(() => {
                     const id = '${args.id}';
                     const list = document.getElementById(id);
-                    if (!list) return;
                     const resource = list.listResource;
                     resource?.mapItem(item => {
                         item.author_initials = getInitials(item.author_name + ' ' + item.author_surname);

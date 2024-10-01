@@ -737,7 +737,7 @@ class List extends ArpaElement {
     }
 
     _onDestroy() {
-        this.listResource?.destroy();
+        this?.listResource?.destroy();
     }
 
     // #endregion
