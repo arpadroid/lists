@@ -1,4 +1,5 @@
 import { ArpaElement } from '@arpadroid/ui';
+import { appendNodes } from '@arpadroid/tools';
 // import Sticky from '../../../../components/sticky/sticky.js';
 
 const html = String.raw;
@@ -47,7 +48,7 @@ class ListControls extends ArpaElement {
         this.search = this.querySelector('list-search');
         this.views = this.querySelector('list-views');
         this.multiSelect = this.querySelector('list-multi-select');
-        this.append(...this._childNodes);
+        appendNodes(this, this._childNodes);
     }
 }
 

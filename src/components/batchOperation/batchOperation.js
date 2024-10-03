@@ -1,4 +1,5 @@
 import { ArpaFragment } from '@arpadroid/ui';
+import { appendNodes } from '@arpadroid/tools';
 
 const html = String.raw;
 class BatchOperation extends ArpaFragment {
@@ -8,7 +9,7 @@ class BatchOperation extends ArpaFragment {
             ${this.innerHTML}
         </select-option>`;
         this.node = this.querySelector('select-option');
-        this.node.append(...this._childNodes);
+        appendNodes(this.node, this._childNodes);
     }
 }
 

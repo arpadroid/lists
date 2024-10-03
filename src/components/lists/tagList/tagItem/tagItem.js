@@ -1,6 +1,6 @@
 /** @typedef {import('./tagInterface').TagInterface} TagInterface */
 
-import { render, renderNode } from '@arpadroid/tools';
+import { render, renderNode, appendNodes } from '@arpadroid/tools';
 import { I18nTool } from '@arpadroid/i18n';
 import ListItem from '../../../listItem/listItem.js';
 
@@ -37,11 +37,21 @@ class TagItem extends ListItem {
         this.innerHTML = content;
         this.initializeDeleteButton();
         this.textNode = this.querySelector('.tag__text');
-        this.textNode.append(this._childNodes);
+        appendNodes(this.textNode, this._childNodes);
         this.classList.add('tag');
         if (this._config.value) {
             this.setAttribute('value', this._config.value);
         }
+    }
+
+    renderDeleteButton() {
+        return html`<button
+            is="icon-button"
+            class="tag__delete iconButton--mini"
+            label="Delete"
+            icon="delete"
+            tooltip-position="left"
+        ></button>`;
     }
 
     getValue() {
@@ -82,16 +92,6 @@ class TagItem extends ListItem {
         if (typeof onDelete === 'function') {
             onDelete(this);
         }
-    }
-
-    renderDeleteButton() {
-        return html`<button
-            is="icon-button"
-            class="tag__delete iconButton--mini"
-            label="Delete"
-            icon="delete"
-            tooltip-position="left"
-        ></button>`;
     }
 }
 

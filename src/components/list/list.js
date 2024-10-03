@@ -9,7 +9,7 @@ import { I18nTool } from '@arpadroid/i18n';
 import { Context } from '@arpadroid/application';
 import { ArpaElement } from '@arpadroid/ui';
 import { ListResource, getResource } from '@arpadroid/resources';
-import { mergeObjects, getScrollableParent, isInView, editURL } from '@arpadroid/tools';
+import { mergeObjects, getScrollableParent, isInView, editURL, appendNodes } from '@arpadroid/tools';
 import { render, renderNode, renderAttr, mapHTML, attrString } from '@arpadroid/tools';
 import ListItem from '../listItem/listItem.js';
 
@@ -34,7 +34,6 @@ class List extends ArpaElement {
     }
 
     _initialize() {
-        super._initialize();
         this._initializeListResource();
     }
 
@@ -348,12 +347,8 @@ class List extends ArpaElement {
         }
     }
 
-    async addItemNodes(items) {
-        if (!items?.length) {
-            return;
-        }
-        await this.onReady();
-        this.itemsNode?.append(...items);
+    addItemNodes(items) {
+        items.length && appendNodes(this.itemsNode, items);
     }
 
     // #endregion ACCESSORS
@@ -514,7 +509,6 @@ class List extends ArpaElement {
 
     async onResourceSetItems(items = []) {
         this.updatePager();
-        await this.onReady();
         this.itemsNode && (this.itemsNode.innerHTML = '');
         this.onResourceAddItems(items);
         setTimeout(() => this.resolveFetch?.(), 20);
@@ -593,7 +587,8 @@ class List extends ArpaElement {
 
     renderInfo() {
         return this.hasInfo()
-            ? html`<list-info zone="list-info"
+            ? html`<list-info
+                  zone="list-info"
                   ${attrString({
                       'txt-all-results': this.getProperty('txt-all-results')
                   })}
@@ -706,7 +701,7 @@ class List extends ArpaElement {
         const renderMode = this.getProperty('render-mode');
         this.classList.add('arpaList');
         this.bodyMainNode = this.querySelector('.arpaList__bodyMain');
-        this.bodyMainNode?.append(...this._childNodes);
+        appendNodes(this.bodyMainNode, this._childNodes);
         this.itemsNode = renderMode === 'minimal' ? this : this.querySelector('.arpaList__items');
         this.controls = this.querySelector('list-controls');
         this.noItemsNode = this.querySelector('.arpaList__noItems');

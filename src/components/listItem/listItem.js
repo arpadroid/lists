@@ -59,7 +59,6 @@ class ListItem extends ArpaElement {
             this.listResource.on(`item_selected_${id}`, this._onSelected, this._unsubscribes);
             this.listResource.on(`item_deselected_${id}`, this._onDeselected, this._unsubscribes);
         }
-
         return true;
     }
 
@@ -271,11 +270,12 @@ class ListItem extends ArpaElement {
 
     /**
      * Returns the template for the list item.
+     * @param {boolean} isGrid - Indicates whether the list item is in grid view.
      * @returns {string}
      */
-    getTemplate() {
+    getTemplate(isGrid = this.isGrid) {
         const wrapperComponent = this.link ? 'a' : this.getWrapperComponent();
-        const isGrid = this.view?.indexOf('grid') === 0;
+
         const attrs = attrString({
             href: this.link,
             class: classNames('listItem__main', { listItem__link: this.link })
@@ -309,16 +309,14 @@ class ListItem extends ArpaElement {
     //#region RENDER TITLE
 
     renderTitleContainer(title = this.getTitle(), subTitle = this.getSubTitle()) {
-        return (
-            ((title || subTitle) &&
-                html`
-                    <div class="listItem__titleWrapper">
-                        ${this.renderTitle()}
-                        ${(subTitle && html`<span class="listItem__subTitle">${subTitle}</span>`) || ''}
-                    </div>
-                `) ||
-            ''
-        );
+        return title || subTitle
+            ? html`
+                  <div class="listItem__titleWrapper">
+                      ${this.renderTitle()}
+                      ${(subTitle && html`<span class="listItem__subTitle">${subTitle}</span>`) || ''}
+                  </div>
+              `
+            : '';
     }
 
     renderTitle(title = this.getTitle()) {
@@ -338,7 +336,7 @@ class ListItem extends ArpaElement {
 
     renderSubTitle() {
         const subTitle = this.getProperty('sub-title');
-        return render(subTitle, html`<span class="listItem__subTitle">${subTitle}</span>`);
+        return subTitle ? html`<span class="listItem__subTitle">${subTitle}</span>` : '';
     }
 
     //#endregion RENDER TITLE
@@ -347,14 +345,13 @@ class ListItem extends ArpaElement {
 
     renderTags() {
         const { tags = [] } = this._config;
-        if (!tags?.length && !this.hasZone('tags')) {
-            return '';
-        }
-        return html`
-            <tag-list id="item-${this.getId()}-tagList" variant="compact" class="listItem__tags" zone="tags">
-                ${tags?.map(tag => this.renderTag(tag)) || ''}
-            </tag-list>
-        `;
+        return tags?.length || this.hasZone('tags')
+            ? html`
+                  <tag-list id="item-${this.getId()}-tagList" variant="compact" class="listItem__tags" zone="tags">
+                      ${tags?.map(tag => this.renderTag(tag)) || ''}
+                  </tag-list>
+              `
+            : '';
     }
 
     renderTag(tag) {
@@ -366,7 +363,7 @@ class ListItem extends ArpaElement {
     renderRhs(content = this._config.rhsContent) {
         const nav = this.renderNav();
         const checkbox = this.renderCheckbox();
-        return render(nav || checkbox || content, html`<div class="listItem__rhs">${checkbox}${nav}${content}</div>`);
+        return nav || checkbox || content ? html`<div class="listItem__rhs">${checkbox}${nav}${content}</div>` : '';
     }
 
     renderCheckbox() {
@@ -489,12 +486,18 @@ class ListItem extends ArpaElement {
         /** @type {ListFilter} */
         this.viewsFilter = this.listResource?.filters?.views;
         this.view = this.viewsFilter?.getValue();
+        this.isGrid = this._isGrid();
         this.viewsFilter?.on('value', this._onViewChange, this._unsubscribes);
+    }
+
+    _isGrid() {
+        return this.view?.indexOf('grid') === 0;
     }
 
     _onViewChange(view) {
         if (this.view !== view) {
             this.view = view;
+            this.isGrid = this._isGrid();
             this?.isConnected && this.update();
         }
     }
@@ -516,13 +519,12 @@ class ListItem extends ArpaElement {
     }
 
     updateImage() {
-        const isGrid = this.view?.indexOf('grid') === 0;
         let targetParentNode = this.mainNode;
-        if (isGrid) {
+        if (this.isGrid) {
             targetParentNode = this.titleNode ? this.titleNode : this.contentWrapperNode;
         }
         if (this.image && this.image.parentNode !== targetParentNode) {
-            if (isGrid && this.titleNode) {
+            if (this.isGrid && this.titleNode) {
                 this.titleNode.after(this.image);
             } else {
                 targetParentNode.prepend(this.image);
