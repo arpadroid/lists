@@ -117,11 +117,11 @@ class MultiSelect extends ArpaElement {
 
     async _initializeActions() {
         /** @type {SelectCombo} */
-        this.actionsField = this.form.getField('actions');
-        await this.actionsField.onReady();
-        this.actionsField.optionsNode.setAttribute('zone', 'batch-operations');
+        this.actionsField = this.form?.getField('actions');
+        await this.actionsField?.onReady();
+        this.actionsField?.optionsNode.setAttribute('zone', 'batch-operations');
         // eslint-disable-next-line no-unused-vars
-        this.actionsField.on('change', async (value, field, event) => {
+        this.actionsField?.on('change', async (value, field, event) => {
             const option = this.actionsField.getSelectedOption();
             if (typeof option?.action === 'function') {
                 option.action(this.resource.getSelectedItems(), this.renderItemList());
@@ -155,8 +155,8 @@ class MultiSelect extends ArpaElement {
     updateDisabledState() {
         const items = this.resource?.getSelectedItems();
         const fn = items?.length ? 'enable' : 'disable';
-        this.actionsField[fn]();
-        this.selectedFilterField[fn]();
+        this.actionsField?.[fn]();
+        this.selectedFilterField?.[fn]();
     }
 
     updateMessage() {

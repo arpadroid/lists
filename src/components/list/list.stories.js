@@ -144,6 +144,7 @@ export const ResourceDrivenTest = {
         await customElements.whenDefined('arpa-list');
         const listNode = canvasElement.querySelector('arpa-list');
         await listNode.promise;
+        await new Promise(resolve => setTimeout(resolve, 10));
         return { canvas, listNode };
     },
     play: async ({ canvasElement, step }) => {
@@ -154,6 +155,40 @@ export const ResourceDrivenTest = {
             const filtersMenu = canvas.getByRole('button', { name: /Filters/i });
             userEvent.click(filtersMenu);
         });
+    }
+};
+
+export const TestMultiActions = {
+    ...ResourceDriven,
+    parameters: {},
+    args: {
+        ...ResourceDriven.args,
+        id: 'test-list-multiactions',
+        allControls: false,
+        hasResource: true,
+        hasSelection: true,
+        hasControls: true,
+        url: 'blah/'
+    },
+    play: async ({ canvasElement, step }) => {
+        const setup = await ResourceDrivenTest.playSetup(canvasElement);
+        const { canvas } = setup;
+
+        await step('Clicks on multi select menu', async () => {
+            const filtersMenu = canvas.getByRole('button', { name: /No items selected/i });
+            userEvent.click(filtersMenu);
+        });
+    }
+};
+
+export const TestItem = {
+    ...ResourceDriven,
+    parameters: {},
+    args: {
+        ...ResourceDriven.args,
+        id: 'test-list-item',
+        allControls: false,
+        hasResource: true
     }
 };
 
@@ -175,10 +210,6 @@ export const Test = {
         const listNode = canvasElement.querySelector('arpa-list');
         return { canvas, listNode };
     }
-    // play: async ({ canvasElement, step }) => {
-    //     const setup = await Test.playSetup(canvasElement);
-    //     // const { canvas, listNode } = setup;
-    // }
 };
 
 export default ListStory;

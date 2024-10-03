@@ -1,3 +1,6 @@
+list-multi-select:only-child {
+    margin-left: auto;
+}
 .listMultiSelect__form {
     min-width: 320px;
     display: flex;
