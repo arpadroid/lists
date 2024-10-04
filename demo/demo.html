@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Basic HTML Document</title>
+        
+        <link rel="stylesheet" href="../dist/material-symbols/outlined.css" />
+        <link rel="stylesheet" href="../dist/themes/default/default.bundled.final.css" />
+        <link
+            id="mobile-styles"
+            rel="stylesheet"
+            href="/themes/mobile/mobile.bundled.final.css"
+            disabled
+        />
+    </head>
+    <body>
+        <arpa-list
+            id="resource-driven-list"
+            all-controls
+            title="Resource Driven List"
+            url="http://casavaquero.local/api/gallery/item/get-items"
+            param-namespace="galleryList-"
+            itemsPerPage="600"
+        >
+            <arpa-zone name="batch-operations">
+                <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>
+            </arpa-zone>
+
+            <arpa-zone name="sort-options">
+                <nav-link param-value="title" icon-right="sort_by_alpha"> Title </nav-link>
+                <nav-link param-value="date" icon-right="calendar_month" default> Date </nav-link>
+            </arpa-zone>
+
+            <arpa-zone name="list-filters"> </arpa-zone>
+
+            <template
+                id="{id}"
+                template-id="list-item-template"
+                image="http://casavaquero.local/api/image/convert?width=[width]&height=[height]&quality=[quality]&source={image_url}"
+            >
+                <arpa-zone name="tags">
+                    <tag-item label="{author_initials}" icon="person"></tag-item>
+                    <tag-item label="{date}" icon="calendar_month"></tag-item>
+                </arpa-zone>
+
+                <arpa-zone name="nav">
+                    <nav-link link="/gallery/{id}" icon-right="visibility">View</nav-link>
+                    <nav-link link="/gallery/{id}/edit" icon-right="edit">Edit</nav-link>
+                </arpa-zone>
+            </template>
+        </arpa-list>
+        <script type="module" src="../dist/arpadroid-lists.js"></script>
+        <script type="module">
+            import { editURL, getInitials } from '../../tools/dist/arpadroid-tools.js';
+            customElements.whenDefined('arpa-list').then(() => {
+                const id = 'resource-driven-list';
+                const list = document.getElementById(id);
+                const resource = list.listResource;
+                resource?.mapItem(item => {
+                    item.author_initials = getInitials(item.author_name + ' ' + item.author_surname);
+                    item.date = new Date(item.date)?.getFullYear() ?? '?';
+                    return item;
+                });
+                resource?.fetch();
+            });
+        </script>
+    </body>
+</html>
