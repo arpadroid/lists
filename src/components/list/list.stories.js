@@ -81,31 +81,31 @@ export const ResourceDriven = {
             </style>
 
             <arpa-list ${attrString(args)}>
-                <arpa-zone name="batch-operations">
+                <zone name="batch-operations">
                     <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>
-                </arpa-zone>
+                </zone>
 
-                <arpa-zone name="sort-options">
+                <zone name="sort-options">
                     <nav-link param-value="title" icon-right="sort_by_alpha"> Title </nav-link>
                     <nav-link param-value="date" icon-right="calendar_month" default> Date </nav-link>
-                </arpa-zone>
+                </zone>
 
-                <arpa-zone name="list-filters"> </arpa-zone>
+                <zone name="list-filters"> </zone>
 
                 <template
                     id="{id}"
                     template-id="list-item-template"
                     image="/api/image/convert?width=[width]&height=[height]&quality=[quality]&source={image_url}"
                 >
-                    <arpa-zone name="tags">
+                    <zone name="tags">
                         <tag-item label="{author_initials}" icon="person"></tag-item>
                         <tag-item label="{date}" icon="calendar_month"></tag-item>
-                    </arpa-zone>
+                    </zone>
 
-                    <arpa-zone name="nav">
+                    <zone name="nav">
                         <nav-link link="/gallery/{id}" icon-right="visibility">View</nav-link>
                         <nav-link link="/gallery/{id}/edit" icon-right="edit">Edit</nav-link>
-                    </arpa-zone>
+                    </zone>
                 </template>
             </arpa-list>
 

@@ -62,17 +62,17 @@ class MultiSelect extends ArpaElement {
         this.innerHTML = html`
             <icon-menu class="listMultiSelect__nav" nav-class="listMultiSelect__combo"  ${attrString(menuProps)}>
                 <form id="${formId}" class="listMultiSelect__form" is="arpa-form" variant="compact" has-submit="false">
-                    <arpa-zone name="form-title"> ${this.i18n('txtBatchOperations')} </arpa-zone>
-                    <arpa-zone name="messages">
+                    <zone name="form-title"> ${this.i18n('txtBatchOperations')} </zone>
+                    <zone name="messages">
                         <info-message id="info-message" class="listMultiSelect__infoMessage">
                             ${this.getTooltip()}
                         </info-message>
-                    </arpa-zone>
+                    </zone>
                     <checkbox-field id="toggleAll" value="select-all" icon="select_all">
-                        <arpa-zone name="checkbox-label"> ${this.i18n('txtSelectAll')} </arpa-zone>
+                        <zone name="checkbox-label"> ${this.i18n('txtSelectAll')} </zone>
                     </checkbox-field>
                     <checkbox-field id="selectFilter" icon="filter_alt">
-                        <arpa-zone name="checkbox-label"> ${this.i18n('txtShowSelectedOnly')} </arpa-zone>
+                        <zone name="checkbox-label"> ${this.i18n('txtShowSelectedOnly')} </zone>
                     </checkbox-field>
                     <select-combo
                         id="actions"
