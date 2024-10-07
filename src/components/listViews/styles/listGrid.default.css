@@ -1,16 +1,12 @@
 :root {
     --listView--gridItemSize: 14.5rem;
-    --listView--gridGap: 1rem;
+    --listView--gridGap: 0.4rem;
     --listItem--border-radius: 4px;
     --listItem--max-width: 400px;
 }
 .listView--grid,
 .listView--grid-compact {
-    
-    
-
     > .arpaList__body {
-        
         > .arpaList__bodyMain > .arpaList__items.arpaList__items {
             display: grid;
             column-gap: 50px;
@@ -22,7 +18,7 @@
     }
 
     arpa-image {
-        --preloader-width: 3rem;
+        --preloader-size: 3rem;
         --preloader-border-width: 4px;
         --preloader-outline-width: 4px;
     }

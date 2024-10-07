@@ -4,15 +4,10 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Basic HTML Document</title>
-        
+
         <link rel="stylesheet" href="../dist/material-symbols/outlined.css" />
-        <link rel="stylesheet" href="../dist/themes/default/default.bundled.final.css" />
-        <link
-            id="mobile-styles"
-            rel="stylesheet"
-            href="/themes/mobile/mobile.bundled.final.css"
-            disabled
-        />
+        <link rel="stylesheet" href="../dist/themes/default/default.final.css" />
+        <link id="mobile-styles" rel="stylesheet" href="../dist/themes/mobile/mobile.final.css" disabled />
     </head>
     <body>
         <arpa-list
@@ -21,7 +16,7 @@
             title="Resource Driven List"
             url="http://casavaquero.local/api/gallery/item/get-items"
             param-namespace="galleryList-"
-            itemsPerPage="600"
+            itemsPerPage="3"
         >
             <zone name="batch-operations">
                 <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>

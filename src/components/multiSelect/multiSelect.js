@@ -60,7 +60,7 @@ class MultiSelect extends ArpaElement {
         const menuProps = this.getProperties('icon', 'tooltip');
         const formId = this.list.id + '-multiSelectForm';
         this.innerHTML = html`
-            <icon-menu class="listMultiSelect__nav" nav-class="listMultiSelect__combo"  ${attrString(menuProps)}>
+            <icon-menu class="listMultiSelect__nav" nav-class="listMultiSelect__combo" ${attrString(menuProps)}>
                 <form id="${formId}" class="listMultiSelect__form" is="arpa-form" variant="compact" has-submit="false">
                     <zone name="form-title"> ${this.i18n('txtBatchOperations')} </zone>
                     <zone name="messages">
@@ -115,14 +115,13 @@ class MultiSelect extends ArpaElement {
         this.toggleAllField?.on('change', checked => this.resource.setSelections(checked));
     }
 
-    async _initializeActions() {
+    async _initializeActions(actionsField = this.form?.getField('actions')) {
         /** @type {SelectCombo} */
-        this.actionsField = this.form?.getField('actions');
-        await this.actionsField?.onReady();
-        this.actionsField?.optionsNode.setAttribute('zone', 'batch-operations');
-        // eslint-disable-next-line no-unused-vars
-        this.actionsField?.on('change', async (value, field, event) => {
-            const option = this.actionsField.getSelectedOption();
+        this.actionsField = actionsField;
+        await actionsField?.onReady();
+        actionsField?.optionsNode.setAttribute('zone', 'batch-operations');
+        actionsField?.on('change', async (value, field, event) => {
+            const option = actionsField.getSelectedOption();
             if (typeof option?.action === 'function') {
                 option.action(this.resource.getSelectedItems(), this.renderItemList());
             }

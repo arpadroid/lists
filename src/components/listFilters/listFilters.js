@@ -77,6 +77,7 @@ class ListFilters extends ArpaElement {
         const page = pageFilter?.getValue();
         const perPage = perPageFilter?.getValue();
         return html`<form
+            variant="compact"
             id="${this.list.getId()}-filters-form"
             has-submit="false"
             is="arpa-form"
@@ -99,7 +100,7 @@ class ListFilters extends ArpaElement {
                     icon=""
                     id="page"
                     label="Page"
-                    ${attrString({ min: 1, max: this.listResource?.getTotalPages()})}
+                    ${attrString({ min: 1, max: this.listResource?.getTotalPages() })}
                     value="${page}"
                     variant="small"
                 ></number-field>

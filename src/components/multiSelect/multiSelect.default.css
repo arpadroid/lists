@@ -3,21 +3,6 @@ list-multi-select:only-child {
 }
 .listMultiSelect__form {
     min-width: 320px;
-    display: flex;
-    padding: 8px;
-    gap: .25rem;
-    flex-wrap: wrap;
-    .arpaForm__fields {
-        margin-top: 8px;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .arpaField.arpaField {
-        width: 100%;
-        margin-top: 0;
-        gap: 0;
-    }
 }
 
 .listSelection__itemList {

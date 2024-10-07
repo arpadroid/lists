@@ -168,7 +168,6 @@ export const TestMultiActions = {
         hasResource: true,
         hasSelection: true,
         hasControls: true,
-        url: 'blah/'
     },
     play: async ({ canvasElement, step }) => {
         const setup = await ResourceDrivenTest.playSetup(canvasElement);
