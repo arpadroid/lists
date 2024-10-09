@@ -42,31 +42,30 @@ class ListSearch extends ArpaElement {
         return await customElements.whenDefined('arpa-form');
     }
 
-    async _onInitialized() {
-        await this.onReady();
+    async _initializeNodes() {
         this.form = this.querySelector('form');
+        await customElements.whenDefined('arpa-form');
+        this.form.onSubmit(this._onSubmit);
         /** @type {SearchField} */
         this.searchField = this.form.getField('search');
-        if (this.searchFilter) {
-            this.searchField.setValue(this.searchFilter.getValue());
-            this.searchFilter.on('value', value => this.searchField.setValue(value));
-        }
-        this.form.onSubmit(this._onSubmit);
-        this.searchField?.promise.then(() => this.initializeSearch());
+        this.initializeSearch();
     }
 
-    initializeSearch() {
+    async initializeSearch() {
+        if (!this.searchFilter) {
+            return;
+        }
         this.search = new SearchTool(this.searchField.input, {
             container: this.list.itemsNode,
             searchSelector: this.getProperty('search-selector'),
             onSearch: this.onSearch,
             debounceDelay: this.getProperty('debounce-search'),
             hideNonMatches: false,
-            getNodes: () => {
-                const nodes = this.list?.itemsNode?.querySelectorAll('.listItem');
-                return Array.from(nodes);
-            }
+            getNodes: () => Array.from(this.list?.itemsNode?.querySelectorAll('.listItem'))
         });
+
+        this.searchField.setValue(this.searchFilter.getValue());
+        this.searchFilter.on('value', value => this.searchField.setValue(value));
     }
 
     // #endregion

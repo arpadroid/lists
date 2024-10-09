@@ -40,7 +40,7 @@ class ListControls extends ArpaElement {
     }
 
     renderSearch() {
-        return this.list?.hasSearch() || this.list?.hasSort() ? html`<list-search></list-search>` : '';
+        return this.list?.hasSearch() ? html`<list-search></list-search>` : '';
     }
 
     _onConnected() {

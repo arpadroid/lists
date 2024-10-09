@@ -46,6 +46,11 @@ class ListItem extends ArpaElement {
         });
     }
 
+    _initializeTemplate() {
+        this.list = this.getList();
+        super._initializeTemplate(this.getTemplateNode());
+    }
+
     initializeProperties() {
         super.initializeProperties();
         /** @type {List} */
@@ -101,7 +106,8 @@ class ListItem extends ArpaElement {
     }
 
     getList() {
-        return this.closest(this.getProperty('list-selector'));
+        const { list } = this._config;
+        return list || this.closest(this.getProperty('list-selector'));
     }
 
     getLink() {
@@ -222,10 +228,7 @@ class ListItem extends ArpaElement {
      * @returns {HTMLTemplateElement | undefined}
      */
     getTemplateNode() {
-        const list = this.closest('.arpaList');
-        if (list?.itemTemplate) {
-            return this.list?.itemTemplate.cloneNode(true);
-        }
+        return this.list?.itemTemplate?.cloneNode(true);
     }
 
     getTemplateVars() {
@@ -240,8 +243,6 @@ class ListItem extends ArpaElement {
     }
 
     async render() {
-        const templateNode = this.getTemplateNode();
-        templateNode && this.setTemplate(templateNode, () => this.contentWrapperNode);
         this.imageURL = this.getProperty('image');
         const { role, action } = this._config;
         this.classList.add('listItem');
@@ -253,7 +254,6 @@ class ListItem extends ArpaElement {
         this.button = this.querySelector('button.listItem__main');
         this.setViewClass();
         action && this.button?.addEventListener('click', event => action(event, this));
-        await this.initializeNav();
         /**
          * @todo Add support for nested list items.
          */
@@ -281,29 +281,27 @@ class ListItem extends ArpaElement {
             class: classNames('listItem__main', { listItem__link: this.link })
         });
         const icon = this.getIcon();
+        const innerContent = this.renderInnerContent(isGrid);
         return html`
             <${wrapperComponent} ${attrs}>
                 ${icon ? html`<arpa-icon class="listItem__icon">${icon}</arpa-icon>` : ''}
                 ${!isGrid ? this.renderImage() : ''}
-                <div class="listItem__contentWrapper">
-                    ${this.renderTitleContainer()} 
-                    ${isGrid ? this.renderImage() : ''}
-                    ${this.renderTags()}
-                    ${this.renderContent()}
-                </div>
+                ${innerContent.trim()?.length ? html`<div class="listItem__contentWrapper">${innerContent}</div>` : ''}
                 <arpa-icon class="listItem__iconRight">{iconRight}</arpa-icon>
             </${wrapperComponent}>
             ${this.renderRhs()}
         `;
     }
 
+    renderInnerContent(isGrid = this.isGrid) {
+        return html`${this.renderTitleContainer()} ${isGrid ? this.renderImage() : ''} ${this.renderTags()}
+        ${this.renderContent()}`;
+    }
+
     async initializeNav() {
         this.navNode = this.querySelector('.listItem__nav');
-        await this.navNode?.promise;
-        if (this.navNode) {
-            await customElements.whenDefined('icon-menu');
-            this.navNode.setConfig(this._config.nav);
-        }
+        await customElements.whenDefined('icon-menu');
+        this.navNode?.setConfig(this._config.nav);
     }
 
     //#region RENDER TITLE
@@ -415,14 +413,10 @@ class ListItem extends ArpaElement {
     // #region RENDER NAV
 
     renderNav() {
-        if (!this.hasNav() && !this.hasZone('nav')) {
+        if (!this.hasNav() && !this.hasZone('item-nav')) {
             return '';
         }
-        this.promise.then(() => {
-            const itemsNode = this.navNode?.navigation?.itemsNode;
-            itemsNode && itemsNode.setAttribute('zone', 'nav');
-        });
-        return html`<icon-menu id="${this.getId()}" class="listItem__nav"> </icon-menu>`;
+        return html`<icon-menu id="${this.getId()}" class="listItem__nav" zone="item-nav"></icon-menu>`;
     }
 
     // #endregion RENDER NAV
@@ -432,7 +426,7 @@ class ListItem extends ArpaElement {
             return '';
         }
         return html`
-            <truncate-text has-button max-length="${truncate}" class="listItem__content"> ${content} </truncate-text>
+            <truncate-text has-button max-length="${truncate}" class="listItem__content">${content}</truncate-text>
         `;
     }
 
@@ -441,7 +435,6 @@ class ListItem extends ArpaElement {
     // #region LIFECYCLE
 
     async _onConnected() {
-        this._initializeNodes();
         await this._initializeItem();
     }
 
@@ -454,10 +447,12 @@ class ListItem extends ArpaElement {
         this.contentNode = this.querySelector('.listItem__content');
         this.titleNode = this.querySelector('.listItem__title');
         this.contentWrapperNode = this.querySelector('.listItem__contentWrapper');
-        await customElements.whenDefined('arpa-image');
-        this.image?.addConfig({
-            onLoad: event => this._onImageLoaded(event),
-            onError: event => this._onImageError(event)
+        this.initializeNav();
+        customElements.whenDefined('arpa-image').then(() => {
+            this.image?.addConfig({
+                onLoad: event => this._onImageLoaded(event),
+                onError: event => this._onImageError(event)
+            });
         });
     }
 

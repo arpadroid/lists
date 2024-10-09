@@ -2,6 +2,10 @@ list-sort {
     display: flex;
     align-items: center;
     gap: var(--list-control-gap);
+
+    &:only-child {
+        margin-left: auto;
+    }
 }
 
 list-sort i18n-text[key='modules.list.listSort.lblSortBy'] {

@@ -6,11 +6,18 @@
     position: sticky;
     top: 0;
     background-color: var(--overlay);
-    padding: 0.5rem 0;
+    padding: 0 0;
     .comboBox.comboBox {
         background-color: var(--color-background);
     }
 }
+
+.listControls {
+    list-views:only-child {
+        margin-left: auto;
+    }
+}
+
 .listControls:empty {
     display: none;
 }

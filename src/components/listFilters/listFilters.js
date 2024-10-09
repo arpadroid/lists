@@ -51,13 +51,22 @@ class ListFilters extends ArpaElement {
         </icon-menu>`;
         this.menuNode = this.querySelector('icon-menu');
         this._hasRendered = true;
+        this._initializeForm();
+        this._initializeIconMenu();
+    }
+
+    async _initializeIconMenu() {
         await customElements.whenDefined('icon-menu');
         await this.menuNode.promise;
         const itemsNode = this.menuNode?.navigation?.itemsNode;
         itemsNode?.setAttribute('zone', 'list-filters');
+    }
+
+    async _initializeForm() {
         /** @type {FormComponent} */
         this.form = this.querySelector('.listFilters__form');
         this.form?.onSubmit(this.onSubmit);
+        await this.promise;
         /** @type {Field} */
         this.pageField = this.form.getField('page');
         /** @type {Field} */

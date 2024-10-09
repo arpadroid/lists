@@ -102,7 +102,7 @@ export const ResourceDriven = {
                         <tag-item label="{date}" icon="calendar_month"></tag-item>
                     </zone>
 
-                    <zone name="nav">
+                    <zone name="item-nav">
                         <nav-link link="/gallery/{id}" icon-right="visibility">View</nav-link>
                         <nav-link link="/gallery/{id}/edit" icon-right="edit">Edit</nav-link>
                     </zone>
@@ -144,7 +144,7 @@ export const ResourceDrivenTest = {
         await customElements.whenDefined('arpa-list');
         const listNode = canvasElement.querySelector('arpa-list');
         await listNode.promise;
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise(resolve => setTimeout(resolve, 50));
         return { canvas, listNode };
     },
     play: async ({ canvasElement, step }) => {
@@ -158,12 +158,12 @@ export const ResourceDrivenTest = {
     }
 };
 
-export const TestMultiActions = {
+export const TestBatchOperations = {
     ...ResourceDriven,
     parameters: {},
     args: {
         ...ResourceDriven.args,
-        id: 'test-list-multiactions',
+        id: 'test-batch-operations',
         allControls: false,
         hasResource: true,
         hasSelection: true,
@@ -173,8 +173,56 @@ export const TestMultiActions = {
         const setup = await ResourceDrivenTest.playSetup(canvasElement);
         const { canvas } = setup;
 
-        await step('Clicks on multi select menu', async () => {
+        await step('Opens Batch Operations', async () => {
             const filtersMenu = canvas.getByRole('button', { name: /No items selected/i });
+            userEvent.click(filtersMenu);
+        });
+    }
+};
+
+export const TestViews = {
+    ...ResourceDriven,
+    parameters: {},
+    args: {
+        ...ResourceDriven.args,
+        id: 'test-list-views',
+        allControls: false,
+        hasResource: true,
+        hasSelection: false,
+        hasControls: true,
+        hasViews: true
+    },
+    play: async ({ canvasElement, step }) => {
+        const setup = await ResourceDrivenTest.playSetup(canvasElement);
+        const { canvas } = setup;
+
+        await step('Opens the Views menu', async () => {
+            const filtersMenu = canvas.getByRole('button', { name: /Views/i });
+            userEvent.click(filtersMenu);
+        });
+    }
+};
+
+
+export const TestSort = {
+    ...ResourceDriven,
+    parameters: {},
+    args: {
+        ...ResourceDriven.args,
+        id: 'test-list-views',
+        allControls: false,
+        hasResource: true,
+        hasSelection: false,
+        hasControls: true,
+        hasViews: false,
+        hasSort: true
+    },
+    play: async ({ canvasElement, step }) => {
+        const setup = await ResourceDrivenTest.playSetup(canvasElement);
+        const { canvas } = setup;
+
+        await step('Opens the sort menu', async () => {
+            const filtersMenu = canvas.getByRole('button', { name: /Sort/i });
             userEvent.click(filtersMenu);
         });
     }
@@ -187,7 +235,8 @@ export const TestItem = {
         ...ResourceDriven.args,
         id: 'test-list-item',
         allControls: false,
-        hasResource: true
+        hasResource: true,
+        itemsPerPage: 1
     }
 };
 

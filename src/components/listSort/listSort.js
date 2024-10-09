@@ -96,7 +96,7 @@ class ListSort extends ArpaElement {
     async render() {
         const sortDir = this.listResource?.getSortDirection() === 'asc' ? 'desc' : 'asc';
         this.innerHTML = html`
-            <icon-menu class="sortMenu" icon="sort_by_alpha" tooltip="Sort">
+            <icon-menu class="sortMenu" icon="sort_by_alpha" tooltip="Sort" zone="sort-options">
                 ${mapHTML(this.list?.getSortOptions(), ({ value, icon, label }) => {
                     return html`<nav-link link="${value}" icon-left="${icon}" label="${label}"></nav-link>`;
                 })}
@@ -118,18 +118,15 @@ class ListSort extends ArpaElement {
 
     async _initializeNav() {
         this.sortByMenu = this.querySelector('icon-menu');
-        this.sortByMenu?.promise && (await this.sortByMenu.promise);
-        this.sortNav = this.sortByMenu?.navigation;
-        if (!this.sortByMenu || !this.sortNav) {
-            return;
-        }
-        attr(this.sortNav, {
-            zone: 'sort-options',
-            'param-name': this.list?.getParamName('sortBy'),
-            'use-router': '',
-            'param-clear': this.list?.getParamName('page')
+        this.sortByMenu?.onRenderReady(() => {
+            this.sortNav = this.sortByMenu?.navigation;
+            attr(this.sortNav, {
+                'param-name': this.list?.getParamName('sortBy'),
+                'use-router': '',
+                'param-clear': this.list?.getParamName('page')
+            });
+            this.sortNav.on('selected', this._onSortBySelected, this._unsubscribes);
         });
-        this.sortNav?.on('selected', this._onSortBySelected, this._unsubscribes);
     }
 
     _onSortBySelected(item) {
