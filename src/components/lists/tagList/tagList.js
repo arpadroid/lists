@@ -4,6 +4,12 @@ import TagItem from './tagItem/tagItem.js';
 
 const html = String.raw;
 class TagList extends List {
+
+    _initialize() {
+        super._initialize();
+        this.classList.add('tagList');   
+    }
+
     getDefaultConfig() {
         return mergeObjects(super.getDefaultConfig(), {
             className: 'tagList',
@@ -12,11 +18,6 @@ class TagList extends List {
             itemComponent: TagItem,
             noItemsContent: html`<i18n-text key="components.tagList.txtNoTags"></i18n-text>`
         });
-    }
-
-    _onConnected() {
-        super._onConnected();
-        this.classList.add('tagList');
     }
 }
 

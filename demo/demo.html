@@ -16,7 +16,7 @@
             title="Resource Driven List"
             url="http://casavaquero.local/api/gallery/item/get-items"
             param-namespace="galleryList-"
-            itemsPerPage="3"
+            itemsPerPage="200"
         >
             <zone name="batch-operations">
                 <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>
@@ -30,16 +30,16 @@
             <zone name="list-filters"> </zone>
 
             <template
+                image="http://casavaquero.local/api/image/convert?width=[width]&height=[height]&quality=[quality]&source={image_url}"
                 id="{id}"
                 template-id="list-item-template"
-                image="http://casavaquero.local/api/image/convert?width=[width]&height=[height]&quality=[quality]&source={image_url}"
             >
                 <zone name="tags">
                     <tag-item label="{author_initials}" icon="person"></tag-item>
                     <tag-item label="{date}" icon="calendar_month"></tag-item>
                 </zone>
 
-                <zone name="nav">
+                <zone name="item-nav">
                     <nav-link link="/gallery/{id}" icon-right="visibility">View</nav-link>
                     <nav-link link="/gallery/{id}/edit" icon-right="edit">Edit</nav-link>
                 </zone>

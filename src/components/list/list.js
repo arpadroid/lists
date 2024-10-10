@@ -529,10 +529,12 @@ class List extends ArpaElement {
     }
 
     async onResourceSetItems(items = []) {
-        this.updatePager();
-        this.itemsNode && (this.itemsNode.innerHTML = '');
-        this.onResourceAddItems(items);
-        setTimeout(() => this.resolveFetch?.(), 20);
+        requestAnimationFrame(() => {
+            this.updatePager();
+            this.itemsNode && (this.itemsNode.innerHTML = '');
+            this.onResourceAddItems(items);
+            this.resolveFetch?.();
+        });
     }
 
     onResourceItemsUpdated() {

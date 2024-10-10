@@ -70,10 +70,6 @@ class ListSort extends ArpaElement {
     // #region LIFECYCLE
     /////////////////////
 
-    async onReady() {
-        return await customElements.whenDefined('arpa-form');
-    }
-
     _onConnected() {
         Context?.Router?.on('route_changed', this._onRouteChange, this._unsubscribes);
     }

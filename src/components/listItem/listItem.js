@@ -38,7 +38,8 @@ class ListItem extends ArpaElement {
                 grid_compact: { width: 180, height: 180 },
                 grid: { width: 350, height: 350 },
                 grid_large: { width: 480, height: 480 },
-                full_screen: { width: getViewportWidth(), height: getViewportHeight() }
+                // Calculate the full screen width and height inside a function to avoid layout thrashing.
+                full_screen: () => ({ width: getViewportWidth(), height: getViewportHeight() })
             },
             imageConfig: {
                 showPreloader: true

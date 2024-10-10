@@ -236,7 +236,7 @@ export const TestItem = {
         id: 'test-list-item',
         allControls: false,
         hasResource: true,
-        itemsPerPage: 1
+        itemsPerPage: 10
     }
 };
 
@@ -259,5 +259,24 @@ export const Test = {
         return { canvas, listNode };
     }
 };
+
+export const Test200 = {
+    ...ResourceDrivenTest,
+    args: {
+        ...ResourceDrivenTest.args,
+        id: 'stressed-list',
+        itemsPerPage: 200
+    },
+};
+
+export const StressTest = {
+    ...ResourceDrivenTest,
+    args: {
+        ...ResourceDrivenTest.args,
+        id: 'stressed-list',
+        itemsPerPage: 600
+    },
+};
+
 
 export default ListStory;
