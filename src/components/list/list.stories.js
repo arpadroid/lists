@@ -1,12 +1,12 @@
 /**
  * @typedef {import('./list.js').default} List
  */
-import { attrString } from '@arpadroid/tools';
+import { attrString, getInitials } from '@arpadroid/tools';
 import { within, userEvent } from '@storybook/test';
 
 const html = String.raw;
 const ListStory = {
-    title: 'Modules/List/List',
+    title: 'Modules/List/ResourceDriven',
     tags: [],
     getArgs: () => {
         return {
@@ -49,16 +49,20 @@ const ListStory = {
     }
 };
 
+// export const Default = {
+//     name: 'Render',
+//     parameters: {},
+//     argTypes: ListStory.getArgTypes(),
+//     args: { ...ListStory.getArgs(), id: 'test-list-default' }
+// };
+
 export const Default = {
     name: 'Render',
-    parameters: {},
-    argTypes: ListStory.getArgTypes(),
-    args: { ...ListStory.getArgs(), id: 'test-list' }
-};
-
-export const ResourceDriven = {
-    name: 'Resource Driven',
-    parameters: {},
+    parameters: {
+        controls: { disable: true },
+        usage: { disable: true },
+        options: { selectedPanel: 'storybook/interactions/panel' }
+    },
     argTypes: ListStory.getArgTypes(),
     args: {
         ...ListStory.getArgs(),
@@ -67,7 +71,29 @@ export const ResourceDriven = {
         title: 'Resource Driven List',
         url: 'api/gallery/item/get-items',
         paramNamespace: 'galleryList-',
-        itemsPerPage: 50
+        itemsPerPage: 10
+    },
+    initializeList: async id => {
+        const list = document.getElementById(id);
+        const resource = list.listResource;
+        resource?.mapItem(item => {
+            item.author_initials = getInitials(item.author_name + ' ' + item.author_surname);
+            item.date = new Date(item.date)?.getFullYear() ?? '?';
+            return item;
+        });
+        await resource?.fetch();
+    },
+    playSetup: async canvasElement => {
+        await customElements.whenDefined('arpa-list');
+        await customElements.whenDefined('list-item');
+        const canvas = within(canvasElement);
+        const listNode = canvasElement.querySelector('arpa-list');
+        await listNode.promise;
+        await Default.initializeList(listNode.id);
+        return { canvas, listNode };
+    },
+    play: async ({ canvasElement }) => {
+        await Default.playSetup(canvasElement);
     },
     render: args => {
         return html`
@@ -80,7 +106,7 @@ export const ResourceDriven = {
                 }
             </style>
 
-            <arpa-list ${attrString(args)}>
+            <arpa-list id="${args.id}" ${attrString(args)}>
                 <zone name="batch-operations">
                     <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>
                 </zone>
@@ -108,47 +134,18 @@ export const ResourceDriven = {
                     </zone>
                 </template>
             </arpa-list>
-
-            <script type="module">
-                import { editURL, getInitials } from '/arpadroid-tools.js';
-                customElements.whenDefined('arpa-list').then(() => {
-                    const id = '${args.id}';
-                    const list = document.getElementById(id);
-                    const resource = list.listResource;
-                    resource?.mapItem(item => {
-                        item.author_initials = getInitials(item.author_name + ' ' + item.author_surname);
-                        item.date = new Date(item.date)?.getFullYear() ?? '?';
-                        return item;
-                    });
-                    resource?.fetch();
-                });
-            </script>
         `;
     }
 };
 
-export const ResourceDrivenTest = {
-    ...ResourceDriven,
-    parameters: {},
+export const TestFilters = {
+    ...Default,
     args: {
-        ...ResourceDriven.args,
-        id: 'resource-driven-test-list'
-    },
-    parameters: {
-        controls: { disable: true },
-        usage: { disable: true },
-        options: { selectedPanel: 'storybook/interactions/panel' }
-    },
-    playSetup: async canvasElement => {
-        const canvas = within(canvasElement);
-        await customElements.whenDefined('arpa-list');
-        const listNode = canvasElement.querySelector('arpa-list');
-        await listNode.promise;
-        await new Promise(resolve => setTimeout(resolve, 50));
-        return { canvas, listNode };
+        ...Default.args,
+        id: 'test-filters'
     },
     play: async ({ canvasElement, step }) => {
-        const setup = await ResourceDrivenTest.playSetup(canvasElement);
+        const setup = await Default.playSetup(canvasElement);
         const { canvas } = setup;
 
         await step('Clicks on filters menu', async () => {
@@ -159,18 +156,17 @@ export const ResourceDrivenTest = {
 };
 
 export const TestBatchOperations = {
-    ...ResourceDriven,
-    parameters: {},
+    ...Default,
     args: {
-        ...ResourceDriven.args,
+        ...Default.args,
         id: 'test-batch-operations',
         allControls: false,
         hasResource: true,
         hasSelection: true,
-        hasControls: true,
+        hasControls: true
     },
     play: async ({ canvasElement, step }) => {
-        const setup = await ResourceDrivenTest.playSetup(canvasElement);
+        const setup = await Default.playSetup(canvasElement);
         const { canvas } = setup;
 
         await step('Opens Batch Operations', async () => {
@@ -181,11 +177,10 @@ export const TestBatchOperations = {
 };
 
 export const TestViews = {
-    ...ResourceDriven,
-    parameters: {},
+    ...Default,
     args: {
-        ...ResourceDriven.args,
-        id: 'test-list-views',
+        ...Default.args,
+        id: 'test-views',
         allControls: false,
         hasResource: true,
         hasSelection: false,
@@ -193,7 +188,7 @@ export const TestViews = {
         hasViews: true
     },
     play: async ({ canvasElement, step }) => {
-        const setup = await ResourceDrivenTest.playSetup(canvasElement);
+        const setup = await Default.playSetup(canvasElement);
         const { canvas } = setup;
 
         await step('Opens the Views menu', async () => {
@@ -203,13 +198,11 @@ export const TestViews = {
     }
 };
 
-
 export const TestSort = {
-    ...ResourceDriven,
-    parameters: {},
+    ...Default,
     args: {
-        ...ResourceDriven.args,
-        id: 'test-list-views',
+        ...Default.args,
+        id: 'test-sort',
         allControls: false,
         hasResource: true,
         hasSelection: false,
@@ -218,7 +211,7 @@ export const TestSort = {
         hasSort: true
     },
     play: async ({ canvasElement, step }) => {
-        const setup = await ResourceDrivenTest.playSetup(canvasElement);
+        const setup = await Default.playSetup(canvasElement);
         const { canvas } = setup;
 
         await step('Opens the sort menu', async () => {
@@ -229,54 +222,33 @@ export const TestSort = {
 };
 
 export const TestItem = {
-    ...ResourceDriven,
-    parameters: {},
-    args: {
-        ...ResourceDriven.args,
-        id: 'test-list-item',
-        allControls: false,
-        hasResource: true,
-        itemsPerPage: 10
-    }
-};
-
-export const Test = {
-    args: Default.args,
+    ...Default,
     parameters: {},
     args: {
         ...Default.args,
-        id: 'test-list'
-    },
-    parameters: {
-        controls: { disable: true },
-        usage: { disable: true },
-        options: { selectedPanel: 'storybook/interactions/panel' }
-    },
-    playSetup: async canvasElement => {
-        const canvas = within(canvasElement);
-        await customElements.whenDefined('arpa-list');
-        const listNode = canvasElement.querySelector('arpa-list');
-        return { canvas, listNode };
+        id: 'test-item',
+        allControls: false,
+        hasResource: true,
+        itemsPerPage: 1
     }
 };
 
 export const Test200 = {
-    ...ResourceDrivenTest,
+    ...Default,
     args: {
-        ...ResourceDrivenTest.args,
-        id: 'stressed-list',
+        ...Default.args,
+        id: 'test-200',
         itemsPerPage: 200
-    },
+    }
 };
 
-export const StressTest = {
-    ...ResourceDrivenTest,
-    args: {
-        ...ResourceDrivenTest.args,
-        id: 'stressed-list',
-        itemsPerPage: 600
-    },
-};
-
+// export const StressTest = {
+//     ...Default,
+//     args: {
+//         ...Default.args,
+//         id: 'stressed-list',
+//         itemsPerPage: 600
+//     }
+// };
 
 export default ListStory;

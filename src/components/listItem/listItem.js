@@ -48,14 +48,14 @@ class ListItem extends ArpaElement {
     }
 
     _initializeTemplate() {
-        this.list = this.getList();
+        this.getList();
         super._initializeTemplate(this.getTemplateNode());
     }
 
     initializeProperties() {
         super.initializeProperties();
         /** @type {List} */
-        this.list = this.getList();
+        this.getList();
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
         !this.listResource && this.list?.preProcessNode(this);
@@ -107,8 +107,11 @@ class ListItem extends ArpaElement {
     }
 
     getList() {
-        const { list } = this._config;
-        return list || this.closest(this.getProperty('list-selector'));
+        if (this.list) {
+            return this.list;
+        }
+        this.list = this._config?.list || this.closest(this.getProperty('list-selector'));
+        return this.list;
     }
 
     getLink() {
@@ -514,17 +517,33 @@ class ListItem extends ArpaElement {
         }
     }
 
+    // updateImage() {
+    //     let targetParentNode = this.mainNode;
+    //     if (this.isGrid) {
+    //         targetParentNode = this.titleNode ? this.titleNode : this.contentWrapperNode;
+    //     }
+    //     if (this.image && this.image.parentNode !== targetParentNode) {
+    //         if (this.isGrid && this.titleNode) {
+    //             this.titleNode.after(this.image);
+    //         } else {
+    //             targetParentNode.prepend(this.image);
+    //         }
+    //     }
+    // }
+
     updateImage() {
-        let targetParentNode = this.mainNode;
-        if (this.isGrid) {
-            targetParentNode = this.titleNode ? this.titleNode : this.contentWrapperNode;
+        const targetParentNode = this.isGrid ? this.titleNode || this.contentWrapperNode : this.mainNode;
+
+        // Early return if there's no image or if it's already correctly placed
+        if (!this.image || this.image.parentNode === targetParentNode) {
+            return;
         }
-        if (this.image && this.image.parentNode !== targetParentNode) {
-            if (this.isGrid && this.titleNode) {
-                this.titleNode.after(this.image);
-            } else {
-                targetParentNode.prepend(this.image);
-            }
+
+        // Place image correctly based on the grid and title conditions
+        if (this.isGrid && this.titleNode) {
+            this.titleNode.after(this.image);
+        } else {
+            targetParentNode.prepend(this.image);
         }
     }
 

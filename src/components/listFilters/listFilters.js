@@ -65,8 +65,8 @@ class ListFilters extends ArpaElement {
     async _initializeForm() {
         /** @type {FormComponent} */
         this.form = this.querySelector('.listFilters__form');
+        await this.form?.promise;
         this.form?.onSubmit(this.onSubmit);
-        await this.promise;
         /** @type {Field} */
         this.pageField = this.form.getField('page');
         /** @type {Field} */

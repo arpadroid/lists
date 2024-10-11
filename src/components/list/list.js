@@ -529,7 +529,7 @@ class List extends ArpaElement {
     }
 
     async onResourceSetItems(items = []) {
-        requestAnimationFrame(() => {
+        this.onRenderReady(() => {
             this.updatePager();
             this.itemsNode && (this.itemsNode.innerHTML = '');
             this.onResourceAddItems(items);
@@ -733,13 +733,14 @@ class List extends ArpaElement {
     }
 
     async update() {
-        await this.promise;
-        if (!this.getItems()?.length) {
-            this.noItemsNode = this.noItemsNode || renderNode(this.renderNoItemsContent());
-            this.noItemsNode && this.bodyMainNode?.appendChild(this.noItemsNode);
-        } else {
-            this.noItemsNode?.remove();
-        }
+        requestAnimationFrame(() => {
+            if (!this.getItems()?.length) {
+                this.noItemsNode = this.noItemsNode || renderNode(this.renderNoItemsContent());
+                this.noItemsNode && this.bodyMainNode?.appendChild(this.noItemsNode);
+            } else {
+                this.noItemsNode?.remove();
+            }
+        });
     }
 
     async _handlePreloading() {
