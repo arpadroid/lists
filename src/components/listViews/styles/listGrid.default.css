@@ -9,7 +9,6 @@
     > .arpaList__body {
         > .arpaList__bodyMain > .arpaList__items.arpaList__items {
             display: grid;
-            column-gap: 50px;
             grid-template-columns: repeat(auto-fit, minmax(var(--listView--gridItemSize), 1fr));
             grid-gap: var(--listView--gridGap);
             justify-items: center;

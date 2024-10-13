@@ -10,7 +10,7 @@ import { Context } from '@arpadroid/application';
 import { ArpaElement } from '@arpadroid/ui';
 import { ListResource, getResource } from '@arpadroid/resources';
 import { mergeObjects, getScrollableParent, isInView, editURL, appendNodes } from '@arpadroid/tools';
-import { render, renderNode, renderAttr, attrString } from '@arpadroid/tools';
+import { renderNode, renderAttr, attrString } from '@arpadroid/tools';
 import ListItem from '../listItem/listItem.js';
 
 const html = String.raw;
@@ -157,9 +157,9 @@ class List extends ArpaElement {
 
     // #endregion
 
-    /////////////////////
+    /////////////////////////////
     // #region Accessors
-    /////////////////////
+    /////////////////////////////
 
     /**
      * Returns the component id.
@@ -219,6 +219,8 @@ class List extends ArpaElement {
     getSortDefault() {
         return this.getProperty('sort-default');
     }
+
+    // #region has
 
     /**
      * Returns true if the list has any controls enabled.
@@ -318,6 +320,16 @@ class List extends ArpaElement {
         return this.hasProperty('sticky-controls');
     }
 
+    hasNoItemsContent() {
+        return Boolean(this.getNoItemsContent() || this.hasZone('no-items'));
+    }
+
+    getNoItemsContent() {
+        return this.getProperty('no-items-content');
+    }
+
+    // #endregion
+
     /**
      * Sets the sort options for the list.
      * @param {Record<string,unknown>[]} options
@@ -357,6 +369,10 @@ class List extends ArpaElement {
         }
     }
 
+    /**
+     * Adds item nodes to the list.
+     * @param {HTMLElement[]} items
+     */
     async addItemNodes(items) {
         const container = this.itemsNode || this;
         appendNodes(container, items);
@@ -413,10 +429,7 @@ class List extends ArpaElement {
      * @returns {ListItem[] | ListItemInterface[] | void}
      */
     addItems(itemsPayload) {
-        if (this.listResource) {
-            return this.listResource?.addItems(itemsPayload);
-        }
-
+        if (this.listResource) return this.listResource?.addItems(itemsPayload);
         if (this.itemsNode) {
             return appendNodes(
                 this.itemsNode,
@@ -434,11 +447,15 @@ class List extends ArpaElement {
      * @param {Record<string,unknown>} mapping
      * @returns {ListItem}
      */
-    createItem(config = {}, payload = {}, mapping = {}) {
+    createItem(config = {}, payload = this.getDefaultItemPayload(config.id), mapping = {}) {
         const { itemComponent } = this._config;
         const item = new itemComponent(config, payload, mapping);
         !this.listResource && this.preProcessNode(item);
         return item;
+    }
+
+    getDefaultItemPayload(itemId) {
+        return this?.listResource?.getRawItem(itemId) ?? {};
     }
 
     /**
@@ -449,6 +466,10 @@ class List extends ArpaElement {
         return this.listResource?.getItems() ?? this._config.items;
     }
 
+    /**
+     * Returns the list item nodes.
+     * @returns {HTMLElement[]}
+     */
     getItemNodes() {
         return Array.from(this.itemsNode?.children);
     }
@@ -522,19 +543,25 @@ class List extends ArpaElement {
     /**
      * Handles the addition of a list item from the list resource.
      * @param {ListItemInterface[]} items
+     */
+    onResourceAddItems(items = []) {
+        this.addItemsBatched(items);
+    }
+
+    /**
+     * Handles the addition of a list item from the list resource.
+     * @param {ListItemInterface[]} items
      * @param {number} batchSize
      */
-    onResourceAddItems(items = [], batchSize = 50) {
+    addItemsBatched(items = [], batchSize = 50) {
         const totalItems = items.length;
         let currentIndex = 0;
         const processBatch = () => {
             const batch = items.slice(currentIndex, currentIndex + batchSize);
-            const itemNodes = batch.map(config => this.createItem(config, this?.listResource?.getRawItem(config?.id)));
+            const itemNodes = batch.map(config => this.createItem(config));
             this.addItemNodes(itemNodes);
             currentIndex += batchSize;
-            if (currentIndex < totalItems) {
-                setTimeout(processBatch);
-            }
+            currentIndex < totalItems && setTimeout(processBatch);
         };
         processBatch();
     }
@@ -543,7 +570,7 @@ class List extends ArpaElement {
         this.onRenderReady(() => {
             this.updatePager();
             this.itemsNode && (this.itemsNode.innerHTML = '');
-            this.onResourceAddItems(items);
+            this.addItemsBatched(items);
             this.resolveFetch?.();
         });
     }
@@ -552,17 +579,28 @@ class List extends ArpaElement {
         this.update();
     }
 
+    /**
+     * Handles the removal of all list items from the list resource.
+     */
     onResourceRemoveItems() {
-        if (this.itemsNode) {
-            this.itemsNode.innerHTML = '';
-        }
+        this.itemsNode && (this.itemsNode.innerHTML = '');
     }
 
+    /**
+     * Handles the addition of a list item from the list resource.
+     * @param {ListItemInterface} payload
+     * @param {boolean} unshift
+     */
     onResourceAddItem(payload, unshift = false) {
         const node = this.createItem(payload);
         this.addItemNode(node, unshift);
     }
 
+    /**
+     * Handles the removal of a list item from the list resource.
+     * @param {ListItemInterface} payload
+     * @param {number} index
+     */
     onResourceRemoveItem(payload, index) {
         const item = this.itemsNode?.children[index];
         item?.remove();
@@ -570,23 +608,23 @@ class List extends ArpaElement {
 
     // #endregion
 
-    //////////////////
-    // #region Render
-    /////////////////
+    /////////////////////////
+    // #region RENDER
+    ////////////////////////
 
     getTemplateVars() {
         return {
             aside: this.renderAside(),
-            id: this.getId(),
             controls: this.renderControls(),
-            title: this.renderTitle(),
-            items: this.renderItemsWrapper(),
-            heading: this.renderHeading(),
-            noItemsIcon: this.getProperty('no-items-icon'),
-            noItemsContent: this.getProperty('no-items-content'),
-            pager: this.renderPager(),
             footer: this.renderFooter(),
-            info: this.renderInfo()
+            heading: this.renderHeading(),
+            id: this.getId(),
+            info: this.renderInfo(),
+            items: this.renderItemsWrapper(),
+            noItemsContent: this.getNoItemsContent(),
+            noItemsIcon: this.getProperty('no-items-icon'),
+            pager: this.renderPager(),
+            title: this.renderTitle()
         };
     }
 
@@ -601,6 +639,11 @@ class List extends ArpaElement {
         appendNodes(this.itemsNode, this.getInitialItems());
     }
 
+    /**
+     * Renders the list items.
+     * @param {ListItemInterface[]} items
+     * @param {HTMLElement} container
+     */
     renderItems(items = this.getItems(), container = this.itemsNode) {
         appendNodes(
             container,
@@ -616,7 +659,7 @@ class List extends ArpaElement {
         return html`
             {title} {controls}
             <div class="arpaList__body">
-                <div class="arpaList__bodyMain">{info} {heading} {items}</div>
+                <div class="arpaList__bodyMain">{info}{heading}{items}</div>
                 {aside}
             </div>
             {footer}
@@ -632,37 +675,34 @@ class List extends ArpaElement {
     }
 
     renderInfo() {
-        return this.hasInfo()
-            ? html`<list-info
-                  zone="list-info"
-                  ${attrString({
-                      'txt-all-results': this.getProperty('txt-all-results')
-                  })}
-              ></list-info>`
-            : '';
+        if (!this.hasInfo()) return '';
+        return html`<list-info
+            zone="list-info"
+            ${attrString({
+                'txt-all-results': this.getProperty('txt-all-results')
+            })}
+        ></list-info>`;
     }
 
     renderControls() {
-        return this.hasControls()
-            ? html`<list-controls zone="controls">
-                  ${this.hasFilters() ? html`<list-filters></list-filters>` : ''}
-              </list-controls>`
-            : '';
+        if (!this.hasControls()) return '';
+        const filters = this.hasFilters() ? html`<list-filters></list-filters>` : '';
+        return html`<list-controls zone="controls">${filters}</list-controls>`;
     }
 
     renderTitle(title = this.getTitle()) {
-        return title || this.hasZone('title') ? html`<h2 class="arpaList__title" zone="title">${title}</h2>` : '';
+        if (!title && !this.hasZone('title')) return '';
+        return html`<h2 class="arpaList__title" zone="title">${title}</h2>`;
     }
 
     renderHeading() {
         const headingText = this.getProperty('heading');
-        return render(headingText, html`<div class="arpaList__header">${headingText}</div>`);
+        if (!headingText) return '';
+        return html`<div class="arpaList__header">${headingText}</div>`;
     }
 
     renderItemsWrapper() {
-        if (this.getRenderMode() === 'minimal') {
-            return '';
-        }
+        if (this.getRenderMode() === 'minimal') return '';
         const ariaLabel = I18nTool.processTemplate(this.getProperty('heading'), {}, 'text');
         return html`<div class="arpaList__items" role="list" ${renderAttr('aria-label', ariaLabel)}></div>`;
     }
@@ -681,39 +721,30 @@ class List extends ArpaElement {
     }
 
     renderNoItemsContent(items = this.getItems()) {
-        const notItemsContent = this.getProperty('no-items-content');
-        if (!items?.length || !notItemsContent) {
-            return '';
-        }
-        return I18nTool.processTemplate(
-            html`
-                <div class="arpaList__noItems">
-                    <arpa-icon>{noItemsIcon}</arpa-icon>
-                    <div class="arpaList__noItemsText">{noItemsContent}</div>
-                </div>
-            `,
-            this.getTemplateVars()
-        );
+        if (!this.hasNoItemsContent() || !items?.length) return '';
+        return html`<div class="arpaList__noItems">
+            <arpa-icon>${this.getProperty('no-items-icon')}</arpa-icon>
+            <div class="arpaList__noItemsText">${this.getNoItemsContent()}</div>
+        </div>`;
     }
 
-    // #endregion
+    //////////////////////////////
+    // #endregion RENDER
+    //////////////////////////////
 
-    ///////////////////
-    // #region Render Pager
-    //////////////////
+    ////////////////////////////
+    // #region Pager
+    ////////////////////////////
 
     renderPager() {
-        return this.hasPager() && this.hasResource()
-            ? html`
-                  <arpa-pager
-                      id="${this.id}-listPager"
-                      class="arpaList__pager"
-                      total-pages="${this.listResource?.getTotalPages()}"
-                      current-page="${this.listResource?.getCurrentPage()}"
-                      url-param="${this.getParamName('page')}"
-                  ></arpa-pager>
-              `
-            : '';
+        if (!this.hasPager() || !this.hasResource()) return '';
+        return html`<arpa-pager
+            id="${this.id}-listPager"
+            class="arpaList__pager"
+            total-pages="${this.listResource?.getTotalPages()}"
+            current-page="${this.listResource?.getCurrentPage()}"
+            url-param="${this.getParamName('page')}"
+        ></arpa-pager>`;
     }
 
     /**
@@ -731,14 +762,15 @@ class List extends ArpaElement {
             Context.Router.go(newURL);
         });
     }
+    ////////////////////////////
+    // #endregion Pager
+    ////////////////////////////
 
-    // #endregion
-
-    /////////////////////
+    /////////////////////////
     // #region Lifecycle
-    /////////////////////
+    /////////////////////////
 
-    _onConnected() {
+    _initializeNodes() {
         this.controls = this.querySelector('list-controls');
         this.noItemsNode = this.querySelector('.arpaList__noItems');
     }
@@ -773,8 +805,9 @@ class List extends ArpaElement {
     _onDestroy() {
         this?.listResource?.destroy();
     }
-
-    // #endregion
+    /////////////////////////
+    // #endregion Lifecycle
+    /////////////////////////
 }
 
 customElements.define('arpa-list', List);

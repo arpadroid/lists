@@ -18,9 +18,10 @@
     }
 }
 
-.listFilters__nav {
+.listFilters__nav.listFilters__nav {
     max-height: 100%;
     background-color: var(--color-background);
+    overflow: visible;
 }
 
 .listFilters__pagination {

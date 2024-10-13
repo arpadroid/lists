@@ -124,6 +124,10 @@ class ListItem extends ArpaElement {
         return this.getProperty('link');
     }
 
+    getLabelText(label = this.getProperty('label')) {
+        return label || this.getLabelNode()?.textContent?.trim();
+    }
+
     getTemplateContent(template = this._config.template) {
         return super.getTemplateContent(template, this.getPayload());
     }
@@ -151,6 +155,14 @@ class ListItem extends ArpaElement {
 
     getTitle() {
         return this.getProperty('title');
+    }
+
+    getContentNode() {
+        return this.contentNode || this.contentWrapperNode || this.mainNode || this;
+    }
+
+    getLabelNode() {
+        return this.titleNode || this.getContentNode();
     }
 
     /**

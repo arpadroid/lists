@@ -89,7 +89,7 @@ class ListSort extends ArpaElement {
     // #region RENDERING
     ////////////////////
 
-    async render() {
+    render() {
         const sortDir = this.listResource?.getSortDirection() === 'asc' ? 'desc' : 'asc';
         this.innerHTML = html`
             <icon-menu class="sortMenu" icon="sort_by_alpha" tooltip="Sort" zone="sort-options">
@@ -112,7 +112,7 @@ class ListSort extends ArpaElement {
         this._initializeNav();
     }
 
-    async _initializeNav() {
+    _initializeNav() {
         this.sortByMenu = this.querySelector('icon-menu');
         this.sortByMenu?.onRenderReady(() => {
             this.sortNav = this.sortByMenu?.navigation;
@@ -128,8 +128,9 @@ class ListSort extends ArpaElement {
     _onSortBySelected(item) {
         const icon = item.getProperty('icon') || item.getProperty('icon-right');
         this.sortByMenu.setIcon(icon);
-        const tooltip = item.getProperty('label') || item.contentNode?.innerText?.trim();
-        this.sortByMenu.setTooltip(html`<span>${this.getProperty('lblSortedBy')}</span> <strong>${tooltip}</strong>`);
+        this.sortByMenu.setTooltip(
+            html`<span>${this.getProperty('lblSortedBy')}</span> <strong>${item.getLabelText()}</strong>`
+        );
     }
 
     // #endregion
