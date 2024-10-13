@@ -522,10 +522,21 @@ class List extends ArpaElement {
     /**
      * Handles the addition of a list item from the list resource.
      * @param {ListItemInterface[]} items
+     * @param {number} batchSize
      */
-    onResourceAddItems(items = []) {
-        const itemNodes = items.map(config => this.createItem(config, this?.listResource?.getRawItem(config?.id)));
-        this.addItemNodes(itemNodes);
+    onResourceAddItems(items = [], batchSize = 50) {
+        const totalItems = items.length;
+        let currentIndex = 0;
+        const processBatch = () => {
+            const batch = items.slice(currentIndex, currentIndex + batchSize);
+            const itemNodes = batch.map(config => this.createItem(config, this?.listResource?.getRawItem(config?.id)));
+            this.addItemNodes(itemNodes);
+            currentIndex += batchSize;
+            if (currentIndex < totalItems) {
+                setTimeout(processBatch);
+            }
+        };
+        processBatch();
     }
 
     async onResourceSetItems(items = []) {
@@ -733,11 +744,11 @@ class List extends ArpaElement {
     }
 
     async update() {
-        requestAnimationFrame(() => {
-            if (!this.getItems()?.length) {
+        this.onRenderReady(() => {
+            if (!this.getItems()?.length && !this.isLoading) {
                 this.noItemsNode = this.noItemsNode || renderNode(this.renderNoItemsContent());
                 this.noItemsNode && this.bodyMainNode?.appendChild(this.noItemsNode);
-            } else {
+            } else if (this.noItemsNode?.isConnected) {
                 this.noItemsNode?.remove();
             }
         });

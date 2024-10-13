@@ -10,7 +10,9 @@ import { render, classNames, attrString, getViewportWidth, getViewportHeight } f
 
 const html = String.raw;
 class ListItem extends ArpaElement {
-    // #region INITIALIZATION
+    /////////////////////
+    // #region INIT
+    /////////////////////
     _bindings = ['_onImageLoaded', '_onImageError', 'setSelected', '_onViewChange', '_onSelected', '_onDeselected'];
 
     constructor(config = {}, payload, map) {
@@ -48,27 +50,36 @@ class ListItem extends ArpaElement {
     }
 
     _initializeTemplate() {
-        this.getList();
+        this.grabList();
         super._initializeTemplate(this.getTemplateNode());
     }
 
     initializeProperties() {
         super.initializeProperties();
-        /** @type {List} */
-        this.getList();
-        /** @type {ListResource} */
-        this.listResource = this.list?.listResource;
-        !this.listResource && this.list?.preProcessNode(this);
-        this._initializeView();
+        this.grabList();
         const id = this.getId();
         if (this.list?.hasMultiSelect()) {
             this.listResource.on(`item_selected_${id}`, this._onSelected, this._unsubscribes);
             this.listResource.on(`item_deselected_${id}`, this._onDeselected, this._unsubscribes);
         }
+        !this.listResource && this.list?.preProcessNode(this);
+        /** @type {ListFilter} */
+        this.viewsFilter = this.listResource?.filters?.views;
+        this.viewsFilter && this._initializeView();
         return true;
     }
 
+    grabList() {
+        if (this.list) return this.list;
+        /** @type {List} */
+        this.list = this._config?.list || this.closest(this.getProperty('list-selector'));
+        /** @type {ListResource} */
+        this.listResource = this.list?.listResource;
+        return this.list;
+    }
+
     _onSelected() {
+        console.log('_onSelected');
         this.checkbox.checked = true;
         this.classList.add(this.getSelectedClass());
     }
@@ -77,10 +88,13 @@ class ListItem extends ArpaElement {
         this.checkbox.checked = false;
         this.classList.remove(this.getSelectedClass());
     }
+    /////////////////////////////
+    // #endregion INIT
+    /////////////////////////////
 
-    // #endregion
-
+    /////////////////////////////
     // #region ACCESSORS
+    /////////////////////////////
 
     getContent() {
         return this._content || this._config?.content || '';
@@ -104,14 +118,6 @@ class ListItem extends ArpaElement {
 
     getImageAlt() {
         return this.getProperty('image-alt');
-    }
-
-    getList() {
-        if (this.list) {
-            return this.list;
-        }
-        this.list = this._config?.list || this.closest(this.getProperty('list-selector'));
-        return this.list;
     }
 
     getLink() {
@@ -221,10 +227,13 @@ class ListItem extends ArpaElement {
         }
         return this.getProperty('wrapper-component');
     }
-
+    /////////////////////////////
     // #endregion
+    /////////////////////////////
 
+    /////////////////////////////
     // #region RENDERING
+    /////////////////////////////
 
     /**
      * Returns the template node for the list item.
@@ -247,9 +256,9 @@ class ListItem extends ArpaElement {
     }
 
     async render() {
+        this.classList.add('listItem');
         this.imageURL = this.getProperty('image');
         const { role, action } = this._config;
-        this.classList.add('listItem');
         role && this.setAttribute('role', role);
         this.link = this.getLink();
         this.removeAttribute('link');
@@ -275,23 +284,24 @@ class ListItem extends ArpaElement {
     /**
      * Returns the template for the list item.
      * @param {boolean} isGrid - Indicates whether the list item is in grid view.
+     * @param {string} link - The link for the list item.
      * @returns {string}
      */
-    getTemplate(isGrid = this.isGrid) {
-        const wrapperComponent = this.link ? 'a' : this.getWrapperComponent();
-
+    getTemplate(isGrid = this.isGrid, link = this.link) {
         const attrs = attrString({
-            href: this.link,
-            class: classNames('listItem__main', { listItem__link: this.link })
+            href: link,
+            class: classNames('listItem__main', { listItem__link: link })
         });
+        const wrapperComponent = this.link ? 'a' : this.getWrapperComponent();
         const icon = this.getIcon();
+        const iconRight = this.getIconRight();
         const innerContent = this.renderInnerContent(isGrid);
         return html`
             <${wrapperComponent} ${attrs}>
                 ${icon ? html`<arpa-icon class="listItem__icon">${icon}</arpa-icon>` : ''}
                 ${!isGrid ? this.renderImage() : ''}
                 ${innerContent.trim()?.length ? html`<div class="listItem__contentWrapper">${innerContent}</div>` : ''}
-                <arpa-icon class="listItem__iconRight">{iconRight}</arpa-icon>
+                ${iconRight ? html`<arpa-icon class="listItem__iconRight">${iconRight}</arpa-icon>` : ''}
             </${wrapperComponent}>
             ${this.renderRhs()}
         `;
@@ -308,23 +318,17 @@ class ListItem extends ArpaElement {
         this.navNode?.setConfig(this._config.nav);
     }
 
-    //#region RENDER TITLE
+    //#region Render Title
 
     renderTitleContainer(title = this.getTitle(), subTitle = this.getSubTitle()) {
-        return title || subTitle
-            ? html`
-                  <div class="listItem__titleWrapper">
-                      ${this.renderTitle()}
-                      ${(subTitle && html`<span class="listItem__subTitle">${subTitle}</span>`) || ''}
-                  </div>
-              `
-            : '';
+        if (!title && !subTitle) return '';
+        return html`<div class="listItem__titleWrapper">
+            ${this.renderTitle()} ${(subTitle && html`<span class="listItem__subTitle">${subTitle}</span>`) || ''}
+        </div>`;
     }
 
     renderTitle(title = this.getTitle()) {
-        if (!title) {
-            return '';
-        }
+        if (!title) return '';
         const titleLink = this.getTitleLink();
         const titleClass = 'listItem__title';
         return titleLink
@@ -341,26 +345,23 @@ class ListItem extends ArpaElement {
         return subTitle ? html`<span class="listItem__subTitle">${subTitle}</span>` : '';
     }
 
-    //#endregion RENDER TITLE
+    //#endregion Render Title
 
-    //#region RENDER TAGS
+    //#region Render Tags
 
     renderTags() {
         const { tags = [] } = this._config;
-        return tags?.length || this.hasZone('tags')
-            ? html`
-                  <tag-list id="item-${this.getId()}-tagList" variant="compact" class="listItem__tags" zone="tags">
-                      ${tags?.map(tag => this.renderTag(tag)) || ''}
-                  </tag-list>
-              `
-            : '';
+        if (!tags?.length && !this.hasZone('tags')) return '';
+        return html`<tag-list id="item-${this.getId()}-tagList" variant="compact" class="listItem__tags" zone="tags">
+            ${tags?.map(tag => this.renderTag(tag)) || ''}
+        </tag-list>`;
     }
 
     renderTag(tag) {
         return html`<tag-item class="listItem__tag" text="${tag.label}" icon="${tag.icon}"></tag-item>`;
     }
 
-    //#endregion
+    // #endregion Render Tags
 
     renderRhs(content = this._config.rhsContent) {
         const nav = this.renderNav();
@@ -369,19 +370,15 @@ class ListItem extends ArpaElement {
     }
 
     renderCheckbox() {
-        if (!this.hasSelection()) {
-            return '';
-        }
+        if (!this.hasSelection()) return '';
         const props = this.getProperties('id', 'is-selected');
         const { id = '', isSelected = this.listResource?.isSelected(this.getPayload()) } = props;
         const checkboxId = id?.toString() ?? id ?? '';
         const htmlId = `listItem__checkbox-${checkboxId}`;
         const checked = render(isSelected, 'checked');
-        return html`
-            <label class="listItem__checkboxContainer" for="${htmlId}">
-                <input class="listItem__checkbox arpaCheckbox" type="checkbox" id="${htmlId}" ${checked} />
-            </label>
-        `;
+        return html`<label class="listItem__checkboxContainer" for="${htmlId}">
+            <input class="listItem__checkbox arpaCheckbox" type="checkbox" id="${htmlId}" ${checked} />
+        </label>`;
     }
 
     /**
@@ -391,52 +388,56 @@ class ListItem extends ArpaElement {
      * @returns {string} - The rendered image as a string.
      */
     renderImage(image = this.getImage(), alt = this.getImageAlt()) {
-        const { width } = this.getImageDimensions();
-        return image
-            ? html`<arpa-image
-                  ${attrString({ size: width })}
-                  lazy-load
-                  class="listItem__image"
-                  src="${image}"
-                  alt="${alt}"
-              ></arpa-image>`
-            : '';
+        if (!image) return '';
+        const { width } = this.getImageDimensions(true);
+        return html`<arpa-image
+            ${attrString({ size: width })}
+            lazy-load
+            class="listItem__image"
+            src="${image}"
+            alt="${alt}"
+        ></arpa-image>`;
     }
 
-    getImageDimensions() {
+    getImageDimensions(memoized = true) {
+        (!memoized || !this.imageDimensions) && (this.imageDimensions = this._getImageDimensions(memoized));
+        this.list && (this.list.itemImageDimensions = this.imageDimensions);
+        return this.imageDimensions;
+    }
+
+    _getImageDimensions(memoized) {
+        if (memoized && this.list?.itemImageDimensions) return this.list.itemImageDimensions;
+        const { imageSizes = { list: { width: 100 } } } = this._config;
         const size = this.getProperty('image-size');
         const width = this.getProperty('image-width') || size;
         const height = this.getProperty('image-height');
-        if (width || height) {
-            return { width, height };
-        }
-        const { imageSizes = { list: { width: 100 } } } = this._config;
+        if (width || height) return { width, height };
         return imageSizes[this.view?.replace(/-/g, '_')] || imageSizes.list;
     }
 
-    // #region RENDER NAV
+    // #region Render Nav
 
     renderNav() {
-        if (!this.hasNav() && !this.hasZone('item-nav')) {
-            return '';
-        }
+        if (!this.hasNav() && !this.hasZone('item-nav')) return '';
         return html`<icon-menu id="${this.getId()}" class="listItem__nav" zone="item-nav"></icon-menu>`;
     }
 
-    // #endregion RENDER NAV
+    // #endregion Render Nav
 
     renderContent(truncate = this.getProperty('truncate-content'), content = this.getContent()) {
-        if (!content?.trim()) {
-            return '';
-        }
-        return html`
-            <truncate-text has-button max-length="${truncate}" class="listItem__content">${content}</truncate-text>
-        `;
+        if (!content.length) return '';
+        if (!truncate) return content;
+        return html`<truncate-text has-button max-length="${truncate}" class="listItem__content">
+            ${content}
+        </truncate-text>`;
     }
-
+    /////////////////////////////
     //#endregion RENDERING
+    /////////////////////////////
 
+    /////////////////////////////
     // #region LIFECYCLE
+    /////////////////////////////
 
     async _onConnected() {
         await this._initializeItem();
@@ -451,12 +452,10 @@ class ListItem extends ArpaElement {
         this.contentNode = this.querySelector('.listItem__content');
         this.titleNode = this.querySelector('.listItem__title');
         this.contentWrapperNode = this.querySelector('.listItem__contentWrapper');
-        this.initializeNav();
-        customElements.whenDefined('arpa-image').then(() => {
-            this.image?.addConfig({
-                onLoad: event => this._onImageLoaded(event),
-                onError: event => this._onImageError(event)
-            });
+        this.hasNav() && this.initializeNav();
+        this.image?.addConfig({
+            onLoad: event => this._onImageLoaded(event),
+            onError: event => this._onImageError(event)
         });
     }
 
@@ -464,7 +463,7 @@ class ListItem extends ArpaElement {
      * Initializes event listeners and actions for the list item.
      */
     async _initializeItem() {
-        if (this.checkbox && this.hasSelection()) {
+        if (this.checkbox) {
             this.checkbox.removeEventListener('change', this.setSelected);
             this.checkbox.addEventListener('change', this.setSelected);
             this.setSelected();
@@ -482,8 +481,6 @@ class ListItem extends ArpaElement {
      * An item can have a view filter that changes the view of the list: grid, list, compact etc...
      */
     _initializeView() {
-        /** @type {ListFilter} */
-        this.viewsFilter = this.listResource?.filters?.views;
         this.view = this.viewsFilter?.getValue();
         this.isGrid = this._isGrid();
         this.viewsFilter?.on('value', this._onViewChange, this._unsubscribes);
@@ -507,48 +504,23 @@ class ListItem extends ArpaElement {
         this.image && this.updateImageSize();
     }
 
-    updateCheckbox() {
-        if (this.checkboxContainer) {
-            if (this.view === 'list-compact') {
-                this.mainNode?.prepend(this.checkboxContainer);
-            } else {
-                this.rhs?.prepend(this.checkboxContainer);
-            }
+    updateCheckbox(container = this.checkboxContainer) {
+        if (container) {
+            this.view === 'list-compact'
+                ? container.parentNode !== this.mainNode && this.mainNode?.prepend(container)
+                : container.parentNode !== this.rhs && this.rhs?.prepend(container);
         }
     }
 
-    // updateImage() {
-    //     let targetParentNode = this.mainNode;
-    //     if (this.isGrid) {
-    //         targetParentNode = this.titleNode ? this.titleNode : this.contentWrapperNode;
-    //     }
-    //     if (this.image && this.image.parentNode !== targetParentNode) {
-    //         if (this.isGrid && this.titleNode) {
-    //             this.titleNode.after(this.image);
-    //         } else {
-    //             targetParentNode.prepend(this.image);
-    //         }
-    //     }
-    // }
-
     updateImage() {
         const targetParentNode = this.isGrid ? this.titleNode || this.contentWrapperNode : this.mainNode;
-
-        // Early return if there's no image or if it's already correctly placed
-        if (!this.image || this.image.parentNode === targetParentNode) {
-            return;
-        }
-
-        // Place image correctly based on the grid and title conditions
-        if (this.isGrid && this.titleNode) {
-            this.titleNode.after(this.image);
-        } else {
-            targetParentNode.prepend(this.image);
+        if (this.image && this.image.parentNode !== targetParentNode) {
+            this.isGrid && this.titleNode ? this.titleNode.after(this.image) : targetParentNode.prepend(this.image);
         }
     }
 
     updateImageSize() {
-        const { width, height } = this.getImageDimensions();
+        const { width, height } = this.getImageDimensions(false);
         this.image?.setSize(width, height);
     }
 
@@ -562,9 +534,13 @@ class ListItem extends ArpaElement {
             this.listResource?.registerItem(payload, this);
         }
     }
-    // #endregion
+    /////////////////////////////
+    // #endregion LIFECYCLE
+    /////////////////////////////
 
+    /////////////////////////////
     // #region EVENTS
+    /////////////////////////////
 
     /**
      * Called when the image has loaded.
@@ -583,10 +559,13 @@ class ListItem extends ArpaElement {
         const { onImageError } = this._config;
         typeof onImageError === 'function' && this._config?.onImageError(event, this);
     }
+    /////////////////////////////
+    // #endregion EVENTS
+    /////////////////////////////
 
-    // #endregion
-
+    /////////////////////////////
     // #region ACTIONS
+    /////////////////////////////
 
     /**
      * Deletes the list item.
@@ -595,8 +574,9 @@ class ListItem extends ArpaElement {
     delete() {
         return this.listResource ? this.listResource.removeItem({ id: this.getId() }) : this.remove();
     }
-
-    // #endregion
+    /////////////////////////////
+    // #endregion ACTIONS
+    /////////////////////////////
 }
 
 customElements.define(ListItem.prototype.getTagName(), ListItem);

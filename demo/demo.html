@@ -22,7 +22,7 @@
                 <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>
             </zone>
 
-            <zone name="sort-options">
+            <zone name="sort-options" lazy>
                 <nav-link param-value="title" icon-right="sort_by_alpha"> Title </nav-link>
                 <nav-link param-value="date" icon-right="calendar_month" default> Date </nav-link>
             </zone>
@@ -39,9 +39,19 @@
                     <tag-item label="{date}" icon="calendar_month"></tag-item>
                 </zone>
 
-                <zone name="item-nav">
+                <zone name="item-nav" lazy>
                     <nav-link link="/gallery/{id}" icon-right="visibility">View</nav-link>
                     <nav-link link="/gallery/{id}/edit" icon-right="edit">Edit</nav-link>
+                    <nav-link link="/gallery/{id}/delete" icon-right="delete" confirm>Delete</nav-link>
+                    <nav-link link="/gallery/{id}/download" icon-right="download">Download</nav-link>
+                    <nav-link link="/gallery/{id}/share" icon-right="share">Share</nav-link>
+                    <nav-link link="/gallery/{id}/print" icon-right="print">Print</nav-link>
+                    <nav-link link="/gallery/{id}/copy" icon-right="content_copy">Copy</nav-link>
+                    <nav-link link="/gallery/{id}/move" icon-right="move_to_inbox">Move</nav-link>
+                    <nav-link link="/gallery/{id}/link" icon-right="link">Link</nav-link>
+                    <nav-link link="/gallery/{id}/info" icon-right="info">Info</nav-link>
+                    <nav-link link="/gallery/{id}/settings" icon-right="settings">Settings</nav-link>
+                    <nav-link link="/gallery/{id}/more" icon-right="more_horiz">More</nav-link>
                 </zone>
             </template>
         </arpa-list>
