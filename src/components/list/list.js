@@ -3,14 +3,15 @@
  * @typedef {import('./listInterface.js').ListInterface} ListInterface
  * @typedef {import('../../../../types').AbstractContentInterface} AbstractContentInterface
  * @typedef {import('@arpadroid/ui').Pager} Pager
+ * @typedef {import('@arpadroid/resources/dist/arpadroid-resources.js').ListResource} ListResource
  */
 
 import { I18nTool } from '@arpadroid/i18n';
 import { Context } from '@arpadroid/application';
 import { ArpaElement } from '@arpadroid/ui';
 import { ListResource, getResource } from '@arpadroid/resources';
-import { mergeObjects, getScrollableParent, isInView, editURL, appendNodes } from '@arpadroid/tools';
-import { renderNode, renderAttr, attrString } from '@arpadroid/tools';
+import { mergeObjects, getScrollableParent, isInView, editURL, appendNodes, processTemplate } from '@arpadroid/tools';
+import { renderNode, renderAttr, attrString, bind } from '@arpadroid/tools';
 import ListItem from '../listItem/listItem.js';
 
 const html = String.raw;
@@ -22,13 +23,8 @@ class List extends ArpaElement {
     //////////////////////////
 
     _preInitialize() {
-        this.onResourceAddItem = this.onResourceAddItem.bind(this);
-        this.onResourceRemoveItem = this.onResourceRemoveItem.bind(this);
-        this.onResourceRemoveItems = this.onResourceRemoveItems.bind(this);
-        this.onResourceItemsUpdated = this.onResourceItemsUpdated.bind(this);
-        this.onResourceSetItems = this.onResourceSetItems.bind(this);
-        this.onResourceAddItems = this.onResourceAddItems.bind(this);
-        this.onResourceFetch = this.onResourceFetch.bind(this);
+        bind(this, 'onResourceAddItem', 'onResourceRemoveItem', 'onResourceRemoveItems', '_initializeList');
+        bind(this, 'onResourceItemsUpdated', 'onResourceSetItems', 'onResourceAddItems', 'onResourceFetch');
         this.itemTemplate = this.getItemTemplate();
         this.itemTemplate?.remove();
     }
@@ -46,8 +42,7 @@ class List extends ArpaElement {
         /** @type {ListResource} */
         this.listResource = this.getResource();
         if (this.listResource) {
-            this.preloader = renderNode(html`<circular-preloader class="arpaList__preloader"></circular-preloader>`);
-            this.listResource.on('payload', () => this._initializeList());
+            this.listResource.on('payload', this._initializeList);
             this._handleItems();
             this._handlePreloading();
             const url = this.getProperty('url');
@@ -124,6 +119,7 @@ class List extends ArpaElement {
                 hasResource: false,
                 hasSearch: false,
                 hasSelection: false,
+                hasPreloader: true,
                 hasSort: false,
                 hasStickyFilters: false,
                 hasViews: false,
@@ -132,6 +128,7 @@ class List extends ArpaElement {
                 items: [],
                 itemsPerPage: 50,
                 itemTag: 'list-item',
+                lazyLoadImages: 'auto',
                 noItemsContent: html`<i18n-text key="modules.list.txtNoItemsFound"></i18n-text>`,
                 noItemsIcon: 'info',
                 pageParam: 'page',
@@ -157,70 +154,9 @@ class List extends ArpaElement {
 
     // #endregion
 
-    /////////////////////////////
-    // #region Accessors
-    /////////////////////////////
-
-    /**
-     * Returns the component id.
-     * @returns {string}
-     */
-    getId() {
-        return this.getProperty('id');
-    }
-
-    getDefaultView() {
-        return this.getProperty('default-view');
-    }
-
-    /**
-     * Returns the render mode.
-     * @returns {string}
-     */
-    getRenderMode() {
-        return this.getProperty('render-mode');
-    }
-
-    /**
-     * The main text to be displayed.
-     * @returns {string}
-     */
-    getTitle() {
-        return this.getProperty('title');
-    }
-
-    /**
-     * Returns the different options by which the list items can be sorted.
-     * @returns {Record<string,unknown>[]}
-     * @todo - Implement FieldOptionInterface as return type.
-     * Have to sort out the forms library types first.
-     */
-    getSortOptions() {
-        return this.getProperty('sort-options');
-    }
-
-    /**
-     * Gets the list items that are initially added to the DOM.
-     * @returns {ListItem[]}
-     */
-    getInitialItems() {
-        const itemTagName = this.getProperty('item-tag');
-        return (
-            this._childNodes.filter(node => {
-                return node?.tagName?.toLowerCase() === itemTagName;
-            }) || []
-        );
-    }
-
-    /**
-     * Returns the default sort option value.
-     * @returns {string}
-     */
-    getSortDefault() {
-        return this.getProperty('sort-default');
-    }
-
+    /////////////////////////
     // #region has
+    /////////////////////////
 
     /**
      * Returns true if the list has any controls enabled.
@@ -228,6 +164,10 @@ class List extends ArpaElement {
      */
     hasControls() {
         return this.hasAllControls() || this.hasProperty('has-controls') || this.hasZone('controls');
+    }
+
+    hasPreloader() {
+        return this.hasProperty('has-preloader');
     }
 
     /**
@@ -324,11 +264,94 @@ class List extends ArpaElement {
         return Boolean(this.getNoItemsContent() || this.hasZone('no-items'));
     }
 
+    // #endregion
+
+    /////////////////////////////
+    // #region get
+    /////////////////////////////
+
+    /**
+     * Returns the component id.
+     * @returns {string}
+     */
+    getId() {
+        return this.getProperty('id');
+    }
+
+    getDefaultView() {
+        return this.getProperty('default-view');
+    }
+
+    getItemCount() {
+        return this.getItems()?.length;
+    }
+
+    /**
+     * Returns the render mode.
+     * @returns {string}
+     */
+    getRenderMode() {
+        return this.getProperty('render-mode');
+    }
+
+    /**
+     * The main text to be displayed.
+     * @returns {string}
+     */
+    getTitle() {
+        return this.getProperty('title');
+    }
+
+    /**
+     * Returns the different options by which the list items can be sorted.
+     * @returns {Record<string,unknown>[]}
+     * @todo - Implement FieldOptionInterface as return type.
+     * Have to sort out the forms library types first.
+     */
+    getSortOptions() {
+        return this.getProperty('sort-options');
+    }
+
+    /**
+     * Gets the list items that are initially added to the DOM.
+     * @returns {ListItem[]}
+     */
+    getInitialItems() {
+        const itemTagName = this.getProperty('item-tag');
+        return (
+            this._childNodes.filter(node => {
+                return node?.tagName?.toLowerCase() === itemTagName;
+            }) || []
+        );
+    }
+
     getNoItemsContent() {
         return this.getProperty('no-items-content');
     }
 
-    // #endregion
+    /**
+     * Returns the default sort option value.
+     * @returns {string}
+     */
+    getSortDefault() {
+        return this.getProperty('sort-default');
+    }
+
+    getChildren() {
+        return this.itemsNode?.children ?? [];
+    }
+
+    getLazyLoadImages() {
+        return this.getProperty('lazy-load-images');
+    }
+
+    //////////////////////
+    // #endregion get
+    /////////////////////
+
+    /////////////////////////
+    // #region set
+    /////////////////////////
 
     /**
      * Sets the sort options for the list.
@@ -342,10 +365,6 @@ class List extends ArpaElement {
         const listSort = this.controls?.search?.listSort;
         const sortField = listSort?.selectField;
         sortField?.setOptions(options, defaultValue);
-    }
-
-    getChildren() {
-        return this.itemsNode?.children ?? [];
     }
 
     /**
@@ -378,7 +397,9 @@ class List extends ArpaElement {
         appendNodes(container, items);
     }
 
-    // #endregion ACCESSORS
+    /////////////////////////
+    // #endregion set
+    /////////////////////////
 
     ////////////////////////
     // #region Resource API
@@ -553,7 +574,7 @@ class List extends ArpaElement {
      * @param {ListItemInterface[]} items
      * @param {number} batchSize
      */
-    addItemsBatched(items = [], batchSize = 50) {
+    addItemsBatched(items = [], batchSize = 100) {
         const totalItems = items.length;
         let currentIndex = 0;
         const processBatch = () => {
@@ -567,12 +588,10 @@ class List extends ArpaElement {
     }
 
     async onResourceSetItems(items = []) {
-        this.onRenderReady(() => {
-            this.updatePager();
-            this.itemsNode && (this.itemsNode.innerHTML = '');
-            this.addItemsBatched(items);
-            this.resolveFetch?.();
-        });
+        this.updatePager();
+        this.itemsNode && (this.itemsNode.innerHTML = '');
+        this.addItemsBatched(items);
+        this.resolveFetch?.();
     }
 
     onResourceItemsUpdated() {
@@ -624,19 +643,24 @@ class List extends ArpaElement {
             noItemsContent: this.getNoItemsContent(),
             noItemsIcon: this.getProperty('no-items-icon'),
             pager: this.renderPager(),
-            title: this.renderTitle()
+            title: this.renderTitle(),
+            preloader: this.renderPreloader()
         };
     }
 
     render() {
         const renderMode = this.getRenderMode();
         const template = renderMode === 'minimal' ? this.renderMinimal() : this.renderFull();
-        this.innerHTML = I18nTool.processTemplate(template, this.getTemplateVars());
+        this.innerHTML = processTemplate(template, this.getTemplateVars());
         this.bodyMainNode = this.querySelector('.arpaList__bodyMain');
         this.itemsNode = renderMode === 'minimal' ? this : this.querySelector('.arpaList__items');
         appendNodes(this.itemsNode, this._childNodes);
         this.renderItems();
         appendNodes(this.itemsNode, this.getInitialItems());
+    }
+
+    renderPreloader() {
+        return this.hasPreloader() ? html`<circular-preloader class="arpaList__preloader"></circular-preloader>` : '';
     }
 
     /**
@@ -659,7 +683,7 @@ class List extends ArpaElement {
         return html`
             {title} {controls}
             <div class="arpaList__body">
-                <div class="arpaList__bodyMain">{info}{heading}{items}</div>
+                <div class="arpaList__bodyMain">{info}{heading}{items}{preloader}</div>
                 {aside}
             </div>
             {footer}
@@ -679,7 +703,9 @@ class List extends ArpaElement {
         return html`<list-info
             zone="list-info"
             ${attrString({
-                'txt-all-results': this.getProperty('txt-all-results')
+                'txt-all-results': this.getProperty('txt-all-results'),
+                'txt-search-results': this.getProperty('txt-search-results'),
+                'txt-no-results': this.getProperty('txt-no-results')
             })}
         ></list-info>`;
     }
@@ -751,7 +777,7 @@ class List extends ArpaElement {
      * Updates the pager.
      * @param {Pager} node
      */
-    async updatePager(node = this.querySelector('arpa-pager')) {
+    updatePager(node = this.querySelector('arpa-pager')) {
         node?.setPager(this.listResource?.getCurrentPage(), this.listResource?.getTotalPages());
     }
 
@@ -773,9 +799,10 @@ class List extends ArpaElement {
     _initializeNodes() {
         this.controls = this.querySelector('list-controls');
         this.noItemsNode = this.querySelector('.arpaList__noItems');
+        this.preloader = this.querySelector('.arpaList__preloader');
     }
 
-    async update() {
+    update() {
         this.onRenderReady(() => {
             if (!this.getItems()?.length && !this.isLoading) {
                 this.noItemsNode = this.noItemsNode || renderNode(this.renderNoItemsContent());
@@ -786,19 +813,15 @@ class List extends ArpaElement {
         });
     }
 
-    async _handlePreloading() {
+    _handlePreloading() {
         this.listResource?.on('fetch', async () => {
-            await this.promise;
-            const container = this.bodyMainNode || this;
             this.isLoading = true;
             this.classList.add('arpaList--loading');
-            this.isLoading && this._hasRendered && container.appendChild(this.preloader);
         });
 
         this.listResource?.on('ready', () => {
             this.classList.remove('arpaList--loading');
             this.isLoading = false;
-            this.preloader?.remove();
         });
     }
 

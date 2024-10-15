@@ -112,7 +112,6 @@ class ListViews extends ArpaElement {
         }
         clearLazyQueue();
         this?.viewFilter?.setValue(view);
-        this.list && (await this.list.onReady());
         this.applyView(view);
     }
 
@@ -120,7 +119,7 @@ class ListViews extends ArpaElement {
         return Boolean(this._config.links.find(link => link.value === view));
     }
 
-    async applyView(view) {
+    applyView(view) {
         this.list?.classList.remove(...this.viewClasses);
         this.list?.classList.add('listView--' + view);
         view === 'grid-compact' && this.list?.classList.add('listView--grid');

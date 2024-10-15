@@ -1,5 +1,5 @@
 import { ArpaElement } from '@arpadroid/ui';
-import { appendNodes } from '@arpadroid/tools';
+import { appendNodes, attrString } from '@arpadroid/tools';
 // import Sticky from '../../../../components/sticky/sticky.js';
 
 const html = String.raw;
@@ -28,7 +28,15 @@ class ListControls extends ArpaElement {
     }
 
     renderSort() {
-        return this.list?.hasSort() ? html`<list-sort></list-sort>` : '';
+        if (!this.list?.hasSort()) return '';
+        return html`<list-sort
+            ${attrString({
+                'lbl-sort-asc': this.list.getProperty('lbl-sort-asc'),
+                'lbl-sort-desc': this.list.getProperty('lbl-sort-desc'),
+                'lbl-no-selection': this.list.getProperty('lbl-no-selection'),
+                'lbl-sorted-by': this.list.getProperty('lbl-sorted-by')
+            })}
+        ></list-sort>`;
     }
 
     renderMultiSelect() {

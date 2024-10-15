@@ -24,6 +24,29 @@ class TagItem extends ListItem {
         };
     }
 
+    getId() {
+        return this.getProperty('id');
+    }
+
+    getValue() {
+        return this.getProperty('value') ?? this.getText();
+    }
+
+    getText() {
+        return this.getProperty('text') ?? this.textNode?.textContent ?? '';
+    }
+
+    hasOnDelete() {
+        return this.hasAttribute('has-delete') || typeof this._config.onDelete === 'function';
+    }
+    getPayload() {
+        return {
+            id: this.getId(),
+            value: this.getValue(),
+            text: this.getProperty('text')
+        };
+    }
+
     render() {
         const tooltip = this.getProperty('tooltip');
         const tooltipPosition = this.getProperty('tooltip-position');
@@ -54,18 +77,6 @@ class TagItem extends ListItem {
         ></button>`;
     }
 
-    getValue() {
-        return this.getProperty('value') ?? this.getText();
-    }
-
-    getText() {
-        return this.getProperty('text') ?? this.textNode?.textContent ?? '';
-    }
-
-    hasOnDelete() {
-        return this.hasAttribute('has-delete') || typeof this._config.onDelete === 'function';
-    }
-
     initializeDeleteButton() {
         if (this.hasOnDelete()) {
             this.deleteButton = renderNode(this.renderDeleteButton());
@@ -73,18 +84,6 @@ class TagItem extends ListItem {
             this.deleteButton.removeEventListener('click', this._onDelete);
             this.deleteButton.addEventListener('click', this._onDelete);
         }
-    }
-
-    getPayload() {
-        return {
-            id: this.getId(),
-            value: this.getValue(),
-            text: this.getProperty('text')
-        };
-    }
-
-    getId() {
-        return this.getProperty('id');
     }
 
     _onDelete() {

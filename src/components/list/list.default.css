@@ -64,6 +64,7 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .arpaList__bodyAside {
@@ -126,6 +127,8 @@
     --preloader-border-width: 2px;
     --preloader-outline-width: 2px;
     --preloader-bg-color: rgba(255, 255, 255, 0.3);
+    opacity: 0;
+    z-index: -1;
 
     .circularPreloader__spinnerContainer {
         position: fixed;
@@ -151,8 +154,22 @@
  * States
  */
 
-.arpaList--loading .arpaList__items {
-    opacity: 0.2;
+.arpaList--loading {
+    .arpaList__preloader {
+        opacity: 1;
+        z-index: 1;
+        visibility: hidden;
+        .circularPreloader__spinnerContainer {
+            visibility: hidden;
+            .circularPreloader__spinner {
+                visibility: visible;
+            }
+        }
+    }
+
+    > .arpaList__body > .arpaList__bodyMain > .arpaList__items .listItem {
+        opacity: 0.2;
+    }
 }
 
 /**

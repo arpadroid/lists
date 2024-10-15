@@ -13,18 +13,14 @@ import { Context } from '@arpadroid/application';
 import { ArpaElement } from '@arpadroid/ui';
 const html = String.raw;
 class ListSort extends ArpaElement {
-    //////////////////////////
+    //////////////////////////////
     // #region INITIALIZATION
-    //////////////////////////
+    /////////////////////////////
     _bindings = ['renderSelectValue', 'onSelectChange', 'update', 'onSortClick', '_onRouteChange', '_onSortBySelected'];
 
     getDefaultConfig() {
         this.i18nKey = 'modules.list.listSort';
         return {
-            lblNoSelection: this.i18nText('lblNoSelection'),
-            lblSortAsc: this.i18n('lblSortAsc'),
-            lblSortDesc: this.i18n('lblSortDesc'),
-            lblSortedBy: this.i18n('lblSortedBy'),
             iconAsc: 'keyboard_double_arrow_up',
             iconDesc: 'keyboard_double_arrow_down',
             iconSort: 'sort',
@@ -44,8 +40,9 @@ class ListSort extends ArpaElement {
         this.sortFilter = this.listResource?.getSortFilter();
         return true;
     }
-
-    // #endregion
+    ////////////////////////////////
+    // #endregion INITIALIZATION
+    ///////////////////////////////
 
     ////////////////////
     // #region ACCESSORS
@@ -60,18 +57,18 @@ class ListSort extends ArpaElement {
     }
 
     getSortDirTooltip(dir = this.getSortDir()) {
-        const prop = dir === 'asc' ? 'lbl-sort-asc' : 'lbl-sort-desc';
-        return this.getProperty(prop);
+        return this.i18n(dir === 'asc' ? 'lblSortAsc' : 'lblSortDesc');
     }
+    ///////////////////////////////
+    // #endregion ACCESSORS
+    //////////////////////////////
 
-    // #endregion
-
-    /////////////////////
+    /////////////////////////////
     // #region LIFECYCLE
-    /////////////////////
+    ////////////////////////////
 
     _onConnected() {
-        Context?.Router?.on('route_changed', this._onRouteChange, this._unsubscribes);
+        Context?.Router?.on('route_changed', this._onRouteChange);
     }
 
     _onRouteChange() {
@@ -85,9 +82,13 @@ class ListSort extends ArpaElement {
         sortLink?.querySelector('arpa-tooltip')?.setContent(this.getSortDirTooltip());
     }
 
-    ////////////////////
+    /////////////////////////////
+    // #endregion LIFECYCLE
+    ////////////////////////////
+
+    ///////////////////////////
     // #region RENDERING
-    ////////////////////
+    //////////////////////////
 
     render() {
         const sortDir = this.listResource?.getSortDirection() === 'asc' ? 'desc' : 'asc';
@@ -129,11 +130,12 @@ class ListSort extends ArpaElement {
         const icon = item.getProperty('icon') || item.getProperty('icon-right');
         this.sortByMenu.setIcon(icon);
         this.sortByMenu.setTooltip(
-            html`<span>${this.getProperty('lblSortedBy')}</span> <strong>${item.getLabelText()}</strong>`
+            html`<span>${this.i18n('lblSortedBy')}</span> <strong>${item.getLabelText()}</strong>`
         );
     }
-
-    // #endregion
+    //////////////////////////
+    // #endregion RENDERING
+    //////////////////////////
 }
 
 customElements.define('list-sort', ListSort);

@@ -7,18 +7,16 @@
  * @typedef {import('../list/list.js').default} List
  */
 import { ArpaElement } from '@arpadroid/ui';
-import { mergeObjects } from '@arpadroid/tools';
+import { mergeObjects, bind, renderNode } from '@arpadroid/tools';
 const html = String.raw;
 class ListInfo extends ArpaElement {
     getDefaultConfig() {
         this.i18nKey = 'modules.list';
+        bind(this, 'reRender', 'updateText');
         return mergeObjects(super.getDefaultConfig(), {
             className: 'listInfo',
             hasPrevNext: true,
-            hasRefresh: true,
-            i18nAllResults: 'txtAllResults',
-            i18nSearchResults: 'txtSearchResults',
-            i18nNoResults: 'txtNoResults'
+            hasRefresh: true
         });
     }
 
@@ -28,10 +26,18 @@ class ListInfo extends ArpaElement {
         this.list = this.closest('.arpaList');
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
-        this.listResource?.on('payload', () => this.reRender());
+        this.listResource?.on('payload', this.updateText);
         /** @type {ListFilter} */
-        this.searchFilter = this.listResource?.searchFilter;
-        return true;
+        this.searchFilter = this.listResource?.getSearchFilter();
+    }
+
+    updateText() {
+        this.textNode = this.querySelector('.listInfo__text');
+        const infoText = this.renderInfoText();
+        if (!infoText) return;
+        const newNode = renderNode(infoText);
+        this.textNode ? this.textNode.replaceWith(newNode) : this.prepend(newNode);
+        this.textNode = newNode;
     }
 
     hasRefresh() {
@@ -43,24 +49,24 @@ class ListInfo extends ArpaElement {
     }
 
     render() {
-        this.innerHTML = '';
-        if (!this.listResource) {
-            return;
-        }
-        const hasSearchResults = this.listResource?.hasResults();
-        const query = this.searchFilter?.getValue();
-        let _html = '';
-        if (this.listResource) {
-            if (query?.length) {
-                _html += !hasSearchResults ? this.renderNoResults() : this.renderSearchResults();
-            } else {
-                _html += this.renderResults();
-            }
-        }
-        this.innerHTML = _html + this.renderButtons();
+        if (!this.listResource) return;
+        this.innerHTML = this.renderInfoText() + this.renderButtons();
         this.handleRefresh();
         this.handlePreviousPage();
         this.handleNextPage();
+        this.textNode = this.querySelector('.listInfo__text');
+    }
+
+    renderInfoText() {
+        const hasSearchResults = this.listResource?.hasResults();
+        const query = this.searchFilter?.getValue();
+        if (this.listResource) {
+            if (query?.length) {
+                return !hasSearchResults ? this.renderNoResults() : this.renderSearchResults();
+            }
+            return this.renderResults();
+        }
+        return '';
     }
 
     handlePreviousPage() {
@@ -72,29 +78,34 @@ class ListInfo extends ArpaElement {
 
     handleNextPage() {
         this.nextBtn = this.querySelector('.listInfo__next');
-        this.nextBtn?.addEventListener('click', () => {
-            this.listResource?.nextPage();
-        });
+        this.nextBtn?.addEventListener('click', () => this.listResource?.nextPage());
     }
 
     handleRefresh() {
         this.refreshBtn = this.querySelector('.listInfo__refresh');
-        this.refreshBtn?.addEventListener('click', () => {
-            this.listResource?.refresh();
-        });
+        this.refreshBtn?.addEventListener('click', () => this.listResource?.refresh());
     }
 
     renderButtons() {
+        return html`<div class="listInfo__buttons">${this.renderRefresh()}${this.renderPrevNext()}</div>`;
+    }
+
+    renderRefresh() {
+        if (!this.hasRefresh()) return '';
+        return html`<button class="listInfo__refresh" is="icon-button" icon="refresh">
+            <zone name="tooltip-content">${this.i18n('txtRefresh')}</zone>
+        </button>`;
+    }
+
+    renderPrevNext() {
+        if (!this.hasPrevNext()) return '';
         return html`
-            <div class="listInfo__buttons">
-                ${(this.hasRefresh() &&
-                    html`<button class="listInfo__refresh" is="icon-button" icon="refresh"></button>`) ||
-                ''}
-                ${(this.hasPrevNext() &&
-                    html`<button class="listInfo__previous" is="icon-button" icon="skip_previous"></button>
-                        <button class="listInfo__next" is="icon-button" icon="skip_next"></button> `) ||
-                ''}
-            </div>
+            <button class="listInfo__previous" is="icon-button" icon="skip_previous">
+                <zone name="tooltip-content">${this.i18n('txtPrevPage')}</zone>
+            </button>
+            <button class="listInfo__next" is="icon-button" icon="skip_next">
+                <zone name="tooltip-content">${this.i18n('txtNextPage')}</zone>
+            </button>
         `;
     }
 
@@ -107,13 +118,13 @@ class ListInfo extends ArpaElement {
     renderResults(range = this.listResource?.getItemRange() ?? [], total = this.listResource?.getTotalItems()) {
         const { showResultsText } = this.list.getConfig();
         const [fistItem, lastItem] = range;
-        const { i18nAllResults } = this._config;
-        return showResultsText && range[0] && range[1]
-            ? html`<i18n-text key="${this.i18nKey}.${i18nAllResults}">
-                  <i18n-replace name="resultCount"><strong>${total}</strong></i18n-replace>
-                  <i18n-replace name="pageCount"><strong>${fistItem} - ${lastItem}</strong></i18n-replace>
-              </i18n-text>`
-            : '';
+        if (!showResultsText || !range[0] || !range[1]) return '';
+        return html`
+            <i18n-text key="${this.i18nKey}.txtAllResults" class="listInfo__text">
+                <i18n-replace name="resultCount"><strong>${total}</strong></i18n-replace>
+                <i18n-replace name="pageCount"><strong>${fistItem} - ${lastItem}</strong></i18n-replace>
+            </i18n-text>
+        `;
     }
 
     /**
@@ -123,11 +134,12 @@ class ListInfo extends ArpaElement {
      * @returns {string}
      */
     renderSearchResults(resultTotal = this.listResource?.getTotalItems(), query = this.searchFilter?.getValue()) {
-        const { i18nSearchResults } = this._config;
-        return html`<i18n-text key="${this.i18nKey}.${i18nSearchResults}">
-            <i18n-replace name="resultCount"><strong>${resultTotal}</strong></i18n-replace>
-            <i18n-replace name="result"><strong>${query}</strong></i18n-replace>
-        </i18n-text>`;
+        return html`
+            <i18n-text key="${this.i18nKey}.txtSearchResults" class="listInfo__text">
+                <i18n-replace name="resultCount"><strong>${resultTotal}</strong></i18n-replace>
+                <i18n-replace name="result"><strong>${query}</strong></i18n-replace>
+            </i18n-text>
+        `;
     }
 
     /**
@@ -136,10 +148,11 @@ class ListInfo extends ArpaElement {
      * @returns {string}
      */
     renderNoResults(query = this.searchFilter?.getValue()) {
-        const { i18nNoResults } = this._config;
-        return html`<i18n-text key="${this.i18nKey}.${i18nNoResults}">
-            <i18n-replace name="result"><strong>${query}</strong></i18n-replace>
-        </i18n-text>`;
+        return html`
+            <i18n-text key="${this.i18nKey}.txtNoResults" class="listInfo__text">
+                <i18n-replace name="result"><strong>${query}</strong></i18n-replace>
+            </i18n-text>
+        `;
     }
 }
 

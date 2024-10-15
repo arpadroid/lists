@@ -34,6 +34,7 @@ class ListItem extends ArpaElement {
             rhsContent: '',
             role: 'listitem',
             listSelector: '.arpaList',
+            lazyLoadImage: false,
             imageSizes: {
                 list_compact: { width: 24, height: 24 },
                 list: { width: 64, height: 64 },
@@ -402,13 +403,19 @@ class ListItem extends ArpaElement {
     renderImage(image = this.getImage(), alt = this.getImageAlt()) {
         if (!image) return '';
         const { width } = this.getImageDimensions(true);
-        return html`<arpa-image
-            ${attrString({ size: width })}
-            lazy-load
-            class="listItem__image"
-            src="${image}"
-            alt="${alt}"
-        ></arpa-image>`;
+        const totalItems = this.list?.getItemCount();
+        const lazyLoad = this.getLazyLoad();
+        const isAuto = lazyLoad === 'auto' && totalItems > 100;
+        const attr = {
+            size: width,
+            'lazy-load': lazyLoad || isAuto,
+            'has-native-lazy': this.getProperty('has-native-lazy') || isAuto
+        };
+        return html`<arpa-image ${attrString(attr)} class="listItem__image" src="${image}" alt="${alt}"></arpa-image>`;
+    }
+
+    getLazyLoad() {
+        return this.list?.getLazyLoadImages() ?? this.getProperty('lazy-load-image');
     }
 
     getImageDimensions(memoized = true) {
