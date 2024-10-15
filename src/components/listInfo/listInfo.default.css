@@ -1,7 +1,6 @@
 .listInfo {
     display: flex;
     flex-direction: row;
-    flex: 1 1 auto;
     align-items: center;
     font-size: 1rem;
     font-weight: 400;

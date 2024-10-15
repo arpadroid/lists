@@ -513,27 +513,27 @@ class ListItem extends ArpaElement {
         if (this.view !== view) {
             this.view = view;
             this.isGrid = this._isGrid();
-            this?.isConnected && this.update();
+            this?.isConnected && this._update();
         }
     }
 
-    update() {
-        this.updateCheckbox();
+    _update() {
+        this.checkboxContainer && this.updateCheckbox();
         this._hasRendered && this.updateImage();
         this.image && this.updateImageSize();
     }
 
     updateCheckbox(container = this.checkboxContainer) {
-        if (container) {
-            this.view === 'list-compact'
-                ? container.parentNode !== this.mainNode && this.mainNode?.prepend(container)
-                : container.parentNode !== this.rhs && this.rhs?.prepend(container);
-        }
+        if (!container) return;
+        this.view === 'list-compact'
+            ? container.parentNode !== this.mainNode && this.mainNode?.prepend(container)
+            : container.parentNode !== this.rhs && this.rhs?.prepend(container);
     }
 
     updateImage() {
+        if (!this.image) return;
         const targetParentNode = this.isGrid ? this.titleNode || this.contentWrapperNode : this.mainNode;
-        if (this.image && this.image.parentNode !== targetParentNode) {
+        if (this.image.parentNode !== targetParentNode) {
             this.isGrid && this.titleNode ? this.titleNode.after(this.image) : targetParentNode.prepend(this.image);
         }
     }
