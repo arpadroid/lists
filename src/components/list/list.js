@@ -121,7 +121,7 @@ class List extends ArpaElement {
                 hasSearch: false,
                 hasSelection: false,
                 hasPreloader: true,
-                hasItemsTransition: true,
+                hasItemsTransition: false,
                 hasSort: false,
                 hasStickyFilters: false,
                 hasViews: false,

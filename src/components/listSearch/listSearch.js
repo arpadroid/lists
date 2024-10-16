@@ -17,9 +17,9 @@ class ListSearch extends ArpaElement {
     //////////////////////////
     // #region INITIALIZATION
     //////////////////////////
-    _bindings = ['_onSubmit'];
 
     getDefaultConfig() {
+        this.bind('_onSubmit');
         return {
             hasMiniSearch: true,
             searchSelector: '.listItem__title'

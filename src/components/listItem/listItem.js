@@ -13,7 +13,6 @@ class ListItem extends ArpaElement {
     /////////////////////
     // #region INIT
     /////////////////////
-    _bindings = ['_onImageLoaded', '_onImageError', 'setSelected', '_onViewChange', '_onSelected', '_onDeselected'];
 
     constructor(config = {}, payload, map) {
         super(config);
@@ -26,6 +25,7 @@ class ListItem extends ArpaElement {
      * @returns {ListItemInterface}
      */
     getDefaultConfig() {
+        this.bind('_onImageLoaded', '_onImageError', 'setSelected', '_onViewChange', '_onSelected', '_onDeselected');
         return super.getDefaultConfig({
             lazyLoad: false,
             selectedClass: 'listItem--selected',

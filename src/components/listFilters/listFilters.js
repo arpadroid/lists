@@ -13,9 +13,9 @@ import { Context } from '@arpadroid/application';
 
 const html = String.raw;
 class ListFilters extends ArpaElement {
-    _bindings = ['onSubmit'];
     // #region INITIALIZATION
     getDefaultConfig() {
+        this.bind('onSubmit');
         return mergeObjects(super.getDefaultConfig(), {
             icon: 'filter_list',
             perPageOptions: [5, 10, 25, 50, 100, 200],
