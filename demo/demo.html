@@ -4,7 +4,6 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Basic HTML Document</title>
-
         <link rel="stylesheet" href="../dist/material-symbols/outlined.css" />
         <link rel="stylesheet" href="../dist/themes/default/default.bundled.final.css" />
         <link id="mobile-styles" rel="stylesheet" href="../dist/themes/mobile/mobile.final.css" disabled />
@@ -17,9 +16,17 @@
             url="http://casavaquero.local/api/gallery/item/get-items"
             param-namespace="galleryList-"
             itemsPerPage="200"
+            has-items-transition
         >
             <zone name="batch-operations">
-                <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>
+                <select-option value="delete" icon="delete">
+                    Delete
+                    <arpa-dialog icon="delete">
+                        <zone name="header"> Delete this </zone>
+                        <zone name="content"> Are you sure you want to delete the selected items? </zone>
+                        <zone name="footer">lola</zone>
+                    </arpa-dialog>
+                </select-option>
             </zone>
 
             <zone name="sort-options" lazy>

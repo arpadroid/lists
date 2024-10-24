@@ -80,7 +80,6 @@ class ListItem extends ArpaElement {
     }
 
     _onSelected() {
-        console.log('_onSelected');
         this.checkbox.checked = true;
         this.classList.add(this.getSelectedClass());
     }

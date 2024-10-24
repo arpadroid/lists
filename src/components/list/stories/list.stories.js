@@ -1,23 +1,22 @@
 /**
- * @typedef {import('./list.js').default} List
+ * @typedef {import('../list.js').default} List
  */
 import { attrString, getInitials } from '@arpadroid/tools';
 import { within, userEvent } from '@storybook/test';
 
 const html = String.raw;
 const ListStory = {
-    title: 'Modules/List/ResourceDriven',
+    title: 'Resource List',
     tags: [],
-    getArgs: () => {
-        return {
-            id: 'static-list',
-            title: '',
-            hasSearch: false,
-            hasSort: false,
-            hasViews: false,
-            allControls: false,
-            hasMultiSelect: false
-        };
+    args: {
+        id: 'static-list',
+        title: '',
+        hasSearch: false,
+        hasSort: false,
+        hasViews: false,
+        allControls: false,
+        hasMultiSelect: false,
+        hasItemsTransition: true
     },
     getArgTypes: (category = 'List Props') => {
         return {
@@ -27,7 +26,11 @@ const ListStory = {
             hasSearch: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
             hasMultiSelect: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
             hasViews: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
-            hasSort: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } }
+            hasSort: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
+            hasItemsTransition: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
+            url: { control: { type: 'text' }, table: { category, subcategory: 'Resource' } },
+            itemsPerPage: { control: { type: 'number' }, table: { category, subcategory: 'Resource' } },
+            paramNamespace: { control: { type: 'text' }, table: { category, subcategory: 'Resource' } }
         };
     },
     render: args => {
@@ -49,23 +52,11 @@ const ListStory = {
     }
 };
 
-// export const Default = {
-//     name: 'Render',
-//     parameters: {},
-//     argTypes: ListStory.getArgTypes(),
-//     args: { ...ListStory.getArgs(), id: 'test-list-default' }
-// };
-
 export const Default = {
     name: 'Render',
-    parameters: {
-        controls: { disable: true },
-        usage: { disable: true },
-        options: { selectedPanel: 'storybook/interactions/panel' }
-    },
     argTypes: ListStory.getArgTypes(),
     args: {
-        ...ListStory.getArgs(),
+        // ...ListStory.getArgs(),
         id: 'resource-driven-list',
         allControls: true,
         title: 'Resource Driven List',
@@ -106,9 +97,16 @@ export const Default = {
                 }
             </style>
 
-            <arpa-list id="${args.id}" ${attrString(args)}>
+            <arpa-list ${attrString(args)}>
                 <zone name="batch-operations">
-                    <batch-operation value="delete" icon="delete" confirm> Delete </batch-operation>
+                    <select-option value="delete" icon="delete">
+                        Delete
+                        <arpa-dialog title="Delete Itemsss" icon="delete">
+                            <zone name="header"> Delete this </zone>
+                            <zone name="content"> Are you sure you want to delete the selected items? </zone>
+                            <zone name="footer">lola</zone>
+                        </arpa-dialog>
+                    </select-option>
                 </zone>
 
                 <zone name="sort-options">
@@ -138,8 +136,15 @@ export const Default = {
     }
 };
 
+const testParams = {
+    controls: { disable: true },
+    usage: { disable: true },
+    options: { selectedPanel: 'storybook/interactions/panel' }
+};
+
 export const TestFilters = {
     ...Default,
+    parameters: testParams,
     args: {
         ...Default.args,
         id: 'test-filters'
@@ -157,13 +162,15 @@ export const TestFilters = {
 
 export const TestBatchOperations = {
     ...Default,
+    parameters: testParams,
     args: {
         ...Default.args,
         id: 'test-batch-operations',
         allControls: false,
         hasResource: true,
         hasSelection: true,
-        hasControls: true
+        hasControls: true,
+        itemsPerPage: 1
     },
     play: async ({ canvasElement, step }) => {
         const setup = await Default.playSetup(canvasElement);
@@ -171,13 +178,18 @@ export const TestBatchOperations = {
 
         await step('Opens Batch Operations', async () => {
             const filtersMenu = canvas.getByRole('button', { name: /No items selected/i });
-            userEvent.click(filtersMenu);
+            await userEvent.click(filtersMenu);
+            const button = canvas.getByText('Select an action');
+            await userEvent.click(canvas.getByText(/Select all/i));
+            await new Promise(resolve => setTimeout(resolve, 100));
+            userEvent.click(button);
         });
     }
 };
 
 export const TestViews = {
     ...Default,
+    parameters: testParams,
     args: {
         ...Default.args,
         id: 'test-views',

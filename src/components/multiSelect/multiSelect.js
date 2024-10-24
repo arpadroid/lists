@@ -89,14 +89,16 @@ class MultiSelect extends ArpaElement {
 
     // #region LIFECYCLE
 
-    async _onConnected() {
-        await customElements.whenDefined('arpa-form', 'icon-menu');
+    _initializeNodes(){
         /** @type {FormComponent} */
         this.form = this.querySelector('.listMultiSelect__form');
         this.messages = this.querySelector('arpa-messages');
-
         /** @type {IconMenu} */
         this.menu = this.querySelector('.listMultiSelect__nav');
+    }
+
+    async _onConnected() {
+        await customElements.whenDefined('arpa-form', 'icon-menu');
         this._initializeActions();
         this._initializeToggle();
         this._initializeSelectionFilter();

@@ -47,7 +47,11 @@ class List extends ArpaElement {
             this._handleItems();
             this._handlePreloading();
             const url = this.getProperty('url');
-            url && this.listResource.setUrl(url);
+            if (url) {
+                this.listResource.setUrl(url);
+                this.removeAttribute('url');
+            }
+            
         }
     }
 
@@ -621,7 +625,7 @@ class List extends ArpaElement {
 
     async onResourceSetItems(items = []) {
         this.updatePager();
-        const hasItemsTransition = this.getProperty('has-items-transition');
+        const hasItemsTransition = this.hasProperty('has-items-transition');
         if (hasItemsTransition) {
             this.transitionNewItems(items);
         } else {
