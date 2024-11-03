@@ -8,6 +8,6 @@ list-sort {
     }
 }
 
-list-sort i18n-text[key='modules.list.listSort.lblSortBy'] {
+list-sort i18n-text[key='lists.listSort.lblSortBy'] {
     min-width: 54px;
 }

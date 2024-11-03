@@ -12,7 +12,7 @@ class MultiSelect extends ArpaElement {
     // #region INITIALIZATION
 
     _preInitialize() {
-        this.i18nKey = 'modules.list.multiSelect';
+        this.i18nKey = 'lists.multiSelect';
         this.list = this.closest('.arpaList');
         this.resource = this.list?.listResource;
     }

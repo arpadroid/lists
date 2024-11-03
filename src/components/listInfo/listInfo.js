@@ -11,7 +11,7 @@ import { mergeObjects, bind, renderNode } from '@arpadroid/tools';
 const html = String.raw;
 class ListInfo extends ArpaElement {
     getDefaultConfig() {
-        this.i18nKey = 'modules.list';
+        this.i18nKey = 'lists.list';
         bind(this, 'reRender', 'updateText');
         return mergeObjects(super.getDefaultConfig(), {
             className: 'listInfo',

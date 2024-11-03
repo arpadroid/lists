@@ -1,0 +1,11 @@
+{
+    "list": {
+        "txtNoResults": "No results found for {result}.",
+        "txtSearchResults": "Found {resultCount} search results for {result}.",
+        "txtAllResults": "Showing {pageCount} out of {resultCount} results.",
+        "txtNoItemsFound": "No items found.",
+        "txtPrevPage": "Previous page",
+        "txtNextPage": "Next page",
+        "txtRefresh": "Refresh list"
+    }
+}

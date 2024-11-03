@@ -135,7 +135,7 @@ class List extends ArpaElement {
                 itemsPerPage: 50,
                 itemTag: 'list-item',
                 lazyLoadImages: 'auto',
-                noItemsContent: html`<i18n-text key="modules.list.txtNoItemsFound"></i18n-text>`,
+                noItemsContent: html`<i18n-text key="lists.list.txtNoItemsFound"></i18n-text>`,
                 noItemsIcon: 'info',
                 pageParam: 'page',
                 perPageParam: 'perPage',

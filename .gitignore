@@ -7,3 +7,4 @@ dist/
 junit.xml
 *storybook.log
 storybook-static/
+src/i18n/

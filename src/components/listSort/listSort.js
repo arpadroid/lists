@@ -19,7 +19,7 @@ class ListSort extends ArpaElement {
 
     getDefaultConfig() {
         this.bind('update', '_onRouteChange', '_onSortBySelected');
-        this.i18nKey = 'modules.list.listSort';
+        this.i18nKey = 'lists.listSort';
         return {
             iconAsc: 'keyboard_double_arrow_up',
             iconDesc: 'keyboard_double_arrow_down',
