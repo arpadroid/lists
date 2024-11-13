@@ -332,20 +332,18 @@ class ListItem extends ArpaElement {
 
     //#region Render Title
 
-    renderTitleContainer(title = this.getTitle(), subTitle = this.getSubTitle()) {
-        if (!title && !subTitle) return '';
-        return html`<div class="listItem__titleWrapper">
-            ${this.renderTitle()} ${(subTitle && html`<span class="listItem__subTitle">${subTitle}</span>`) || ''}
-        </div>`;
+    renderTitleContainer(subTitle = this.getSubTitle()) {
+        if (!this.hasContent('title') && !subTitle) return '';
+        return html`<div class="listItem__titleWrapper">${this.renderTitle()} ${this.renderSubTitle()}</div>`;
     }
 
-    renderTitle(title = this.getTitle()) {
-        if (!title) return '';
+    renderTitle() {
+        if (!this.hasContent('title')) return '';
         const titleLink = this.getTitleLink();
         const titleClass = 'listItem__title';
         return titleLink
-            ? html` <a href="${titleLink}" class="${titleClass}">${this.renderTitleContent()}</a>`
-            : html`<span class="${titleClass}">${this.renderTitleContent()}</span>`;
+            ? html` <a href="${titleLink}" class="${titleClass}" zone="title">${this.renderTitleContent()}</a>`
+            : html`<span class="${titleClass}" zone="title">${this.renderTitleContent()}</span>`;
     }
 
     renderTitleContent() {
@@ -353,8 +351,9 @@ class ListItem extends ArpaElement {
     }
 
     renderSubTitle() {
-        const subTitle = this.getProperty('sub-title');
-        return subTitle ? html`<span class="listItem__subTitle">${subTitle}</span>` : '';
+        return this.hasContent('subtitle')
+            ? html`<span class="listItem__subTitle" zone="subtitle">${this.getSubTitle() || ''}</span>`
+            : '';
     }
 
     //#endregion Render Title
@@ -457,10 +456,6 @@ class ListItem extends ArpaElement {
     // #region LIFECYCLE
     /////////////////////////////
 
-    async _onConnected() {
-        await this._initializeItem();
-    }
-
     async _initializeNodes() {
         this.mainNode = this.querySelector('.listItem__main');
         this.checkbox = this.querySelector('.listItem__checkbox');
@@ -475,6 +470,7 @@ class ListItem extends ArpaElement {
             onLoad: event => this._onImageLoaded(event),
             onError: event => this._onImageError(event)
         });
+        this._initializeItem();
     }
 
     /**

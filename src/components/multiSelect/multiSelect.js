@@ -36,7 +36,13 @@ class MultiSelect extends ArpaElement {
     // #region GETTERS
 
     getIcon() {
-        return this.resource?.hasSelections() ? 'check_box' : 'check_box_outline_blank';
+        return this.resource?.hasSelections() ? this.getSelectedIcon() : 'filter_none';
+    }
+
+    getSelectedIcon() {
+        let count = this.resource?.getSelectedCount();
+        if (count > 9) count = '9_plus';
+        return 'filter_' + count;
     }
 
     getTooltip() {

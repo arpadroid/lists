@@ -5,7 +5,7 @@
 .arpaList {
     position: relative;
     display: flex;
-    gap: 12px;
+    gap: .75rem;
     flex-direction: column;
     flex: 1 1 auto;
 }
@@ -13,6 +13,7 @@
 .arpaList__title {
     margin: 0;
     font-weight: normal;
+    flex: 1 1 auto;
     color: var(--grey-600);
     font-size: 26px;
 }
@@ -23,7 +24,7 @@
 
 .arpaList__header {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 0.5rem;
 }
 

@@ -6,7 +6,7 @@
 .listItem {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 0.75rem;
     flex: 1 1 auto;
     width: 100%;
     transition: var(--theme-transition);
@@ -25,7 +25,7 @@
 .listItem__main {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
     padding: 0.25rem 0px;
     min-width: 0;
     flex: 1 1 auto;
@@ -53,31 +53,42 @@ button.listItem__main {
 .listItem__titleWrapper {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0.4rem;
 }
 
 .listItem__title {
     align-items: center;
-    display: block;
     flex: 0 1 auto;
-    font-weight: 400;
-    gap: 0.2rem;
+    font-weight: 500;
+    gap: 0.5rem;
     line-height: 20px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: 1.2rem;
+    color: var(--grey-600);
+
+    .icon {
+        --icon-size: 1.3rem;
+        font-weight: 600;
+        color: var(--color-primary);
+        font-size: 1.3rem;
+        margin-right: 0.5rem;
+        position: relative;
+        top: 0.2rem;
+    }
 }
 
 .listItem__content {
     font-size: 1rem;
-    line-height: 1.3rem;
+    line-height: 1.45rem;
 }
 
 .listItem__subTitle {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--grey-600);
-    line-height: 16px;
+    color: var(--grey-700);
+    line-height: 1.4rem;
 }
 
 .listItem__contentWrapper {
@@ -88,11 +99,12 @@ button.listItem__main {
     flex: 1 1 auto;
     font-family: var(--primary-font);
     font-size: 1rem;
-    gap: 0.5rem;
+    gap: 0.25rem;
     justify-content: space-between;
     line-height: 1rem;
     max-width: 100%;
     overflow: hidden;
+    padding: 0.25rem 0px;
 }
 
 .listItem__rhs {
@@ -110,7 +122,13 @@ button.listItem__main {
     font-size: 24px;
     justify-content: center;
 }
+
 .listItem__checkbox::after {
     font-size: 26px;
     font-weight: 300;
+}
+
+.listItem__icon.listItem__icon {
+    align-self: flex-start;
+    margin-top: 0.35rem;
 }

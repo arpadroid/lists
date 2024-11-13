@@ -17,7 +17,7 @@ class ListFilters extends ArpaElement {
     getDefaultConfig() {
         this.bind('onSubmit');
         return mergeObjects(super.getDefaultConfig(), {
-            icon: 'filter_list',
+            icon: 'filter_alt',
             perPageOptions: [5, 10, 25, 50, 100, 200],
             btnLabel: 'Filters'
         });

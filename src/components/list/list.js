@@ -51,7 +51,6 @@ class List extends ArpaElement {
                 this.listResource.setUrl(url);
                 this.removeAttribute('url');
             }
-            
         }
     }
 
@@ -101,7 +100,14 @@ class List extends ArpaElement {
         if (!config.id) {
             throw new Error('List component must have an id.');
         }
-        return super.setConfig(config);
+        super.setConfig(config);
+        this._initializeZoneSelector();
+        return this._config;
+    }
+
+    _initializeZoneSelector() {
+        const itemTag = this._config?.itemTag || 'list-item';
+        !this._config?.zoneSelector && (this._config.zoneSelector = `zone:not(${itemTag} zone)`);
     }
 
     /**
@@ -150,9 +156,6 @@ class List extends ArpaElement {
                 sortOptions: [],
                 template: List.template,
                 title: ''
-                // selectors: {
-                //     searchNodes: '.listItem__titleText, .listItem__subTitle'
-                // }
             }),
             config
         );
@@ -247,7 +250,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasResource() {
-        return this.hasAllControls() || this.hasProperty('has-resource');
+        return this.hasAllControls() || this.hasProperty('url') || this.hasProperty('has-resource');
     }
 
     /**
@@ -677,6 +680,7 @@ class List extends ArpaElement {
         return {
             aside: this.renderAside(),
             controls: this.renderControls(),
+            headerControls: this.renderHeaderControls(),
             footer: this.renderFooter(),
             heading: this.renderHeading(),
             id: this.getId(),
@@ -723,7 +727,7 @@ class List extends ArpaElement {
      */
     renderFull() {
         return html`
-            <div class="arpaList__header">{title}</div>
+            <div class="arpaList__header">{title}{headerControls}</div>
             {controls} {info}
             <div class="arpaList__body">
                 <div class="arpaList__bodyMain">{heading}{items}{preloader}</div>
@@ -751,6 +755,20 @@ class List extends ArpaElement {
                 'txt-no-results': this.getProperty('txt-no-results')
             })}
         ></list-info>`;
+    }
+
+    hasHeaderControls() {
+        return !this.hasControls() && (this.hasViews() || this.hasSort() || this.hasMultiSelect() || this.hasFilters());
+    }
+
+    renderHeaderControls() {
+        if (!this.hasHeaderControls()) return '';
+        return html`
+            ${this.hasMultiSelect() ? html`<list-multi-select></list-multi-select>` : ''}
+            ${this.hasSort() ? html`<list-sort></list-sort>` : ''}
+            ${this.hasViews() ? html`<list-views></list-views>` : ''}
+            ${this.hasFilters() ? html`<list-filters></list-filters>` : ''}
+        `;
     }
 
     renderControls() {
