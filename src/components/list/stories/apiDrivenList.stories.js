@@ -6,14 +6,14 @@ import { attrString, getInitials } from '@arpadroid/tools';
 import { within } from '@storybook/test';
 
 const html = String.raw;
-const FetchDrivenListStory = {
-    title: 'Fetch Driven List',
+const ApiDrivenListStory = {
+    title: 'API Resource List',
     ...ListStory
 };
 
 export const Default = {
     name: 'Render',
-    argTypes: FetchDrivenListStory.getArgTypes(),
+    argTypes: ApiDrivenListStory.getArgTypes(),
     args: {
         id: 'api-driven-list',
         allControls: true,
@@ -99,4 +99,4 @@ export const Default = {
     }
 };
 
-export default FetchDrivenListStory;
+export default ApiDrivenListStory;
