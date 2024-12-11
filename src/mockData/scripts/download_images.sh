@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# List of URLs
+urls=(
+    "https://medias.gazette-drouot.com/prod/medias/mediatheque/143264.jpg"
+    "https://i.natgeofe.com/n/37c3c776-b8cb-4be1-988a-cf593c776b88/01-leonardo-da-vinci-book-talk.jpg"
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Michelangelo_Daniele_da_Volterra_%28dettaglio%29.jpg/320px-Michelangelo_Daniele_da_Volterra_%28dettaglio%29.jpg"
+    "https://www.datocms-assets.com/103094/1688665870-1586973322312851-raffaello-autoritratto.jpg?auto=format%2Ccompress&cs=srgb&max-w=800"
+    "https://uploads5.wikiart.org/00380/images/titian/800px-self-portrait-of-titian.jpg!Portrait.jpg"
+    "https://upload.wikimedia.org/wikipedia/commons/7/79/Michelangelo_Merisi_known_as_Caravaggio_-_Portrait_of_a_gentleman_%28Scipione_Borghese%3F%29_-_Google_Art_Project.jpg"
+    "https://media.nga.gov.au/Krjh5NUlrzKL8K_76oUmCleiJAs=/1200x0///national-gallery-of-australia/media/dd/images/rubens_sp.jpg"
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Self-portrait_by_Diego_Vel%C3%A1zquez.jpg/488px-Self-portrait_by_Diego_Vel%C3%A1zquez.jpg"
+    "https://cdn.britannica.com/82/190482-050-33D2C4C5/Self-Portrait-canvas-Rembrandt-van-Rijn-Washington-DC.jpg?w=300"
+    "https://www.johannesvermeer.org/assets/img/vermeer.jpg"
+    "https://arthur.io/img/art/jpg/00017344d7b234726/francisco-de-goya/self-portrait-in-the-studio/large/francisco-de-goya--self-portrait-in-the-studio.jpg"
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzq3DbUYXIjySszajq6RYUXyIlnEdIyb_nwA&s"
+    "https://hips.hearstapps.com/hmg-prod/images/gettyimages-463909553.jpg?crop=0.9960159362549801xw:1xh;center,top&resize=640:*"
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Claude_Monet_1899_Nadar_crop.jpg/800px-Claude_Monet_1899_Nadar_crop.jpg"
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Edgar_Degas_self_portrait_1855.jpeg/220px-Edgar_Degas_self_portrait_1855.jpeg"
+    "https://images.squarespace-cdn.com/content/v1/567e3de1bfe873f15c08108e/1555757881666-389PWXW2BH3T53ZM1IO5/Cezanne.jpg"
+    "https://upload.wikimedia.org/wikipedia/commons/9/9b/Vincent_van_Gogh_-_s0273V1962_-_Van_Gogh_Museum.jpg"
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQafXMB3yRKIZLSZyFsdiIclPg6FCiZrCjv5Q&s"
+    "https://www.henrimatisse.org/assets/img/henri-matisse.jpg"
+    "https://cdn.britannica.com/63/59963-050-C03F29B9/Pablo-Picasso.jpg"
+    "https://www.deodato.art/media/wysiwyg/Ritratti-artisti/Georges_Braque.jpg"
+    "https://www.wassily-kandinsky.org/assets/img/wassily-kandinsky.jpg"
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Casimir_Malevich_photo.jpg/220px-Casimir_Malevich_photo.jpg"
+    "https://loops-expanded.com/wp-content/uploads/2020/04/marcel-duchamp.jpeg"
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Piet_Mondriaan.jpg/220px-Piet_Mondriaan.jpg"
+    "https://www.galeries-bartoux.com/wp-content/uploads/2016/06/DALI-2-540x595.jpg"
+    "https://www.renemagritte.org/assets/img/rene-magritte.jpg"
+    "https://upload.wikimedia.org/wikipedia/commons/0/06/Frida_Kahlo%2C_by_Guillermo_Kahlo.jpg"
+    "https://cdn.britannica.com/25/252825-050-C014CA04/Artist-Jackson-Pollock-1912-1956-dribbles-sand-on-painting-while-working-in-his-studio.jpg"
+    "https://sothebys-com.brightspotcdn.com/dims4/default/388ab4c/2147483647/strip/true/crop/3642x4390+0+0/resize/684x824!/quality/90/?url=http%3A%2F%2Fsothebys-brightspot.s3.amazonaws.com%2Fdotcom%2Fce%2Fed%2Fe2ed2bad474bab4792f1d3823712%2F342100.JPG"
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvTt25sE0v4Gy7LwjMoh-JDNHiQ7cNzyxAAbZR2nAkIqOLDyRk-vSIkg3cAjnRV8_Sm7g&usqp=CAU"
+    "https://hips.hearstapps.com/hmg-prod/images/roy-lichtenstein-gettyimages-535521221.jpg"
+    "https://www.arthistorylessons.com/wp-content/uploads/2023/10/Yayoi-Kusama-Art-History-Lesson-scaled.jpg"
+    "https://www.culturefrontier.com/wp-content/uploads/2023/08/Basquiat-Cover-978x652.jpg"
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjHqAUmpdfOzszhlJWEkYRsodFPf3nYnekSV_pmJv8-ehowr4aGEs9w4BdNvN71nLWnrc&usqp=CAU"
+    "https://www.artetrama.com/cdn/shop/collections/ai-weiwei-760655.png?v=1694445018&width=640"
+    "https://media.newyorker.com/photos/59097586c14b3c606c108834/master/pass/Seabrook-Zaha-Hadid.jpg"
+    "https://upload.wikimedia.org/wikipedia/commons/9/94/Auguste_Rodin_by_George_Charles_Beresford_%28NPG_x6573%29.jpg"
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPQjRVN9VDfKlncOT75YKrzYtgPQqc9qtt0w&s"
+    "https://collectionimages.npg.org.uk/large/mw56662/Barbara-Hepworth.jpg"
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9aETS-ppgVnz-dCMVjlDrD_J14x4JwO7fhA&s"
+    "https://www.guggenheim.org/wp-content/uploads/2010/09/haunted_l1_z.jpg"
+    "https://www.arthistoryproject.com/site/assets/files/10837/el-greco-portrait-of-the-artists-son-1603-obelisk-art-history.800x0.jpg"
+    "https://www.theviennasecession.com/wp-content/uploads/2011/12/gustav_klimt.jpg"
+    "https://hips.hearstapps.com/hmg-prod/images/gettyimages-600031727jpg--.jpg"
+    "https://www.thefamouspeople.com/profiles/images/david-hockney-6.jpg"
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTl7DyiVZBm0q5nDQMbBF_HgqyR5jtfWa0UNg&s"
+    "https://www.galeries-bartoux.com/wp-content/uploads/2016/07/HARING.jpg"
+    "https://ebbg7broonn.exactdn.com/wp-content/uploads/2021/01/William-Blake-Portrait.jpg?strip=all&lossy=1&ssl=1"
+    "https://parametric-architecture.com/wp-content/uploads/2024/03/le-corbusier1950.jpg"
+    "https://uploads6.wikiart.org/images/john-constable.jpg!Portrait.jpg"
+    "https://atelierjadeniklai.com/site/wp-content/uploads/2023/12/Fe102019.jpg"
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Giorgio_de_Chirico_%28portrait%29.jpg/220px-Giorgio_de_Chirico_%28portrait%29.jpg"
+)
+
+# Output directory
+output_dir="downloads"
+mkdir -p "$output_dir"
+
+# Download each URL
+for url in "${urls[@]}"; do
+    filename=$(basename "$url")
+    curl -L "$url" -o "$output_dir/$filename"
+done
+
+echo "All images downloaded to $output_dir"

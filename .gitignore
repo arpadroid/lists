@@ -8,3 +8,4 @@ junit.xml
 *storybook.log
 storybook-static/
 src/i18n/
+src/mockData/images/

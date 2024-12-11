@@ -36,8 +36,8 @@ class ListItem extends ArpaElement {
             listSelector: '.arpaList',
             lazyLoadImage: false,
             imageSizes: {
-                list_compact: { width: 24, height: 24 },
-                list: { width: 64, height: 64 },
+                list_compact: { width: 30, height: 30 },
+                list: { width: 80, height: 80 },
                 grid_compact: { width: 180, height: 180 },
                 grid: { width: 350, height: 350 },
                 grid_large: { width: 480, height: 480 },
@@ -307,7 +307,7 @@ class ListItem extends ArpaElement {
         const wrapperComponent = this.link ? 'a' : this.getWrapperComponent();
         const icon = this.getIcon();
         const iconRight = this.getIconRight();
-        const innerContent = this.renderInnerContent(isGrid);
+        const innerContent = this.renderInnerContent(isGrid) || this.hasZone('content');
         return html`
             <${wrapperComponent} ${attrs}>
                 ${icon ? html`<arpa-icon class="listItem__icon">${icon}</arpa-icon>` : ''}
@@ -320,8 +320,11 @@ class ListItem extends ArpaElement {
     }
 
     renderInnerContent(isGrid = this.isGrid) {
-        return html`${this.renderTitleContainer()} ${isGrid ? this.renderImage() : ''} ${this.renderTags()}
-        ${this.renderContent()}`;
+        const image = isGrid ? this.renderImage() : '';
+        return html` <div class="listItem__contentHeader">
+                ${this.renderTitleContainer()} ${image} ${this.renderTags()}
+            </div>
+            ${this.renderContent()}`;
     }
 
     async initializeNav() {
@@ -441,10 +444,11 @@ class ListItem extends ArpaElement {
 
     // #endregion Render Nav
 
-    renderContent(truncate = this.getProperty('truncate-content'), content = this.getContent()) {
-        if (!content.length) return '';
-        if (!truncate) return content;
-        return html`<truncate-text has-button max-length="${truncate}" class="listItem__content">
+
+    renderContent(truncate = this.getProperty('truncate-content'), content = this.getContent()?.trim() || '') {
+        if (!this.hasZone('content') && !content) return '';
+        if (!truncate) return html`<div class="listItem__content" zone="content">${content}</div>`;
+        return html`<truncate-text has-button max-length="${truncate}" class="listItem__content" zone="content">
             ${content}
         </truncate-text>`;
     }
@@ -462,6 +466,7 @@ class ListItem extends ArpaElement {
         this.checkboxContainer = this.querySelector('.listItem__checkboxContainer');
         this.rhs = this.querySelector('.listItem__rhs');
         this.image = this.querySelector('.listItem__image');
+        this.contentHeaderNode = this.querySelector('.listItem__contentHeader');
         this.contentNode = this.querySelector('.listItem__content');
         this.titleNode = this.querySelector('.listItem__title');
         this.contentWrapperNode = this.querySelector('.listItem__contentWrapper');
@@ -529,7 +534,7 @@ class ListItem extends ArpaElement {
         if (!this.image) return;
         const targetParentNode = this.isGrid ? this.titleNode || this.contentWrapperNode : this.mainNode;
         if (this.image.parentNode !== targetParentNode) {
-            this.isGrid && this.titleNode ? this.titleNode.after(this.image) : targetParentNode.prepend(this.image);
+            this.isGrid && this.titleNode ? this.titleNode.parentNode.after(this.image) : targetParentNode.prepend(this.image);
         }
     }
 

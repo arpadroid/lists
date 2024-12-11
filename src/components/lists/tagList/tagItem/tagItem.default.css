@@ -1,20 +1,27 @@
 .tagItem {
-    text-transform: uppercase;
-    font-weight: normal;
+    align-items: center;
+    background-color: var(--primary-hilight);
+    border-radius: .5rem;
     color: var(--grey-600);
-    border-radius: 2px;
-    position: relative;
-    flex: 0 1 auto;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    align-items: center;
-    background-color: var(--primary-hilight);
-    overflow: visible;
-    transition: none;
-    padding: 6px 12px 4px;
-    max-width: 100%;
+    flex: 0 1 auto;
+    font-weight: normal;
     height: 32px;
+    max-width: 100%;
+    overflow: visible;
+    padding-left: .5rem;
+    padding-right: .5rem;
+    position: relative;
+    transition: none;
+
+    .icon.icon.icon {
+        font-size: 1.3rem;
+        font-weight: 500;
+        color: var(--grey-600);
+        
+    }
 }
 
 .tag__text {
@@ -23,8 +30,10 @@
     overflow: hidden;
     flex: 1 1 auto;
     text-align: center;
-    font-weight: 400;
-    color: var(--grey-800);
+    font-weight: 700;
+    color: var(--grey-600);
+    padding-left: .5rem;
+    padding-right: .5rem;
 }
 
 .tagItem,
@@ -32,7 +41,7 @@
 .tagItem__text + .tooltip {
     letter-spacing: 0px;
     color: var(--grey-500);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 }
 
 .tagItem__text + .tooltip {
@@ -60,10 +69,6 @@
 }
 
 /* icon */
-
-.tagItem__icon.tagItem__icon {
-    font-size: 14px;
-}
 
 .tagItem.tagItem .iconButton.iconButton {
     margin-left: 4px;

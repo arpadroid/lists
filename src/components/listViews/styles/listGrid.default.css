@@ -1,8 +1,9 @@
 :root {
     --listView--gridItemSize: 14.5rem;
-    --listView--gridGap: 0.4rem;
-    --listItem--border-radius: 4px;
+    --listView--gridGap: 1rem;
+    --listItem--border-radius: 0.5rem;
     --listItem--max-width: 400px;
+    --listItem--contentPadding: 0.5rem;
 }
 .listView--grid,
 .listView--grid-compact {
@@ -31,6 +32,7 @@
     padding: 0;
     border-radius: var(--listItem--border-radius);
     min-width: 0;
+    align-self: stretch;
     &:only-child {
         aspect-ratio: 1 / 1;
         max-width: var(--listItem--max-width);
@@ -44,6 +46,32 @@
         > .listItem__contentWrapper {
             padding: 0;
             width: 100%;
+            justify-content: flex-start;
+        }
+    }
+
+    .listItem__content {
+        padding: var(--listItem--contentPadding);
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 1 rem;
+
+        .truncateText__readMoreButton {
+            margin-top: auto;
+            padding-top: 1rem;
+        }
+    }
+
+    .listItem__contentHeader {
+        flex-direction: column;
+        text-align: left;
+        justify-content: flex-start;
+        align-items: flex-start;
+        .tagList {
+            width: 100%;
         }
     }
 
@@ -52,13 +80,12 @@
      */
 
     .listItem__titleWrapper {
-        flex: 1 1 auto;
+        flex: 0 1 auto;
         display: flex;
         flex-direction: column;
     }
 
     .listItem__title {
-        padding: 0.2rem 0 0.4rem 0.2rem;
         margin-top: 0px;
         gap: 0;
         width: 100%;
@@ -94,7 +121,7 @@
         --listItem-imgSize: var(--listView--gridItemSize);
 
         background-color: var(--image-bg-color);
-        flex: 1 1 auto;
+        flex: 0 1 auto;
         margin: 0;
         min-height: 0;
         min-width: 100%;
@@ -121,14 +148,7 @@
      */
 
     .listItem__tags {
-        flex-wrap: wrap;
-        padding: 0;
-        min-width: 100%;
-        flex: 0 1 auto;
-        min-height: 1.5rem;
         .tag.tag {
-            text-overflow: ellipsis;
-            white-space: nowrap;
             flex: 1 1 auto;
         }
     }
@@ -139,8 +159,8 @@
 
     .listItem__rhs {
         position: absolute;
-        right: 4px;
-        top: 4px;
+        right: 0.5rem;
+        top: 0.5rem;
         flex-direction: row-reverse;
         gap: 0.2rem;
     }

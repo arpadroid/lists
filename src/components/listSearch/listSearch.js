@@ -86,7 +86,8 @@ class ListSearch extends ArpaElement {
 
     render() {
         const searchAttr = attrString({
-            'has-mini-search': this.getProperty('has-mini-search')
+            'has-mini-search': this.getProperty('has-mini-search'),
+            placeholder: this.list.getProperty('search-placeholder')
         });
         this.innerHTML = I18nTool.processTemplate(
             html`<form id="{formId}" is="arpa-form" variant="mini">

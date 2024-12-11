@@ -10,8 +10,9 @@ import { I18nTool } from '@arpadroid/i18n';
 import { Context } from '@arpadroid/application';
 import { ArpaElement } from '@arpadroid/ui';
 import { ListResource, getResource } from '@arpadroid/resources';
+import ListControls from '../listControls/listControls.js';
 import { mergeObjects, editURL, appendNodes, processTemplate } from '@arpadroid/tools';
-import { renderNode, renderAttr, attrString, bind } from '@arpadroid/tools';
+import { renderNode, renderAttr, attrString, bind, ucFirst } from '@arpadroid/tools';
 import ListItem from '../listItem/listItem.js';
 
 const html = String.raw;
@@ -79,7 +80,8 @@ class List extends ArpaElement {
                 sortDirParam: this.getParamName('sortDir'),
                 itemsPerPage: this.getProperty('items-per-page'),
                 mapItemId: this._config.mapItemId,
-                listComponent: this
+                listComponent: this,
+                url: this.getProperty('url')
             })
         );
     }
@@ -123,18 +125,15 @@ class List extends ArpaElement {
                 defaultView: 'list',
                 paramNamespace: '',
                 hasControls: false,
-                hasFilters: false,
                 hasInfo: false,
                 hasMiniSearch: true,
                 hasPager: false,
                 hasResource: false,
-                hasSearch: false,
                 hasSelection: false,
                 hasPreloader: true,
                 hasItemsTransition: false,
-                hasSort: false,
                 hasStickyFilters: false,
-                hasViews: false,
+                controls: ['search', 'sort', 'views', 'multiselect', 'filters'],
                 isCollapsed: false,
                 itemComponent: ListItem,
                 items: [],
@@ -172,11 +171,19 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasControls() {
-        return this.hasAllControls() || this.hasProperty('has-controls') || this.hasZone('controls');
+        return this.hasZone('controls') || !this.hasHeaderControls();
     }
 
     hasPreloader() {
         return this.hasProperty('has-preloader');
+    }
+
+    hasControl(control) {
+        return this.getControls()?.includes(control);
+    }
+
+    getControls() {
+        return this.getArrayProperty('controls');
     }
 
     /**
@@ -185,14 +192,6 @@ class List extends ArpaElement {
      */
     hasAllControls() {
         return this.hasProperty('all-controls');
-    }
-
-    /**
-     * Returns true if the list has a filters panel enabled.
-     * @returns {boolean}
-     */
-    hasFilters() {
-        return this.hasAllControls() || this.hasProperty('has-filters');
     }
 
     /**
@@ -209,7 +208,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasInfo() {
-        return this.hasAllControls() || this.hasProperty('has-info');
+        return this.hasProperty('has-info');
     }
 
     /**
@@ -217,15 +216,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasSearch() {
-        return this.hasAllControls() || this.hasProperty('has-search');
-    }
-
-    /**
-     * Returns true if the list has a views component.
-     * @returns {boolean}
-     */
-    hasViews() {
-        return this.hasAllControls() || this.hasProperty('has-views');
+        return this._config.controls?.includes('search');
     }
 
     /**
@@ -233,7 +224,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasMultiSelect() {
-        return this.hasAllControls() || this.hasProperty('has-selection');
+        return this.hasProperty('has-selection');
     }
 
     /**
@@ -241,7 +232,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasPager() {
-        return this.hasAllControls() || this.hasProperty('has-pager');
+        return this.hasResource() || this.hasProperty('has-pager');
     }
 
     /**
@@ -250,15 +241,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasResource() {
-        return this.hasAllControls() || this.hasProperty('url') || this.hasProperty('has-resource');
-    }
-
-    /**
-     * Returns true if the list has a sort component.
-     * @returns {boolean}
-     */
-    hasSort() {
-        return this.hasAllControls() || this.hasProperty('has-sort');
+        return this.hasProperty('url') || this.hasProperty('has-resource');
     }
 
     /**
@@ -608,7 +591,7 @@ class List extends ArpaElement {
         this.listResource.on('remove_items', this.onResourceRemoveItems);
         this.listResource.on('remove_item', this.onResourceRemoveItem);
         this.listResource.on('items_updated', this.onResourceItemsUpdated);
-        this.listResource.on('set_items', this.onResourceSetItems);
+        // this.listResource.on('set_items', this.onResourceSetItems);
         this.listResource.on('items', this.onResourceSetItems);
         this.listResource.on('update_item', payload => payload?.node?.reRender());
         this.listResource.on('fetch', this.onResourceFetch);
@@ -695,6 +678,10 @@ class List extends ArpaElement {
     }
 
     render() {
+        if (this.hasAttribute('title')) {
+            this._config.title = this.getAttribute('title');
+            this.removeAttribute('title');
+        }
         const renderMode = this.getRenderMode();
         const template = renderMode === 'minimal' ? this.renderMinimal() : this.renderFull();
         this.innerHTML = processTemplate(template, this.getTemplateVars());
@@ -758,23 +745,21 @@ class List extends ArpaElement {
     }
 
     hasHeaderControls() {
-        return !this.hasControls() && (this.hasViews() || this.hasSort() || this.hasMultiSelect() || this.hasFilters());
+        const controls = this.getArrayProperty('controls');
+        return controls?.length === 1;
     }
 
     renderHeaderControls() {
         if (!this.hasHeaderControls()) return '';
-        return html`
-            ${this.hasMultiSelect() ? html`<list-multi-select></list-multi-select>` : ''}
-            ${this.hasSort() ? html`<list-sort></list-sort>` : ''}
-            ${this.hasViews() ? html`<list-views></list-views>` : ''}
-            ${this.hasFilters() ? html`<list-filters></list-filters>` : ''}
-        `;
+        const control = this.getArrayProperty('controls')[0];
+        const fn = `render${ucFirst(control)}`;
+        if (typeof ListControls.prototype[fn] === 'function') return ListControls.prototype[fn]();
     }
 
     renderControls() {
         if (!this.hasControls()) return '';
-        const filters = this.hasFilters() ? html`<list-filters></list-filters>` : '';
-        return html`<list-controls zone="controls">${filters}</list-controls>`;
+        const controls = this.getArrayProperty('controls');
+        return html`<list-controls zone="controls" controls="${controls.toString()}"></list-controls>`;
     }
 
     renderTitle(title = this.getTitle()) {

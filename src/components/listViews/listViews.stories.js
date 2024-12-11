@@ -3,8 +3,6 @@
  */
 import { Default as ListStory } from '../list/stories/list.stories.js';
 import { userEvent } from '@storybook/test';
-import { attrString } from '@arpadroid/tools';
-const html = String.raw;
 
 const Default = {
     ...ListStory,
@@ -12,23 +10,20 @@ const Default = {
     parameters: {},
     args: {
         ...ListStory.args,
+        controls: 'views',
         id: 'list-views',
-        allControls: false,
-        hasViews: true,
-        title: 'List Views',
+        title: 'List Views'
     },
-    render: args => {
-        return html` <arpa-list ${attrString(args)}> ${ListStory.renderItemTemplate(args)} </arpa-list> `;
-    }
+    render: ListStory.renderSimple
 };
 
 export const Render = Default;
 
 export const Test = {
-    ...Default,
     args: {
         ...Default.args,
-        id: 'test-views'
+        id: 'test-views',
+        title: 'List Views Test'
     },
     play: async ({ canvasElement, step }) => {
         const setup = await Default.playSetup(canvasElement);

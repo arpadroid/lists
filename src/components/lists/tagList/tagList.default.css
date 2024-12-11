@@ -1,38 +1,19 @@
 .tagList.tagList {
     display: flex;
     flex-wrap: wrap;
-    width: 100%;
     flex-direction: row;
     flex-wrap: wrap;
     gap: 0.25rem;
     .tag {
-        max-width: 16rem;
-        flex: 1 1 auto;
         display: flex;
         align-items: center;
-        width: calc(50% - 12px);
         arpa-icon {
             height: auto;
-            font-size: 20px;
+            font-size: 1.25rem;
         }
     }
 }
 
 .tagList.tagList[variant='compact'] {
-    width: auto;
     gap: 4px;
-    .tag {
-        flex: 0 0 auto;
-        width: auto;
-        height: 24px;
-        gap: 4px;
-        padding: 0.25rem 0.5rem;
-
-        arpa-icon {
-            font-size: 1.25rem;
-            height: 1.25rem;
-            width: 1.25rem;
-            position: relative;
-        }
-    }
 }

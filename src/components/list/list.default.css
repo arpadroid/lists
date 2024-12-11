@@ -97,6 +97,7 @@
     flex: 1 1 auto;
     transition: var(--theme-transition);
     opacity: 1;
+    gap: 8px;
 }
 
 .arpaList__items--transitioning {

@@ -26,7 +26,7 @@ class ListInfo extends ArpaElement {
         this.list = this.closest('.arpaList');
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
-        this.listResource?.on('payload', this.updateText);
+        this.listResource?.on('items', this.updateText);
         /** @type {ListFilter} */
         this.searchFilter = this.listResource?.getSearchFilter();
     }
@@ -38,6 +38,11 @@ class ListInfo extends ArpaElement {
         const newNode = renderNode(infoText);
         this.textNode ? this.textNode.replaceWith(newNode) : this.prepend(newNode);
         this.textNode = newNode;
+        const buttons = this.querySelectorAll('.listInfo__next, .listInfo__previous');
+        buttons.forEach(button => {
+            if (this.listResource?.getTotalPages() <= 1) button.setAttribute('disabled', 'disabled');
+            else button.removeAttribute('disabled');
+        });
     }
 
     hasRefresh() {

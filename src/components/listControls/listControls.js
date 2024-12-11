@@ -1,6 +1,5 @@
 import { ArpaElement } from '@arpadroid/ui';
-import { appendNodes, attrString } from '@arpadroid/tools';
-// import Sticky from '../../../../components/sticky/sticky.js';
+import { appendNodes, attrString, ucFirst } from '@arpadroid/tools';
 
 const html = String.raw;
 class ListControls extends ArpaElement {
@@ -14,41 +13,59 @@ class ListControls extends ArpaElement {
         return {
             className: 'listControls',
             hasStickyControls: this.list?.hasStickyControls(),
-            template: html`{search}{sort}{views}{multiSelect}`
+            controls: this.list?.getControls()
         };
     }
 
-    getTemplateVars() {
-        return {
-            search: this.renderSearch(),
-            views: this.renderViews(),
-            multiSelect: this.renderMultiSelect(),
-            sort: this.renderSort()
-        };
+    hasControl(control) {
+        return this.getControls().includes(control);
+    }
+
+    getControls() {
+        return this.getArrayProperty('controls');
+    }
+
+    render() {
+        const controls = this.getControls();
+        let content = '';
+        controls?.forEach(control => {
+            const fnName = `render${ucFirst(control)}`;
+            const fn = this[fnName]?.bind(this.list);
+            if (this.hasControl(control) && typeof fn === 'function') {
+                content += fn();
+            }
+        });
+
+        if (controls?.length) {
+            this.innerHTML = content || '';
+        }
     }
 
     renderSort() {
-        if (!this.list?.hasSort()) return '';
         return html`<list-sort
             ${attrString({
-                'lbl-sort-asc': this.list.getProperty('lbl-sort-asc'),
-                'lbl-sort-desc': this.list.getProperty('lbl-sort-desc'),
-                'lbl-no-selection': this.list.getProperty('lbl-no-selection'),
-                'lbl-sorted-by': this.list.getProperty('lbl-sorted-by')
+                'lbl-sort-asc': this.getProperty('lbl-sort-asc'),
+                'lbl-sort-desc': this.getProperty('lbl-sort-desc'),
+                'lbl-no-selection': this.getProperty('lbl-no-selection'),
+                'lbl-sorted-by': this.getProperty('lbl-sorted-by')
             })}
         ></list-sort>`;
     }
 
-    renderMultiSelect() {
-        return this.list?.hasMultiSelect() ? html`<list-multi-select></list-multi-select>` : '';
+    renderMultiselect() {
+        return html`<list-multi-select></list-multi-select>`;
     }
 
     renderViews() {
-        return this.list?.hasViews() ? html`<list-views></list-views>` : '';
+        return html`<list-views></list-views>`;
     }
 
     renderSearch() {
-        return this.list?.hasSearch() ? html`<list-search></list-search>` : '';
+        return html`<list-search></list-search>`;
+    }
+
+    renderFilters() {
+        return html`<list-filters></list-filters>`;
     }
 
     _onConnected() {

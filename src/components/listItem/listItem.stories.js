@@ -3,7 +3,7 @@
  */
 import { Default as ListStory } from '../list/stories/list.stories.js';
 import { attrString } from '@arpadroid/tools';
-// import { userEvent } from '@storybook/test';
+import { expect } from '@storybook/test';
 
 const html = String.raw;
 
@@ -13,21 +13,20 @@ const Default = {
     args: {
         ...ListStory.args,
         id: 'list-item',
-        allControls: false,
+        controls: ' ',
         itemsPerPage: 1,
-        title: 'List item'
+        title: 'List Item'
     },
-    render: args => {
-        return html` <arpa-list ${attrString(args)}> ${ListStory.renderItemTemplate(args)} </arpa-list> `;
-    }
+    render: ListStory.renderSimple
 };
 
-export const Render = Default;
+export const SingleItem = Default;
 
 export const HTMLItems = {
     args: {
         ...Default.args,
-        id: 'list-item-test'
+        id: 'list-item-test',
+        title: 'HTML Items'
     },
     render: args => {
         return html`<arpa-list ${attrString(args)}>
@@ -76,7 +75,7 @@ export const HTMLItems = {
                 discovery and self-improvement.
             </list-item>
 
-            <list-item title-link="#test-link3" title-title-icon="self_improvement">
+            <list-item title-link="#test-link3" title-icon="self_improvement">
                 <zone name="title">Embrace Gratitude</zone>
                 <zone name="subtitle">Recognize the good in every day.</zone>
                 Practicing gratitude enhances happiness and mental health. By taking a moment to reflect on what we
@@ -110,13 +109,22 @@ export const HTMLItems = {
                 or another medium, creative expression encourages us to explore our inner world. This practice nurtures
                 confidence, improves problem-solving skills, and enhances emotional well-being. Creativity is a vital
                 aspect of a balanced life, inspiring innovation and joy.
-            </list-item> 
+            </list-item>
         </arpa-list>`;
     },
     play: async ({ canvasElement, step }) => {
-        const setup = await Default.playSetup(canvasElement, false);
-        step('Renders the item', async () => {
-            console.log('Test step');
+        const { canvas } = await Default.playSetup(canvasElement, false);
+        step('Renders the items', async () => {
+            const items = canvas.getAllByRole('listitem');
+            expect(items).toHaveLength(8);
+            expect(items[0]).toHaveTextContent('Morning Motivation');
+            expect(items[1]).toHaveTextContent('Mindful Moments');
+            expect(items[2]).toHaveTextContent('Track Your Progress');
+            expect(items[3]).toHaveTextContent('Explore New Ideas');
+            expect(items[4]).toHaveTextContent('Embrace Gratitude');
+            expect(items[5]).toHaveTextContent('Physical Well-Being');
+            expect(items[6]).toHaveTextContent('Reflect and Grow');
+            expect(items[7]).toHaveTextContent('Creative Expression');
         });
     }
 };

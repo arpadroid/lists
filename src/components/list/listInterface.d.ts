@@ -8,16 +8,13 @@ export interface ListInterface {
     defaultView?: string;
     paramNamespace?: string;
     hasControls?: boolean;
-    hasFilters?: boolean;
     hasInfo?: boolean;
     hasMiniSearch?: boolean;
     hasPager?: boolean;
     hasResource?: boolean;
     hasSearch?: boolean;
     hasSelection?: boolean;
-    hasSort?: boolean;
     hasStickyFilters?: boolean;
-    hasViews?: boolean;
     heading?: string;
     id?: string;
     isCollapsed?: boolean;

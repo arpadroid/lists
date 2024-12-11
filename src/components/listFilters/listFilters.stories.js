@@ -1,9 +1,6 @@
 import { Default as ListStory } from '../list/stories/list.stories.js';
-import { attrString } from '@arpadroid/tools';
 
 import { userEvent } from '@storybook/test';
-
-const html = String.raw;
 
 const Default = {
     ...ListStory,
@@ -11,24 +8,15 @@ const Default = {
     args: {
         ...ListStory.args,
         id: 'list-filters',
-        allControls: false,
-        hasFilters: true,
+        controls: 'filters',
         title: 'List Filters'
     },
-    render: args => {
-        return html`
-            <arpa-list ${attrString(args)}>
-                <zone name="list-filters"> </zone>
-                ${ListStory.renderItemTemplate(args)}
-            </arpa-list>
-        `;
-    }
+    render: ListStory.renderSimple
 };
 
 export const Render = Default;
 
 export const Test = {
-    ...Default,
     args: {
         ...Default.args,
         id: 'test-filters'

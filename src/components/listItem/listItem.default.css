@@ -25,7 +25,7 @@
 .listItem__main {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1rem;
     padding: 0.25rem 0px;
     min-width: 0;
     flex: 1 1 auto;
@@ -54,12 +54,13 @@ button.listItem__main {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
+    flex: 0 1 auto;
 }
 
 .listItem__title {
     align-items: center;
     flex: 0 1 auto;
-    font-weight: 500;
+    font-weight: 600;
     gap: 0.5rem;
     line-height: 20px;
     overflow: hidden;
@@ -82,6 +83,9 @@ button.listItem__main {
 .listItem__content {
     font-size: 1rem;
     line-height: 1.45rem;
+    p {
+        margin: 0;
+    }
 }
 
 .listItem__subTitle {
@@ -104,7 +108,22 @@ button.listItem__main {
     line-height: 1rem;
     max-width: 100%;
     overflow: hidden;
-    padding: 0.25rem 0px;
+}
+
+.listItem__contentHeader {
+    display: flex;
+    gap: 0.5rem;
+    flex-direction: row;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    .tagList {
+        flex: 0 1 auto;
+    }
+}
+
+.listItem__image {
+    align-self: flex-start;
 }
 
 .listItem__rhs {
@@ -130,5 +149,4 @@ button.listItem__main {
 
 .listItem__icon.listItem__icon {
     align-self: flex-start;
-    margin-top: 0.35rem;
 }

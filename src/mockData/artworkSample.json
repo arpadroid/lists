@@ -1,0 +1,105 @@
+{
+    "id": 1,
+    "title": "The Persistence of Memory",
+    "artist": {
+        "id": 21,
+        "firstName": "Salvador",
+        "lastName": "Dalí",
+        "fullName": "Salvador Dalí",
+        "placeOfBirth": "Figueres, Spain",
+        "nationality": "Spanish",
+        "dateOfBirth": "1904-05-11",
+        "dateOfDeath": "1989-01-23"
+    },
+    "yearOfCreation": 1931,
+    "medium": ["Oil on canvas"],
+    "dimensions": {
+        "width": 24,
+        "height": 33,
+        "unit": "inches"
+    },
+    "style": ["Surrealism"],
+    "movement": "Surrealism",
+    "subject": "Melting clocks, dreamlike landscape",
+    "description": "This iconic painting by Dalí features a surreal landscape where clocks appear to melt and distort in the desert heat, symbolizing the relativity of time. The work is widely recognized as one of the most famous surrealist paintings in the world.",
+    "location": {
+        "museum": "Museum of Modern Art (MoMA)",
+        "city": "New York City",
+        "country": "United States"
+    },
+    "provenance": [
+        {
+            "owner": "Private collection",
+            "startDate": "1931",
+            "endDate": "Present",
+            "details": "The painting was part of a private collection before being displayed in various international exhibitions."
+        }
+    ],
+    "exhibitions": [
+        {
+            "title": "The International Surrealist Exhibition",
+            "year": 1936,
+            "venue": "London",
+            "description": "Dalí's work was featured in one of the first large exhibitions of Surrealist art."
+        },
+        {
+            "title": "Dalí's Masterpieces",
+            "year": 1956,
+            "venue": "New York",
+            "description": "A retrospective showcasing Dalí's major works, including 'The Persistence of Memory'."
+        }
+    ],
+    "currentCondition": "Excellent",
+    "restorations": [
+        {
+            "date": "1985",
+            "type": "Minor cleaning and revarnishing",
+            "details": "The painting underwent a careful cleaning process to preserve its visual integrity."
+        }
+    ],
+    "images": [
+        {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/6/6c/The_Persistence_of_Memory.jpg",
+            "caption": "The Persistence of Memory, Salvador Dalí, 1931"
+        }
+    ],
+    "priceHistory": [
+        {
+            "date": "2010-11-15",
+            "price": 15000000,
+            "currency": "USD",
+            "auctionHouse": "Christie’s",
+            "location": "New York",
+            "details": "Sold at auction as part of a surrealism-themed collection."
+        }
+    ],
+    "tags": ["surrealism", "melting clocks", "dream", "time", "landscape", "modern art"],
+    "ownershipHistory": [
+        {
+            "owner": "Private Collector",
+            "startDate": "1931",
+            "endDate": "1960",
+            "details": "Acquired directly from the artist during Dalí's lifetime."
+        },
+        {
+            "owner": "Museum of Modern Art (MoMA)",
+            "startDate": "1960",
+            "endDate": "Present",
+            "details": "Donated by a private collector in the 1960s."
+        }
+    ],
+    "relatedWorks": [
+        {
+            "title": "The Great Masturbator",
+            "artist": "Salvador Dalí",
+            "year": 1929,
+            "url": "https://en.wikipedia.org/wiki/The_Great_Masturbator"
+        },
+        {
+            "title": "The Elephants",
+            "artist": "Salvador Dalí",
+            "year": 1948,
+            "url": "https://en.wikipedia.org/wiki/The_Elephants"
+        }
+    ]
+}

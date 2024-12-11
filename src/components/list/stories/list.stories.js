@@ -1,7 +1,9 @@
 /**
  * @typedef {import('../list.js').default} List
+ * @typedef {import('@arpadroid/resources/src/resources/listResource/listResource.js').default} ListResource
  */
-import { attrString, getInitials } from '@arpadroid/tools';
+import artists from '../../../mockData/artists.json';
+import { attrString, formatDate } from '@arpadroid/tools';
 import { within } from '@storybook/test';
 
 const html = String.raw;
@@ -11,28 +13,23 @@ const ListStory = {
     args: {
         id: 'static-list',
         title: '',
-        hasSearch: false,
-        hasSort: false,
-        hasViews: false,
-        allControls: false,
         hasMultiSelect: false,
-        hasItemsTransition: true
+        hasItemsTransition: true,
+        hasInfo: true,
+        hasResource: true
     },
     getArgTypes: (category = 'List Props') => {
         return {
             id: { control: { type: 'text' }, table: { category } },
             title: { control: { type: 'text' }, table: { category } },
-            allControls: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
-            hasSearch: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
             hasMultiSelect: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
-            hasViews: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
-            hasSort: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
             hasItemsTransition: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
             url: { control: { type: 'text' }, table: { category, subcategory: 'Resource' } },
             itemsPerPage: { control: { type: 'number' }, table: { category, subcategory: 'Resource' } },
             paramNamespace: { control: { type: 'text' }, table: { category, subcategory: 'Resource' } }
         };
     },
+
     render: args => {
         delete args.text;
         return html`
@@ -56,22 +53,27 @@ export const Default = {
     name: 'Render',
     argTypes: ListStory.getArgTypes(),
     args: {
-        id: 'resource-driven-list',
-        allControls: true,
+        id: 'static-list',
         title: 'List',
-        url: 'api/gallery/item/get-items',
-        paramNamespace: 'galleryList-',
-        itemsPerPage: 10
+        itemsPerPage: 10,
+        hasResource: true,
+        hasSelection: true
     },
-    initializeList: async id => {
+    initializeList: async (id, payload = artists) => {
         const list = document.getElementById(id);
+        /** @type {ListResource} */
         const resource = list.listResource;
         resource?.mapItem(item => {
-            item.author_initials = getInitials(item.author_name + ' ' + item.author_surname);
-            item.date = new Date(item.date)?.getFullYear() ?? '?';
-            return item;
+            const dob = formatDate(item.dateOfBirth, 'YYYY');
+            const dod = formatDate(item.dateOfDeath, 'YYYY');
+            const lived = `${dob} - ${dod}` || dob;
+            return {
+                ...item,
+                title: `${item.firstName} ${item.lastName}`,
+                date: lived
+            };
         });
-        await resource?.fetch();
+        resource?.setItems(payload);
     },
     playSetup: async (canvasElement, initializeList = true) => {
         await customElements.whenDefined('arpa-list');
@@ -87,33 +89,23 @@ export const Default = {
         await Default.playSetup(canvasElement);
     },
     renderItemTemplate: () => {
-        return html` <template
-            id="{id}"
-            template-id="list-item-template"
-            image="/api/image/convert?width=[width]&height=[height]&quality=[quality]&source={image_url}"
-        >
+        return html`<template template-id="list-item-template" image="{portraitURL}" truncate-content="50">
             <zone name="tags">
-                <tag-item label="{author_initials}" icon="person"></tag-item>
                 <tag-item label="{date}" icon="calendar_month"></tag-item>
+                <tag-item label="{movement}" icon="palette"></tag-item>
             </zone>
-
             <zone name="item-nav">
-                <nav-link link="/gallery/{id}" icon-right="visibility">View</nav-link>
-                <nav-link link="/gallery/{id}/edit" icon-right="edit">Edit</nav-link>
+                <nav-link link="javascript:void(0)" icon-right="visibility">View</nav-link>
+                <nav-link link="javascript:void(0)" icon-right="edit">Edit</nav-link>
             </zone>
+            <zone name="content">{legacy}</zone>
         </template>`;
+    },
+    renderSimple: args => {
+        return html`<arpa-list ${attrString(args)}>${Default.renderItemTemplate(args)}</arpa-list>`;
     },
     render: args => {
         return html`
-            <style>
-                #storybook-root {
-                    height: 100%;
-                    width: 100%;
-                    display: flex;
-                    flex-direction: column;
-                }
-            </style>
-
             <arpa-list ${attrString(args)}>
                 <zone name="batch-operations">
                     <select-option value="delete" icon="delete">
