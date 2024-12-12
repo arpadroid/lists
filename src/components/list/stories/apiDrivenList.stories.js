@@ -25,7 +25,6 @@ export const Default = {
     },
     initializeList: async id => {
         const list = document.getElementById(id);
-        console.log('list', list);
         const resource = list.listResource;
         console.log('resource', resource);
         resource?.mapItem(item => {

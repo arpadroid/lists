@@ -327,6 +327,11 @@ class ListItem extends ArpaElement {
             ${this.renderContent()}`;
     }
 
+    hasContent(property) {
+        if (this.payload?.[property]) return true;
+        return super.hasContent(property);
+    }
+
     async initializeNav() {
         this.navNode = this.querySelector('.listItem__nav');
         await customElements.whenDefined('icon-menu');

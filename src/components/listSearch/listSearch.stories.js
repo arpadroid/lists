@@ -36,7 +36,7 @@ export const Test = {
             expect(input).toBeInTheDocument();
             expect(input).toHaveAttribute('placeholder', 'List Search Test');
         });
-        /** @todo Fix this test in the pipeline */
+        /** @todo Fix this test in the pipeline. */
         // await step('Types a search term and expects matching item to be highlighted', async () => {
         //     input.value = 'Leo';
 

@@ -47,9 +47,12 @@ export const Test = {
         const setup = await ListStory.playSetup(canvasElement);
         await waitFor(() => expect(document.querySelector('.listMultiSelect__form')).toBeInTheDocument());
         const { canvas } = setup;
-        const getForm = () => within(document.querySelector('.listMultiSelect__form'));
+        const formNode = document.querySelector('.listMultiSelect__form');
+        const getForm = () => within(formNode);
         const form = getForm();
-        console.log('multiSelectForm', form);
+
+        const getToggleAllCheckbox = () => formNode.querySelector('input[type="checkbox"][name="toggleAll"]');
+        const getItemCheckbox = () => document.querySelector('.listItem__checkbox');
 
         await step('Opens and renders Batch Operations panel.', async () => {
             const filtersMenu = canvas.getByRole('button', { name: /No items selected/i });
@@ -61,17 +64,18 @@ export const Test = {
             expect(form.getByText('Select all')).toBeInTheDocument();
             expect(form.getByText('Show selected only')).toBeInTheDocument();
         });
+
         await step('Checks an item checkbox and verifies the selected item count.', async () => {
-            const checkbox = document.querySelector('.listItem__checkbox');
+            await waitFor(() => expect(getItemCheckbox()).toBeInTheDocument());
+            const checkbox = getItemCheckbox();
             fireEvent.click(checkbox);
             await waitFor(() => expect(form.getAllByText('1 items selected')).toHaveLength(1));
         });
-        await new Promise(resolve => setTimeout(resolve, 100));
+
         await step('Clicks on Select all and verifies the selected item count.', async () => {
-            form.getByText(/Select all/i).click();
-            await waitFor(() => {
-                expect(form.getByText('2 items selected')).toBeInTheDocument();
-            });
+            await waitFor(() => expect(getToggleAllCheckbox()).toBeInTheDocument());
+            getToggleAllCheckbox().click();
+            await waitFor(() => expect(form.getByText('2 items selected')).toBeInTheDocument());
         });
 
         const selectActionButton = form.getByText('Select an action');
@@ -81,16 +85,14 @@ export const Test = {
             selectActionButton.click();
         });
 
-        /** @todo Fix this test in the pipeline. */
-        // await step('Clicks on "Delete" and verifies the dialog.', async () => {
-        //     await waitFor(() => {
-        //         const actionsField = selectActionButton.closest('select-combo');
-        //         const options = actionsField.optionsNode;
-        //         const button = within(options).getAllByText('Delete')[0].closest('button');
-        //         button.click();
-        //     });
-        //     // await new Promise(resolve => setTimeout(resolve, 40));
-        // });
+        await step('Clicks on "Delete" and verifies the dialog.', async () => {
+            await waitFor(() => {
+                const actionsField = selectActionButton.closest('select-combo');
+                const options = actionsField.optionsNode;
+                const button = within(options).getAllByText('Delete')[0].closest('button');
+                button.click();
+            });
+        });
     }
 };
 

@@ -124,7 +124,7 @@ class List extends ArpaElement {
                 canCollapse: false,
                 defaultView: 'list',
                 paramNamespace: '',
-                hasControls: false,
+                hasControls: undefined,
                 hasInfo: false,
                 hasMiniSearch: true,
                 hasPager: false,
@@ -171,7 +171,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasControls() {
-        return this.hasZone('controls') || !this.hasHeaderControls();
+        return this._config.hasControls !== false && (this.hasZone('controls') || !this.hasHeaderControls());
     }
 
     hasPreloader() {
@@ -745,8 +745,7 @@ class List extends ArpaElement {
     }
 
     hasHeaderControls() {
-        const controls = this.getArrayProperty('controls');
-        return controls?.length === 1;
+        return this.getControls()?.length === 1;
     }
 
     renderHeaderControls() {

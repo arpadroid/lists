@@ -91,7 +91,7 @@ class ListSearch extends ArpaElement {
         });
         this.innerHTML = I18nTool.processTemplate(
             html`<form id="{formId}" is="arpa-form" variant="mini">
-                ${this.list?.hasSearch() ? html`<search-field id="search" ${searchAttr}></search-field>` : ''}
+                <search-field id="search" ${searchAttr}></search-field>
             </form>`,
             this.getTemplateVars()
         );
