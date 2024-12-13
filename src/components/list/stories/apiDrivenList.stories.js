@@ -26,7 +26,6 @@ export const Default = {
     initializeList: async id => {
         const list = document.getElementById(id);
         const resource = list.listResource;
-        console.log('resource', resource);
         resource?.mapItem(item => {
             item.author_initials = getInitials(item.author_name + ' ' + item.author_surname);
             item.date = new Date(item.date)?.getFullYear() ?? '?';

@@ -312,7 +312,7 @@ class ListItem extends ArpaElement {
             <${wrapperComponent} ${attrs}>
                 ${icon ? html`<arpa-icon class="listItem__icon">${icon}</arpa-icon>` : ''}
                 ${!isGrid ? this.renderImage() : ''}
-                ${innerContent.trim()?.length ? html`<div class="listItem__contentWrapper">${innerContent}</div>` : ''}
+                ${innerContent && innerContent?.trim()?.length ? html`<div class="listItem__contentWrapper">${innerContent}</div>` : ''}
                 ${iconRight ? html`<arpa-icon class="listItem__iconRight">${iconRight}</arpa-icon>` : ''}
             </${wrapperComponent}>
             ${this.renderRhs()}
@@ -321,10 +321,13 @@ class ListItem extends ArpaElement {
 
     renderInnerContent(isGrid = this.isGrid) {
         const image = isGrid ? this.renderImage() : '';
-        return html` <div class="listItem__contentHeader">
-                ${this.renderTitleContainer()} ${image} ${this.renderTags()}
-            </div>
-            ${this.renderContent()}`;
+        const titleContainer = this.renderTitleContainer();
+        const tags = this.renderTags();
+        const contentHeader =
+            image || titleContainer || tags
+                ? html`<div class="listItem__contentHeader">${titleContainer}${image}${tags}</div>`
+                : '';
+        return html`${contentHeader}${this.renderContent()}`;
     }
 
     hasContent(property) {
@@ -449,7 +452,6 @@ class ListItem extends ArpaElement {
 
     // #endregion Render Nav
 
-
     renderContent(truncate = this.getProperty('truncate-content'), content = this.getContent()?.trim() || '') {
         if (!this.hasZone('content') && !content) return '';
         if (!truncate) return html`<div class="listItem__content" zone="content">${content}</div>`;
@@ -539,7 +541,9 @@ class ListItem extends ArpaElement {
         if (!this.image) return;
         const targetParentNode = this.isGrid ? this.titleNode || this.contentWrapperNode : this.mainNode;
         if (this.image.parentNode !== targetParentNode) {
-            this.isGrid && this.titleNode ? this.titleNode.parentNode.after(this.image) : targetParentNode.prepend(this.image);
+            this.isGrid && this.titleNode
+                ? this.titleNode.parentNode.after(this.image)
+                : targetParentNode.prepend(this.image);
         }
     }
 
