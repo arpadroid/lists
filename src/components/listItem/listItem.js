@@ -35,7 +35,7 @@ class ListItem extends ArpaElement {
             role: 'listitem',
             listSelector: '.arpaList',
             lazyLoadImage: false,
-            imageSize: 'list',
+            imageSize: undefined,
             imageSizes: {
                 list_compact: { width: 30, height: 30 },
                 list: { width: 80, height: 80 },

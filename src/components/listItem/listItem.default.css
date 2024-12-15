@@ -137,7 +137,7 @@ button.listItem__main {
 .listItem__checkboxContainer {
     display: flex;
     align-items: center;
-    width: var(--icon-button-width);
+    width: var(--icon-button-size);
     font-size: 24px;
     justify-content: center;
 }

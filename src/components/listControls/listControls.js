@@ -1,5 +1,5 @@
 import { ArpaElement } from '@arpadroid/ui';
-import { appendNodes, attrString, ucFirst } from '@arpadroid/tools';
+import { appendNodes, attrString, ucFirst, camelToDashed } from '@arpadroid/tools';
 
 const html = String.raw;
 class ListControls extends ArpaElement {
@@ -34,9 +34,14 @@ class ListControls extends ArpaElement {
         let content = '';
         controls?.forEach(control => {
             const fnName = `render${ucFirst(control)}`;
-            const fn = this[fnName];
-            if (this.hasControl(control) && fn) {
-                content += fn.call(this);
+            if (this.hasControl(control)) {
+                const fn = this[fnName];
+                const tagName = `gallery-${camelToDashed(control)}`;
+                if (fn) {
+                    content += fn.call(this);
+                } else {
+                    content += html`<${tagName}></${tagName}>`;
+                }
             }
         });
 

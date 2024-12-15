@@ -101,7 +101,7 @@
 }
 
 .arpaList__items--transitioning {
-    opacity: 0;
+    display: none;
 }
 
 .arpaList--itemsOut {
@@ -111,7 +111,11 @@
 }
 
 .arpaList--itemsIn {
+    display: flex;
     opacity: 1;
+    @starting-style {
+        opacity: 0;
+    }
 }
 
 /**

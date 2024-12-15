@@ -48,7 +48,7 @@
 
     .listItem__checkboxContainer,
     .iconButton {
-        --icon-button-width: 25px;
+        --icon-button-size: 25px;
     }
 
     .listItem__checkboxContainer {

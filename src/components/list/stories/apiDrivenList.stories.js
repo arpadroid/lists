@@ -31,7 +31,7 @@ export const Default = {
             item.date = new Date(item.date)?.getFullYear() ?? '?';
             return item;
         });
-        await resource?.fetch();
+        await resource?.fetch().catch(() => {});
     },
     playSetup: async (canvasElement, initializeList = true) => {
         await customElements.whenDefined('arpa-list');

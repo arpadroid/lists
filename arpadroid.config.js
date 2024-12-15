@@ -1,5 +1,5 @@
 const config = {
-    deps: ['navigation', 'forms']
+    deps: ['messages', 'navigation', 'forms']
 };
 
 export default config;
