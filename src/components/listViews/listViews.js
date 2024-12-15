@@ -46,6 +46,11 @@ class ListViews extends ArpaElement {
         });
     }
     render() {
+        const views = this.getViewsConfig();
+        if (views.length < 2) {
+            this.remove();
+            return;
+        }
         const { label, icon } = this.getProperties('icon', 'label');
         this.innerHTML = html`<icon-menu ${attrString({ tooltip: label, icon })}></icon-menu>`;
     }
@@ -53,7 +58,7 @@ class ListViews extends ArpaElement {
     initializeProperties() {
         super.initializeProperties();
         /** @type {List} */
-        this.list = this.closest('.arpaList');
+        this.list = this.closest('.arpaList, .gallery');
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
         this._initializeViewFilter();
@@ -128,8 +133,8 @@ class ListViews extends ArpaElement {
             item?.node?.classList.add('listItem--' + view);
         });
         const prevSelected = this.navigation?.querySelectorAll('[aria-current]');
-        prevSelected.forEach(node => node.removeAttribute('aria-current'));
-        const selected = this.navigation.querySelector(`[data-value="${view}"]`);
+        prevSelected?.forEach(node => node.removeAttribute('aria-current'));
+        const selected = this.navigation?.querySelector(`[data-value="${view}"]`);
         selected?.setAttribute('aria-current', 'location');
     }
 
@@ -137,12 +142,16 @@ class ListViews extends ArpaElement {
         super._onConnected();
         await customElements.whenDefined('icon-menu');
         this.iconMenu = this.querySelector('icon-menu');
-        this.iconMenu.setLinks(this._config.links);
-        return this.iconMenu?.onRendered(() => {
-            this.navigation = this.iconMenu.navigation;
+        if (this.iconMenu) {
+            this.iconMenu.setLinks(this._config.links);
+            return this.iconMenu?.onRendered(() => {
+                this.navigation = this.iconMenu.navigation;
+                this.initializeView();
+                return true;
+            });
+        } else {
             this.initializeView();
-            return true;
-        });
+        }
     }
 
     initializeView(view = this.viewFilter?.getValue()) {

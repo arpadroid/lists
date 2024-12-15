@@ -3,8 +3,12 @@ import { appendNodes, attrString, ucFirst } from '@arpadroid/tools';
 
 const html = String.raw;
 class ListControls extends ArpaElement {
+    getList() {
+        return this.closest('arpa-list, .arpaList');
+    }
+
     initializeProperties() {
-        this.list = this.closest('.arpaList, arpa-list');
+        this.list = this.getList();
         this.listResource = this.list?.listResource;
         super.initializeProperties();
     }
@@ -30,9 +34,9 @@ class ListControls extends ArpaElement {
         let content = '';
         controls?.forEach(control => {
             const fnName = `render${ucFirst(control)}`;
-            const fn = this[fnName]?.bind(this.list);
-            if (this.hasControl(control) && typeof fn === 'function') {
-                content += fn();
+            const fn = this[fnName];
+            if (this.hasControl(control) && fn) {
+                content += fn.call(this);
             }
         });
 
@@ -41,13 +45,13 @@ class ListControls extends ArpaElement {
         }
     }
 
-    renderSort() {
+    renderSort(list = this.getList()) {
         return html`<list-sort
             ${attrString({
-                'lbl-sort-asc': this.getProperty('lbl-sort-asc'),
-                'lbl-sort-desc': this.getProperty('lbl-sort-desc'),
-                'lbl-no-selection': this.getProperty('lbl-no-selection'),
-                'lbl-sorted-by': this.getProperty('lbl-sorted-by')
+                'lbl-sort-asc': list.getProperty('lbl-sort-asc'),
+                'lbl-sort-desc': list.getProperty('lbl-sort-desc'),
+                'lbl-no-selection': list.getProperty('lbl-no-selection'),
+                'lbl-sorted-by': list.getProperty('lbl-sorted-by')
             })}
         ></list-sort>`;
     }

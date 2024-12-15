@@ -3,7 +3,7 @@
  * @typedef {import('./listInterface.js').ListInterface} ListInterface
  * @typedef {import('../../../../types').AbstractContentInterface} AbstractContentInterface
  * @typedef {import('@arpadroid/ui').Pager} Pager
- * @typedef {import('@arpadroid/resources/dist/arpadroid-resources.js').ListResource} ListResource
+ * @typedef {import('@arpadroid/resources').ListResource} ListResource
  */
 
 import { I18nTool } from '@arpadroid/i18n';
@@ -37,7 +37,6 @@ class List extends ArpaElement {
 
     _initialize() {
         this._initializeListResource();
-        this.classList.add('arpaList');
     }
 
     _initializeListResource() {
@@ -122,6 +121,7 @@ class List extends ArpaElement {
             super.getDefaultConfig({
                 allControls: false,
                 canCollapse: false,
+                className: 'arpaList',
                 defaultView: 'list',
                 paramNamespace: '',
                 hasControls: undefined,
@@ -134,6 +134,7 @@ class List extends ArpaElement {
                 hasItemsTransition: false,
                 hasStickyFilters: false,
                 controls: ['search', 'sort', 'views', 'multiselect', 'filters'],
+                imageSize: 'list',
                 isCollapsed: false,
                 itemComponent: ListItem,
                 items: [],
@@ -476,6 +477,7 @@ class List extends ArpaElement {
         newWrapper.classList.add('arpaList__items--transitioning');
         this.itemsNode = newWrapper;
         this.oldWrapper = container;
+        this.oldWrapper.classList.add('arpaList__items--out');
 
         const newItems = items.map(item => this.createItem(item));
         appendNodes(newWrapper, newItems);
@@ -613,6 +615,8 @@ class List extends ArpaElement {
         this.updatePager();
         const hasItemsTransition = this.hasProperty('has-items-transition');
         if (hasItemsTransition) {
+            const oldItems = document.querySelectorAll('.arpaList__items--out');
+            oldItems.forEach(element => element.remove());
             this.transitionNewItems(items);
         } else {
             this.itemsNode && (this.itemsNode.innerHTML = '');
@@ -752,13 +756,17 @@ class List extends ArpaElement {
         if (!this.hasHeaderControls()) return '';
         const control = this.getArrayProperty('controls')[0];
         const fn = `render${ucFirst(control)}`;
-        if (typeof ListControls.prototype[fn] === 'function') return ListControls.prototype[fn]();
+        if (typeof ListControls.prototype[fn] === 'function') return ListControls.prototype[fn](this);
     }
 
-    renderControls() {
+    renderControls(config = {}) {
+        const {
+            tagName = 'list-controls',
+            controls = this.getArrayProperty('controls'),
+            className = 'arpaList__controls'
+        } = config;
         if (!this.hasControls()) return '';
-        const controls = this.getArrayProperty('controls');
-        return html`<list-controls zone="controls" controls="${controls.toString()}"></list-controls>`;
+        return html`<${tagName} zone="controls" class="${className}" controls="${controls.toString()}"></${tagName}>`;
     }
 
     renderTitle(title = this.getTitle()) {

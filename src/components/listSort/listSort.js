@@ -115,7 +115,7 @@ class ListSort extends ArpaElement {
 
     _initializeNav() {
         this.sortByMenu = this.querySelector('icon-menu');
-        this.sortByMenu?.onRenderReady(() => {
+        this.sortByMenu && this.sortByMenu?.onRenderReady(() => {
             this.sortNav = this.sortByMenu?.navigation;
             attr(this.sortNav, {
                 'param-name': this.list?.getParamName('sortBy'),

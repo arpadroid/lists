@@ -107,6 +107,7 @@
 .arpaList--itemsOut {
     opacity: 0;
     position: absolute;
+    inset: 0;
 }
 
 .arpaList--itemsIn {

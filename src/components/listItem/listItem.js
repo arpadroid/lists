@@ -35,6 +35,7 @@ class ListItem extends ArpaElement {
             role: 'listitem',
             listSelector: '.arpaList',
             lazyLoadImage: false,
+            imageSize: 'list',
             imageSizes: {
                 list_compact: { width: 30, height: 30 },
                 list: { width: 80, height: 80 },
@@ -59,11 +60,12 @@ class ListItem extends ArpaElement {
         super.initializeProperties();
         this.grabList();
         const id = this.getId();
-        if (this.list?.hasMultiSelect()) {
+        if (typeof this.list?.hasMultiSelect === 'function' && this.list?.hasMultiSelect()) {
             this.listResource.on(`item_selected_${id}`, this._onSelected, this._unsubscribes);
             this.listResource.on(`item_deselected_${id}`, this._onDeselected, this._unsubscribes);
         }
-        !this.listResource && this.list?.preProcessNode(this);
+        !this.listResource && typeof this.list?.preProcessNode === 'function' && this.list?.preProcessNode(this);
+
         /** @type {ListFilter} */
         this.viewsFilter = this.listResource?.filters?.views;
         this.viewsFilter && this._initializeView();
@@ -180,7 +182,8 @@ class ListItem extends ArpaElement {
     }
 
     hasSelection() {
-        return this.list?.hasMultiSelect() ?? this.getProperty('has-selection');
+        const fn = this.list?.hasMultiSelect;
+        return (typeof fn === 'function' && fn.call(this.list)) ?? this.getProperty('has-selection');
     }
 
     /**
@@ -308,11 +311,12 @@ class ListItem extends ArpaElement {
         const icon = this.getIcon();
         const iconRight = this.getIconRight();
         const innerContent = this.renderInnerContent(isGrid) || this.hasZone('content');
+        const hasInnerContent = innerContent && innerContent?.trim()?.length;
         return html`
             <${wrapperComponent} ${attrs}>
                 ${icon ? html`<arpa-icon class="listItem__icon">${icon}</arpa-icon>` : ''}
                 ${!isGrid ? this.renderImage() : ''}
-                ${innerContent && innerContent?.trim()?.length ? html`<div class="listItem__contentWrapper">${innerContent}</div>` : ''}
+                ${hasInnerContent ? html`<div class="listItem__contentWrapper">${innerContent}</div>` : ''}
                 ${iconRight ? html`<arpa-icon class="listItem__iconRight">${iconRight}</arpa-icon>` : ''}
             </${wrapperComponent}>
             ${this.renderRhs()}
@@ -411,7 +415,8 @@ class ListItem extends ArpaElement {
      */
     renderImage(image = this.getImage(), alt = this.getImageAlt()) {
         if (!image) return '';
-        const { width } = this.getImageDimensions(true);
+        const isAdaptive = this.getProperty('image-size') === 'adaptive';
+        const width = isAdaptive ? 'adaptive' : this.getImageDimensions(true)?.width;
         const totalItems = this.list?.getItemCount();
         const lazyLoad = this.getLazyLoad();
         const isAuto = lazyLoad === 'auto' && totalItems > 100;
@@ -437,6 +442,11 @@ class ListItem extends ArpaElement {
         if (memoized && this.list?.itemImageDimensions) return this.list.itemImageDimensions;
         const { imageSizes = { list: { width: 100 } } } = this._config;
         const size = this.getProperty('image-size');
+
+        if (imageSizes[size]) {
+            if (typeof imageSizes[size] === 'function') return imageSizes[size]();
+            return imageSizes[size];
+        }
         const width = this.getProperty('image-width') || size;
         const height = this.getProperty('image-height');
         if (width || height) return { width, height };
