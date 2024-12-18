@@ -508,9 +508,15 @@ class List extends ArpaElement {
      */
     createItem(config = {}, payload = this.getDefaultItemPayload(config.id), mapping = {}) {
         const { itemComponent } = this._config;
-        const item = new itemComponent(config, payload, mapping);
+        const item = new itemComponent(this.getDefaultItemConfig(config), payload, mapping);
         !this.listResource && this.preProcessNode(item);
         return item;
+    }
+
+    getDefaultItemConfig(config = {}) {
+        const renderMode = this.getRenderMode();
+        renderMode === 'minimal' && (config.renderMode = 'minimal');
+        return config;
     }
 
     getDefaultItemPayload(itemId) {

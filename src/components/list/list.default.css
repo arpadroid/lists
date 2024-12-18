@@ -101,13 +101,18 @@
 }
 
 .arpaList__items--transitioning {
-    display: none;
+    opacity: 0;
 }
 
 .arpaList--itemsOut {
     opacity: 0;
     position: absolute;
-    inset: 0;
+    top:0;
+    left: 0;
+    width: 100%;
+    @starting-style {
+        opacity: 1;
+    }
 }
 
 .arpaList--itemsIn {

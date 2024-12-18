@@ -26,7 +26,7 @@ class ListFilters extends ArpaElement {
     initializeProperties() {
         super.initializeProperties();
         /** @type {List} */
-        this.list = this.closest('.arpaList');
+        this.list = this.closest('.arpaList, .gallery');
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
         this.listResource?.on('payload', () => this.update());
@@ -71,7 +71,7 @@ class ListFilters extends ArpaElement {
         this.pageField = this.form.getField('page');
         /** @type {Field} */
         this.perPageField = this.form.getField('perPage');
-        this.perPageField.on('change', (value, field, event) => this.form.submitForm(event));
+        this.perPageField?.on('change', (value, field, event) => this.form.submitForm(event));
     }
 
     /**

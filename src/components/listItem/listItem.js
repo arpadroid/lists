@@ -25,7 +25,7 @@ class ListItem extends ArpaElement {
      * @returns {ListItemInterface}
      */
     getDefaultConfig() {
-        this.bind('_onImageLoaded', '_onImageError', 'setSelected', '_onViewChange', '_onSelected', '_onDeselected');
+        this.bind('_onImageLoaded', '_onImageError', 'setSelected', '_onViewChange', '_onSelected', '_onDeselected', '_doAction');
         return super.getDefaultConfig({
             lazyLoad: false,
             selectedClass: 'listItem--selected',
@@ -42,6 +42,8 @@ class ListItem extends ArpaElement {
                 grid_compact: { width: 180, height: 180 },
                 grid: { width: 350, height: 350 },
                 grid_large: { width: 480, height: 480 },
+                thumbnail: { height: 110, width: 'auto' },
+                thumbnail_vertical: { height: 'auto', width: 110 },
                 // Calculate the full screen width and height inside a function to avoid layout thrashing.
                 full_screen: () => ({ width: getViewportWidth(), height: getViewportHeight() })
             },
@@ -266,7 +268,8 @@ class ListItem extends ArpaElement {
             iconRight: this.getIconRight(),
             titleIcon: this.getProperty('title-icon'),
             title: this.getTitle(),
-            subTitle: this.getSubTitle()
+            subTitle: this.getSubTitle(),
+            image: this.renderImage()
         };
     }
 
@@ -299,21 +302,16 @@ class ListItem extends ArpaElement {
     /**
      * Returns the template for the list item.
      * @param {boolean} isGrid - Indicates whether the list item is in grid view.
-     * @param {string} link - The link for the list item.
      * @returns {string}
      */
-    getTemplate(isGrid = this.isGrid, link = this.link) {
-        const attrs = attrString({
-            href: link,
-            class: classNames('listItem__main', { listItem__link: link })
-        });
-        const wrapperComponent = this.link ? 'a' : this.getWrapperComponent();
+    getTemplate(isGrid = this.isGrid) {
+        const wrapperComponent = this.getWrapperComponent();
         const icon = this.getIcon();
         const iconRight = this.getIconRight();
         const innerContent = this.renderInnerContent(isGrid) || this.hasZone('content');
         const hasInnerContent = innerContent && innerContent?.trim()?.length;
         return html`
-            <${wrapperComponent} ${attrs}>
+            <${wrapperComponent} ${this.getWrapperAttrs()}>
                 ${icon ? html`<arpa-icon class="listItem__icon">${icon}</arpa-icon>` : ''}
                 ${!isGrid ? this.renderImage() : ''}
                 ${hasInnerContent ? html`<div class="listItem__contentWrapper">${innerContent}</div>` : ''}
@@ -321,6 +319,13 @@ class ListItem extends ArpaElement {
             </${wrapperComponent}>
             ${this.renderRhs()}
         `;
+    }
+
+    getWrapperAttrs() {
+        return attrString({
+            href: this.ling,
+            class: classNames('listItem__main', { listItem__link: this.link })
+        });
     }
 
     renderInnerContent(isGrid = this.isGrid) {
@@ -415,17 +420,36 @@ class ListItem extends ArpaElement {
      */
     renderImage(image = this.getImage(), alt = this.getImageAlt()) {
         if (!image) return '';
-        const isAdaptive = this.getProperty('image-size') === 'adaptive';
-        const width = isAdaptive ? 'adaptive' : this.getImageDimensions(true)?.width;
+        return html`<arpa-image
+            ${attrString(this.getImageAttributes())}
+            class="listItem__image"
+            src="${image}"
+            alt="${alt}"
+        ></arpa-image>`;
+    }
+
+    getImageAttributes() {
         const totalItems = this.list?.getItemCount();
         const lazyLoad = this.getLazyLoad();
         const isAuto = lazyLoad === 'auto' && totalItems > 100;
         const attr = {
-            size: width,
             'lazy-load': lazyLoad || isAuto,
             'has-native-lazy': this.getProperty('has-native-lazy') || isAuto
         };
-        return html`<arpa-image ${attrString(attr)} class="listItem__image" src="${image}" alt="${alt}"></arpa-image>`;
+
+        const isAdaptive = this.getProperty('image-size') === 'adaptive';
+        const dimensions = this.getImageDimensions(true);
+        const width = isAdaptive ? 'adaptive' : dimensions?.width;
+        const height = dimensions?.height;
+        width && width !== 'auto' && (!height || height === width) && (attr.size = width);
+        if (width === 'auto' && dimensions.height) {
+            attr.height = dimensions.height;
+            attr.width = 'auto';
+        } else if (height === 'auto' && dimensions.width) {
+            attr.width = dimensions.width;
+            attr.height = 'auto';
+        }
+        return attr;
     }
 
     getLazyLoad() {
@@ -499,17 +523,22 @@ class ListItem extends ArpaElement {
      * Initializes event listeners and actions for the list item.
      */
     async _initializeItem() {
+        if (this.itemInitialized) return;
         if (this.checkbox) {
             this.checkbox.removeEventListener('change', this.setSelected);
             this.checkbox.addEventListener('change', this.setSelected);
             this.setSelected();
         }
-        const { action } = this._config;
-        const doAction = event => action(event, this);
         if (this.mainNode && typeof action === 'function') {
-            this.mainNode.removeEventListener('click', doAction);
-            this.mainNode.addEventListener('click', doAction);
+            this.mainNode.removeEventListener('click', this._doAction);
+            this.mainNode.addEventListener('click', this._doAction);
         }
+        this.itemInitialized = true;
+    }
+
+    _doAction(event) {
+        const { action } = this._config;
+        return action(event, this);
     }
 
     /**
