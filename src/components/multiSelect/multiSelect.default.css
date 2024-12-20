@@ -3,6 +3,9 @@ list-multi-select:only-child {
 }
 .listMultiSelect__form {
     min-width: 320px;
+    .arpaForm__fields.arpaForm__fields {
+        gap: 0.5rem;
+    }
 }
 
 .listSelection__itemList {

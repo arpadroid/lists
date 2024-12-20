@@ -70,6 +70,7 @@
         text-align: left;
         justify-content: flex-start;
         align-items: flex-start;
+        flex: none;
         .tagList {
             width: 100%;
         }

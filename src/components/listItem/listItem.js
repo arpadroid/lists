@@ -37,7 +37,7 @@ class ListItem extends ArpaElement {
             lazyLoadImage: false,
             imageSize: undefined,
             imageSizes: {
-                list_compact: { width: 30, height: 30 },
+                list_compact: { width: 40, height: 40 },
                 list: { width: 80, height: 80 },
                 grid_compact: { width: 180, height: 180 },
                 grid: { width: 350, height: 350 },

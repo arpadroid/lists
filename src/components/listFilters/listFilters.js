@@ -67,6 +67,7 @@ class ListFilters extends ArpaElement {
         this.form = this.querySelector('.listFilters__form');
         await this.form?.promise;
         this.form?.onSubmit(this.onSubmit);
+        await customElements.whenDefined('arpa-form');
         /** @type {Field} */
         this.pageField = this.form.getField('page');
         /** @type {Field} */
@@ -99,7 +100,7 @@ class ListFilters extends ArpaElement {
                 label="Pagination"
                 open
             >
-                <select-combo id="perPage" label="Per page" value="${perPage ?? ''}" variant="small">
+                <select-combo id="perPage" label="Per page" value="${perPage || ''}" variant="small">
                     ${mapHTML(
                         perPageOptions,
                         value => html`<select-option label="${value}" value="${value}"></select-option>`

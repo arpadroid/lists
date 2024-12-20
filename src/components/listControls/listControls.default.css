@@ -7,7 +7,7 @@
     top: 0;
     background-color: var(--overlay);
     transition: var(--theme-transition);
-    padding: 0;
+    padding: 0.5rem 0;
 
     .comboBox.comboBox {
         background-color: var(--color-background);
