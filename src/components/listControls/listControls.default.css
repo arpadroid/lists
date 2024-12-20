@@ -6,6 +6,7 @@
     position: sticky;
     top: 0;
     background-color: var(--overlay);
+    transition: var(--theme-transition);
     padding: 0;
 
     .comboBox.comboBox {
