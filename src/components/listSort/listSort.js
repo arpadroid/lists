@@ -6,10 +6,10 @@
  * @typedef {import('../../../form/components/fields/searchField/searchField.js').default} SearchField
  * @typedef {import('../../../form/components/fields/selectCombo/selectCombo.js').default} SelectCombo
  * @typedef {import('@arpadroid/application/src/resources/listResource/listFilter').default} ListFilter
+ * @typedef {import('@arpadroid/services').Router} Router
  */
 
 import { mapHTML, attr } from '@arpadroid/tools';
-import { Context } from '@arpadroid/application';
 import { ArpaElement } from '@arpadroid/ui';
 const html = String.raw;
 class ListSort extends ArpaElement {
@@ -32,6 +32,8 @@ class ListSort extends ArpaElement {
     async initializeProperties() {
         /** @type {List} */
         this.list = this.closest('.arpaList');
+        /** @type {Router} */
+        this.router = this.list?.getRouter();
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
         /** @type {ListFilter} sortDirFilter */
@@ -68,7 +70,7 @@ class ListSort extends ArpaElement {
     ////////////////////////////
 
     _onConnected() {
-        Context?.Router?.on('route_changed', this._onRouteChange);
+        this.router.on('route_changed', this._onRouteChange);
     }
 
     _onRouteChange() {

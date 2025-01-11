@@ -47,7 +47,7 @@ export const Default = {
         await Default.playSetup(canvasElement);
     },
     renderItemTemplate: () => {
-        return html` <template
+        return html`<template
             id="{id}"
             template-id="list-item-template"
             image="/api/image/convert?width=[width]&height=[height]&quality=[quality]&source={image_url}"

@@ -1,19 +1,19 @@
 /**
  * @typedef {import('../listItem/listItemInterface').ListItemInterface} ListItemInterface
  * @typedef {import('./listInterface.js').ListInterface} ListInterface
- * @typedef {import('../../../../types').AbstractContentInterface} AbstractContentInterface
  * @typedef {import('@arpadroid/ui').Pager} Pager
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
+ * @typedef {import('@arpadroid/services').Router} Router
  */
 
 import { I18nTool } from '@arpadroid/i18n';
-import { Context } from '@arpadroid/application';
 import { ArpaElement } from '@arpadroid/ui';
 import { ListResource, getResource } from '@arpadroid/resources';
 import ListControls from '../listControls/listControls.js';
-import { mergeObjects, editURL, appendNodes, processTemplate } from '@arpadroid/tools';
+import { mergeObjects, appendNodes, processTemplate, editURL } from '@arpadroid/tools';
 import { renderNode, renderAttr, attrString, bind, ucFirst } from '@arpadroid/tools';
 import ListItem from '../listItem/listItem.js';
+import { getService } from '@arpadroid/context';
 
 const html = String.raw;
 class List extends ArpaElement {
@@ -80,7 +80,8 @@ class List extends ArpaElement {
                 itemsPerPage: this.getProperty('items-per-page'),
                 mapItemId: this._config.mapItemId,
                 listComponent: this,
-                url: this.getProperty('url')
+                url: this.getProperty('url'),
+                router: this.router
             })
         );
     }
@@ -103,6 +104,10 @@ class List extends ArpaElement {
         }
         super.setConfig(config);
         this._initializeZoneSelector();
+        if (this.hasResource()) {
+            /** @type {Router} */
+            this.router = this.getRouter();
+        }
         return this._config;
     }
 
@@ -147,6 +152,7 @@ class List extends ArpaElement {
                 perPageParam: 'perPage',
                 renderMode: 'full',
                 resetScrollOnLoad: false,
+                router: undefined,
                 searchParam: 'search',
                 showResultsText: true,
                 sortByParam: 'sortBy',
@@ -262,6 +268,14 @@ class List extends ArpaElement {
     /////////////////////////////
     // #region get
     /////////////////////////////
+
+    /**
+     * Returns the router service.
+     * @returns {Router}
+     */
+    getRouter() {
+        return this._config?.router || getService('router');
+    }
 
     /**
      * Returns the component id.
@@ -485,8 +499,7 @@ class List extends ArpaElement {
 
         container.addEventListener('transitionend', this.onTransitionOut);
         container.classList.add('arpaList--itemsOut');
-
-        setTimeout(() => newWrapper.classList.add('arpaList--itemsIn'), 5);
+        newWrapper.classList.add('arpaList--itemsIn');
     }
 
     onTransitionOut(event) {
@@ -844,7 +857,7 @@ class List extends ArpaElement {
         this.pagerNode = this.querySelector('arpa-pager');
         this.pagerNode?.onChange(({ page }) => {
             const newURL = editURL(window.location.href, { [this.getParamName('page')]: page });
-            Context.Router.go(newURL);
+            this.router?.go(newURL);
         });
     }
     ////////////////////////////

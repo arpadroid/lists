@@ -5,11 +5,11 @@
  * @typedef {import('@arpadroid/forms').FormComponent} FormComponent
  * @typedef {import('@arpadroid/forms').Field} Field
  * @typedef {import('../list/list.js').default} List
+ * @typedef {import('@arpadroid/services').Router} Router
  */
 import { ListFilter } from '@arpadroid/resources/src';
 import { mergeObjects, attrString, mapHTML, editURL } from '@arpadroid/tools';
 import { ArpaElement } from '@arpadroid/ui';
-import { Context } from '@arpadroid/application';
 
 const html = String.raw;
 class ListFilters extends ArpaElement {
@@ -27,6 +27,8 @@ class ListFilters extends ArpaElement {
         super.initializeProperties();
         /** @type {List} */
         this.list = this.closest('.arpaList, .gallery');
+        /** @type {Router} */
+        this.router = this.list?.getRouter();
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
         this.listResource?.on('payload', () => this.update());
@@ -134,7 +136,7 @@ class ListFilters extends ArpaElement {
             [this.list.getParamName('page')]: payload.page,
             [this.list.getParamName('perPage')]: payload.perPage
         });
-        Context.Router.go(newURL);
+        this.router.go(newURL);
     }
 
     // #endregion

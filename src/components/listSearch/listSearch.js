@@ -6,12 +6,13 @@
  * @typedef {import('@arpadroid/forms').SearchField} SearchField
  * @typedef {import('@arpadroid/forms').SelectCombo} SelectCombo
  * @typedef {import('@arpadroid/resources/src').ListFilter} ListFilter
+ * @typedef {import('@arpadroid/services').Router} Router
  */
 
 import { editURL, attrString, SearchTool } from '@arpadroid/tools';
-import { Context } from '@arpadroid/application';
 import { ArpaElement } from '@arpadroid/ui';
 import { I18nTool } from '@arpadroid/i18n';
+
 const html = String.raw;
 class ListSearch extends ArpaElement {
     //////////////////////////
@@ -29,6 +30,8 @@ class ListSearch extends ArpaElement {
     async initializeProperties() {
         /** @type {List} */
         this.list = this.closest('.arpaList');
+        /** @type {Router} */
+        this.router = this.list.getRouter();
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
         /** @type {ListFilter} searchFilter */
@@ -87,7 +90,8 @@ class ListSearch extends ArpaElement {
     render() {
         const searchAttr = attrString({
             'has-mini-search': this.getProperty('has-mini-search'),
-            placeholder: this.list.getProperty('search-placeholder')
+            placeholder: this.list.getProperty('search-placeholder'),
+            value: this.searchFilter?.getValue()
         });
         this.innerHTML = I18nTool.processTemplate(
             html`<form id="{formId}" is="arpa-form" variant="mini">
@@ -119,12 +123,11 @@ class ListSearch extends ArpaElement {
         if (this.searchFilter) {
             const searchValue = this.searchField.getValue() || '';
             this.searchFilter.setValue(searchValue);
-            await Context.Router.go(
-                editURL(Context.Router.getRoute(), {
-                    [this.list.getParamName('search')]: searchValue,
-                    [this.list.getParamName('page')]: 1
-                })
-            );
+            const url = editURL(this.router.getRoute(), {
+                [this.list.getParamName('search')]: searchValue,
+                [this.list.getParamName('page')]: 1
+            });
+            this.router.go(url);
             this.list?.fetchPromise && (await this.list.fetchPromise);
             this.search.doSearch();
         }

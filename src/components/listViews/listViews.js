@@ -1,10 +1,10 @@
 /**
  * @typedef {import('@arpadroid/resources/src').ListResource} ListResource
  * @typedef {import('../list/list.js').default} List
+ * @typedef {import('@arpadroid/services').Router} Router
  */
 import { mergeObjects, attrString, clearLazyQueue } from '@arpadroid/tools';
 import { ArpaElement } from '@arpadroid/ui';
-import { Context } from '@arpadroid/application';
 
 export const LIST_VIEW_GRID = 'grid';
 export const LIST_VIEW_GRID_COMPACT = 'grid-compact';
@@ -59,14 +59,15 @@ class ListViews extends ArpaElement {
         super.initializeProperties();
         /** @type {List} */
         this.list = this.closest('.arpaList, .gallery');
+        /** @type {Router} */
+        this.router = this.list?.getRouter();
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
         this._initializeViewFilter();
         this._initializeViewsConfig();
-
         this.viewClasses = this._config.links.map(link => 'listView--' + link.value);
         this.itemViewClasses = this._config.links.map(link => 'listItem--' + link.value);
-        Context.Router.on('route_changed', () => this.initializeView());
+        this.router?.on('route_changed', () => this.initializeView());
         return true;
     }
 
