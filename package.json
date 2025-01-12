@@ -36,21 +36,22 @@
         "babel-jest": "^29.7.0",
         "babel-loader": "^9.1.3",
         "dts-bundle-generator": "^9.3.1",
+        "http-proxy-middleware": "^3.0.3",
         "jsdoc-to-markdown": "^8.0.1",
         "typescript": "^5.4.2"
     },
     "dependencies": {
-        "@ungap/custom-elements": "^1.3.0",
-        "@arpadroid/context": "file:../context"
+        "@arpadroid/context": "file:../context",
+        "@ungap/custom-elements": "^1.3.0"
     },
     "peerDependencies": {
-        "@arpadroid/services": "file:../services",
         "@arpadroid/context": "file:../context",
         "@arpadroid/forms": "file:../forms",
         "@arpadroid/i18n": "file:../i18n",
         "@arpadroid/messages": "file:../messages",
         "@arpadroid/navigation": "file:../navigation",
         "@arpadroid/resources": "file:../resources",
+        "@arpadroid/services": "file:../services",
         "@arpadroid/tools": "file:../tools",
         "@arpadroid/ui": "file:../ui"
     }
