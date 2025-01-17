@@ -75,15 +75,18 @@ export const Default = {
         });
         resource?.setItems(payload);
     },
-    playSetup: async (canvasElement, initializeList = true) => {
+    playSetup: async (canvasElement, initializeList = true, preRenderCallback) => {
         await customElements.whenDefined('arpa-list');
         await customElements.whenDefined('list-item');
         const canvas = within(canvasElement);
         const listNode = canvasElement.querySelector('arpa-list');
         const listItem = canvasElement.querySelector('list-item');
+        const listResource = listNode.listResource;
+        typeof preRenderCallback === 'function' && preRenderCallback({ listResource, listNode, listItem });
         await listNode.promise;
         initializeList && (await Default.initializeList(listNode.id));
-        return { canvas, listNode, listItem };
+        await new Promise(resolve => setTimeout(resolve, 50));
+        return { canvas, listNode, listItem, listResource };
     },
     play: async ({ canvasElement }) => {
         await Default.playSetup(canvasElement);
