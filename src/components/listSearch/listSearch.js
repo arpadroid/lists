@@ -127,9 +127,9 @@ class ListSearch extends ArpaElement {
                 [this.list.getParamName('search')]: searchValue,
                 [this.list.getParamName('page')]: 1
             });
-            this.router.go(url);
+            await this.router.go(url);
             this.list?.fetchPromise && (await this.list.fetchPromise);
-            this.search.doSearch();
+            setTimeout(() => this.search.doSearch(), 10);
         }
     }
 }

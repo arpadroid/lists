@@ -18,7 +18,7 @@ class ListSort extends ArpaElement {
     /////////////////////////////
 
     getDefaultConfig() {
-        this.bind('update', '_onRouteChange', '_onSortBySelected');
+        this.bind('update', '_onRouteChange', '_onSortBySelected', '_isItemSelected');
         this.i18nKey = 'lists.listSort';
         return {
             iconAsc: 'keyboard_double_arrow_up',
@@ -94,8 +94,12 @@ class ListSort extends ArpaElement {
 
     render() {
         const sortDir = this.listResource?.getSortDirection() === 'asc' ? 'desc' : 'asc';
-        this.innerHTML = html`
-            <icon-menu class="sortMenu" icon="sort_by_alpha" tooltip="Sort" zone="sort-options">
+        this.innerHTML = html`<icon-menu
+                class="sortMenu"
+                icon="sort_by_alpha"
+                tooltip="${this.i18nText('lblSortBy')}"
+                zone="sort-options"
+            >
                 ${mapHTML(this.list?.getSortOptions(), ({ value, icon, label }) => {
                     return html`<nav-link link="${value}" icon-left="${icon}" label="${label}"></nav-link>`;
                 })}
@@ -106,26 +110,36 @@ class ListSort extends ArpaElement {
                 param-value="${sortDir}"
                 param-clear="${this.list?.getParamName('page')}"
                 icon="${this.getSortDirIcon()}"
+                label="${this.i18nText('lblSortOrder')}"
                 use-router
             >
                 <zone name="tooltip-content">${this.getSortDirTooltip()}</zone>
-            </nav-link>
-        `;
+            </nav-link>`;
         this.sortLink = this.querySelector('.sortDirButton');
         this._initializeNav();
     }
 
     _initializeNav() {
         this.sortByMenu = this.querySelector('icon-menu');
-        this.sortByMenu && this.sortByMenu?.onRenderReady(() => {
-            this.sortNav = this.sortByMenu?.navigation;
-            attr(this.sortNav, {
-                'param-name': this.list?.getParamName('sortBy'),
-                'use-router': '',
-                'param-clear': this.list?.getParamName('page')
+        this.sortByMenu &&
+            this.sortByMenu?.onRenderReady(async () => {
+                await customElements.whenDefined('nav-list');
+                this.sortNav = this.sortByMenu?.navigation;
+                this.sortNav._config.isItemSelected = this._isItemSelected;
+                attr(this.sortNav, {
+                    'param-name': this.list?.getParamName('sortBy'),
+                    'use-router': '',
+                    'param-clear': this.list?.getParamName('page')
+                });
+                this.sortNav.on('selected', this._onSortBySelected, this._unsubscribes);
             });
-            this.sortNav.on('selected', this._onSortBySelected, this._unsubscribes);
-        });
+    }
+
+    _isItemSelected({ node }) {
+        const sortByValue = this.sortFilter?.getValue();
+        if (!sortByValue) return;
+        const itemValue = node.getAttribute('param-value');
+        return itemValue === sortByValue;
     }
 
     _onSortBySelected(item) {

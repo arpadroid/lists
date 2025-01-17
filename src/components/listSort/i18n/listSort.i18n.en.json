@@ -1,6 +1,8 @@
 {
     "listSort": {
         "lblSort": "Sort",
+        "lblSortBy": "Sort by",
+        "lblSortOrder": "Sort order",
         "lblSortedBy": "Sorted by:",
         "lblAscending": "Ascending",
         "lblDescending": "Descending",

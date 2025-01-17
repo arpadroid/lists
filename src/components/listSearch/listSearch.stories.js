@@ -2,7 +2,7 @@
  * @typedef {import('../list.js').default} List
  */
 import { Default as ListStory } from '../list/stories/list.stories.js';
-import { expect, waitFor } from '@storybook/test';
+import { expect, waitFor, fireEvent } from '@storybook/test';
 
 const Default = {
     ...ListStory,
@@ -30,25 +30,49 @@ export const Test = {
     },
     play: async ({ canvasElement, step }) => {
         const setup = await Default.playSetup(canvasElement);
+        await customElements.whenDefined('field-input');
         const { canvas } = setup;
         const input = canvas.getByRole('searchbox');
+        const field = input.closest('search-field');
+        const form = input.closest('form');
+        form?._config && (form._config.debounce = false);
+        await customElements.whenDefined('field-input');
+        input.value = '';
+        await fireEvent.submit(form);
+
         await step('Renders the search', async () => {
-            await waitFor(() => expect(input).not.toBeNull());
             expect(input).toHaveAttribute('placeholder', 'List Search Test');
         });
-        /** @todo Fix this test in the pipeline. */
-        await step('Types a search term and expects matching item to be highlighted', async () => {
-            input.value = 'Leo';
-            // input.dispatchEvent(new Event('input', { bubbles: true }));
-            // input.dispatchEvent(new Event('change', { bubbles: true }));
-            //await new Promise(resolve => setTimeout(resolve, 50));
-            // await waitFor(() => expect(canvasElement.querySelector('mark')).not.toBeNull());
-            // await waitFor(() => {
-            //     const searchMatch = canvasElement.querySelector('mark');
-            //     expect(searchMatch).not.toBeNull();
-            //     expect(searchMatch).toHaveTextContent('Leo');
-            //     expect(searchMatch?.parentNode).toHaveTextContent('Leonardo da Vinci');
-            // });
+
+        await step('Searches for "Leon" and expects "Leonardo Da Vinci\'s" item to be highlighted', async () => {
+            field.setValue('Leon', true);
+            await fireEvent.input(input);
+            await waitFor(() => {
+                const searchMatch = canvasElement.querySelector('mark');
+                expect(searchMatch).toHaveTextContent('Leon');
+                expect(searchMatch?.parentNode).toHaveTextContent('Leonardo da Vinci');
+            });
+        });
+
+        await step('Searches and submits query for "Mitch" expecting two results.', async () => {
+            field.setValue('Mich', true);
+            await fireEvent.input(input);
+            await waitFor(() => {
+                document.querySelectorAll('mark')?.forEach(element => {
+                    expect(element).toHaveTextContent('Mich');
+                    expect(element?.parentNode).toHaveTextContent('Michelangelo Buonarroti');
+                });
+            });
+            await fireEvent.submit(form);
+            await waitFor(() => {
+                const marks = canvasElement.querySelectorAll('mark');
+                expect(marks).toHaveLength(2);
+                expect(marks[0]).toHaveTextContent('Mich');
+                expect(marks[0]?.parentNode).toHaveTextContent('Michelangelo Buonarroti');
+                expect(marks[1]).toHaveTextContent('Mich');
+                expect(marks[1]?.parentNode).toHaveTextContent('Jean-Michel Basquiat');
+                expect(canvasElement.querySelector('list-info')).toHaveTextContent('Found 2 search results for Mich.');
+            }); 
         });
     }
 };
