@@ -55,7 +55,8 @@ export const Test = {
         const getItemCheckbox = () => document.querySelector('.listItem__checkbox');
 
         await step('Opens and renders Batch Operations panel.', async () => {
-            const filtersMenu = canvas.getByRole('button', { name: /No items selected/i });
+            
+            const filtersMenu = canvas.getByRole('button', { name: /Batch Operations/i });
             await userEvent.click(filtersMenu);
 
             expect(form.getByText('Batch operations')).toBeInTheDocument();

@@ -31,7 +31,7 @@ class ListFilters extends ArpaElement {
         this.router = this.list?.getRouter();
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
-        this.listResource?.on('payload', () => this.update());
+        this.listResource?.on('payload', () => this._hasRendered && this.update());
         /** @type {ListFilter} */
         this.pageFilter = this.listResource?.pageFilter;
         /** @type {ListFilter} */
@@ -132,6 +132,10 @@ class ListFilters extends ArpaElement {
     }
 
     onSubmit(payload) {
+        if (payload.perPage != this.perPageFilter?.getValue()) {
+            payload.page = 1;
+            this.pageField?.setValue(1);
+        }
         const newURL = editURL(window.location.href, {
             [this.list.getParamName('page')]: payload.page,
             [this.list.getParamName('perPage')]: payload.perPage

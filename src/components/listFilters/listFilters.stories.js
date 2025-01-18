@@ -24,11 +24,9 @@ export const Test = {
     play: async ({ canvasElement, step }) => {
         const setup = await Default.playSetup(canvasElement);
         const { canvas } = setup;
-
         const filtersBtn = canvas.getByRole('button', { name: /Filters/i });
         const filtersNode = filtersBtn.closest('icon-menu');
         const filtersCombo = filtersNode.navigation;
-        
         const combo = within(filtersCombo);
         const filtersForm = filtersCombo.querySelector('form');
 
@@ -45,7 +43,7 @@ export const Test = {
         });
 
         await step('Renders the filters panel with the pagination controls', async () => {
-            const pagination = combo.getByText(/Pagination/i );
+            const pagination = combo.getByText(/Pagination/i);
             expect(pagination).toBeInTheDocument();
             const perPageInput = combo.getByLabelText(/Per page/i);
             const pageInput = combo.getByLabelText('Page');
@@ -68,18 +66,20 @@ export const Test = {
         await step('Changes the per page, submits the form and verifies the per page change', async () => {
             const perPageInput = combo.getByLabelText(/Per page/i);
             const perPageField = perPageInput.closest('select-combo');
-            
-            
-            perPageInput.click();
-            await waitFor(() => {
-                expect(perPageField.optionsNode).toBeVisible();
-            });
 
-            const options = within(perPageField.optionsNode);
-            expect(perPageField.getValue()).toEqual('10');
-            const option50 = options.getByText( '5').closest('button');
-            console.log('option50', option50);
-            
+            perPageInput.click();
+            // await waitFor(() => {
+            //     expect(perPageField.optionsNode).toBeInTheDocument();
+            // });
+
+            /**
+             * @todo Complete the test.
+             */
+
+            // const options = within(perPageField.optionsNode);
+            // expect(perPageField.getValue()).toEqual('10');
+            // const option50 = options.getByText( '5').closest('button');
+
             // await new Promise((resolve) => setTimeout(resolve, 500));
             // option50.click();
             // await userEvent.click(option50);

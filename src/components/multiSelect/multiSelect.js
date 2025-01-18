@@ -3,6 +3,7 @@
  * @typedef {import('@arpadroid/forms').FormComponent} FormComponent
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
  * @typedef {import('@arpadroid/navigation').IconMenu} IconMenu
+ * @typedef {import('@arpadroid/resources/src/resources/listResource/listResource.js').default} ListResource
  */
 import { ArpaElement } from '@arpadroid/ui';
 import { attrString } from '@arpadroid/tools';
@@ -14,6 +15,7 @@ class MultiSelect extends ArpaElement {
     _preInitialize() {
         this.i18nKey = 'lists.multiSelect';
         this.list = this.closest('.arpaList');
+        /** @type {ListResource} */
         this.resource = this.list?.listResource;
     }
 
@@ -63,39 +65,43 @@ class MultiSelect extends ArpaElement {
     // #region RENDERING
 
     async render() {
-        const menuProps = this.getProperties('icon', 'tooltip');
+        const menuProps = this.getProperties('icon');
         const formId = this.list.id + '-multiSelectForm';
-        this.innerHTML = html`
-            <icon-menu class="listMultiSelect__nav" nav-class="listMultiSelect__combo" ${attrString(menuProps)}>
-                <form id="${formId}" class="listMultiSelect__form" is="arpa-form" variant="compact" has-submit="false">
-                    <zone name="form-title"> ${this.i18n('txtBatchOperations')} </zone>
-                    <zone name="messages">
-                        <info-message id="info-message" class="listMultiSelect__infoMessage">
-                            ${this.getTooltip()}
-                        </info-message>
-                    </zone>
-                    <checkbox-field id="toggleAll" value="select-all" icon="select_all">
-                        <zone name="checkbox-label"> ${this.i18n('txtSelectAll')} </zone>
-                    </checkbox-field>
-                    <checkbox-field id="selectFilter" icon="filter_alt">
-                        <zone name="checkbox-label"> ${this.i18n('txtShowSelectedOnly')} </zone>
-                    </checkbox-field>
-                    <select-combo
-                        id="actions"
-                        placeholder="${this.getText('txtSelectAction')}"
-                        icon="layers"
-                        option-component="batch-operation"
-                    ></select-combo>
-                </form>
-            </icon-menu>
-        `;
+        this.innerHTML = html`<icon-menu
+            class="listMultiSelect__nav"
+            nav-class="listMultiSelect__combo"
+            button-label="${this.i18nText('txtBatchOperations')}"
+            ${attrString(menuProps)}
+        >
+            <zone name="tooltip-content"> ${this.getTooltip()} </zone>
+            <form id="${formId}" class="listMultiSelect__form" is="arpa-form" variant="compact" has-submit="false">
+                <zone name="form-title"> ${this.i18n('txtBatchOperations')} </zone>
+                <zone name="messages">
+                    <info-message id="info-message" class="listMultiSelect__infoMessage">
+                        ${this.getTooltip()}
+                    </info-message>
+                </zone>
+                <checkbox-field id="toggleAll" value="select-all" icon="select_all">
+                    <zone name="checkbox-label"> ${this.i18n('txtSelectAll')} </zone>
+                </checkbox-field>
+                <checkbox-field id="selectFilter" icon="filter_alt">
+                    <zone name="checkbox-label"> ${this.i18n('txtShowSelectedOnly')} </zone>
+                </checkbox-field>
+                <select-combo
+                    id="actions"
+                    placeholder="${this.getText('txtSelectAction')}"
+                    icon="layers"
+                    option-component="batch-operation"
+                ></select-combo>
+            </form>
+        </icon-menu>`;
     }
 
     // #endregion
 
     // #region LIFECYCLE
 
-    _initializeNodes(){
+    _initializeNodes() {
         /** @type {FormComponent} */
         this.form = this.querySelector('.listMultiSelect__form');
         this.messages = this.querySelector('arpa-messages');
