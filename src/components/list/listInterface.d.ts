@@ -1,4 +1,4 @@
-import { ListResource } from '@arpadroid/resources/src';
+import { ListResource } from '@arpadroid/resources';
 import { ListItemInterface } from '../../types.compiled';
 import ListItem from '../listItem/listItem.js';
 
@@ -31,7 +31,6 @@ export interface ListInterface {
     preProcessItem?: (item: ListInterface) => void;
     preProcessNode?: (node: HTMLElement) => void;
     renderMode?: 'minimal' | 'full';
-    renderMode?: string;
     resetScrollOnLoad?: boolean;
     searchParam?: string;
     showResultsText?: boolean;

@@ -1,8 +1,4 @@
-// import List from '../list/list.js';
-// import DialogContext from '../../../dialog/contexts/dialogContext';
-// import { IconMenuInterface } from '../../../navigation/components/iconMenu/iconMenu';
-// import ListItem from './listItem.js';
-import { TagInterface } from '../../../../components/tag/tagInterface';
+import { TagItemInterface } from '../lists/tagList/tagItem/tagItemInterface';
 
 export interface ListItemInterface {
     id?: string;
@@ -20,7 +16,7 @@ export interface ListItemInterface {
     // dialogContext?: DialogContext;
     // defaultImage?: string;
     // nav?: IconMenuInterface;
-    tags?: TagInterface[];
+    tags?: TagItemInterface[];
     onImageLoaded?: (event: Event, image: HTMLElement) => void;
     onImageError?: (event: Event, image: HTMLElement) => void;
 }
