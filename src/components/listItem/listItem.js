@@ -76,8 +76,9 @@ class ListItem extends ArpaElement {
 
     grabList() {
         if (this.list) return this.list;
+        const listSelector = this.getProperty('list-selector');
         /** @type {List} */
-        this.list = this._config?.list || this.closest(this.getProperty('list-selector'));
+        this.list = this._config?.list || this.closest(listSelector);
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
         return this.list;

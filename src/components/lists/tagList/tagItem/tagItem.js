@@ -14,6 +14,7 @@ class TagItem extends ListItem {
         this._onDelete = this._onDelete.bind(this);
         return {
             className: 'tagItem',
+            listSelector: 'tag-list',
             tooltip: '',
             tooltipPosition: 'top',
             template: html`
