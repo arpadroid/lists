@@ -72,12 +72,14 @@ export const Test = {
 
         await step('Sorts item descending by title and verifies items.', async () => {
             sortOrderButton.click();
-            await waitFor(() => expect(sortOrderButton).toHaveTextContent('Sorted descending'));
-            const items = canvas.getAllByRole('listitem');
-            expect(items[0]).toHaveTextContent('Zaha Hadid');
-            expect(items[1]).toHaveTextContent('Yayoi Kusama');
-            expect(items[2]).toHaveTextContent('William Blake');
-            expect(items[3]).toHaveTextContent('Wassily Kandinsky');
+            await waitFor(() => {
+                expect(sortOrderButton).toHaveTextContent('Sorted descending');
+                const items = canvas.getAllByRole('listitem');
+                expect(items[0]).toHaveTextContent('Zaha Hadid');
+                expect(items[1]).toHaveTextContent('Yayoi Kusama');
+                expect(items[2]).toHaveTextContent('William Blake');
+                expect(items[3]).toHaveTextContent('Wassily Kandinsky');
+            });
         });
 
         await step('Selects "Date" sort option and verifies items', async () => {
