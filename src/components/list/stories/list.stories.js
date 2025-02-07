@@ -1,6 +1,6 @@
 /**
  * @typedef {import('../list.js').default} List
- * @typedef {import('@arpadroid/resources/src/resources/listResource/listResource.js').default} ListResource
+ * @typedef {import('@arpadroid/resources').ListResource} ListResource
  */
 import artists from '../../../mockData/artists.json';
 import { attrString, formatDate } from '@arpadroid/tools';

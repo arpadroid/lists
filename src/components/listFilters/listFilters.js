@@ -1,18 +1,23 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 /**
- * @typedef {import('@arpadroid/resources/src').ListResource} ListResource
- * @typedef {import('@arpadroid/resources/src').ListFilter} ListFilter
- * @typedef {import('@arpadroid/forms').FormComponent} FormComponent
- * @typedef {import('@arpadroid/forms').Field} Field
+ * @typedef {import('@arpadroid/resources').ListResource} ListResource
+ * @typedef {import('@arpadroid/resources').ListFilter} ListFilter // @ts-ignore
+ * @typedef {any} FormComponent // @ts-ignore
+ * @typedef {any} Field // @ts-ignore
+ * @typedef {any} SelectCombo // @ts-ignore
+ * @typedef {any} NumberField
  * @typedef {import('../list/list.js').default} List
  * @typedef {import('@arpadroid/services').Router} Router
+ * @typedef {import('./listFilters.types').ListFiltersConfigType} ListFiltersConfigType
+ * @typedef {import('./listFilters.types').ListFiltersSubmitPayloadType} ListFiltersSubmitPayloadType
  */
-import { ListFilter } from '@arpadroid/resources/src';
 import { mergeObjects, attrString, mapHTML, editURL } from '@arpadroid/tools';
 import { ArpaElement } from '@arpadroid/ui';
 
 const html = String.raw;
 class ListFilters extends ArpaElement {
+    /** @type {ListFiltersConfigType} */ // @ts-ignore
+    _config = this._config;
     // #region INITIALIZATION
     getDefaultConfig() {
         this.bind('onSubmit');
@@ -25,7 +30,7 @@ class ListFilters extends ArpaElement {
 
     initializeProperties() {
         super.initializeProperties();
-        /** @type {List} */
+        /** @type {List | null} */
         this.list = this.closest('.arpaList, .gallery');
         /** @type {Router} */
         this.router = this.list?.getRouter();
@@ -51,6 +56,7 @@ class ListFilters extends ArpaElement {
         this.innerHTML = html`<icon-menu ${attrString(props)} nav-class="listFilters__nav">
             <div class="listFilters__content">${this.renderForm()}</div>
         </icon-menu>`;
+        /** @type {import('../multiSelect/multiSelect.js').IconMenu} */
         this.menuNode = this.querySelector('icon-menu');
         this._hasRendered = true;
         this._initializeForm();
@@ -59,38 +65,43 @@ class ListFilters extends ArpaElement {
 
     async _initializeIconMenu() {
         await customElements.whenDefined('icon-menu');
-        await this.menuNode.promise;
+        await this.menuNode?.promise;
         const itemsNode = this.menuNode?.navigation?.itemsNode;
         itemsNode?.setAttribute('zone', 'list-filters');
     }
 
     async _initializeForm() {
-        /** @type {FormComponent} */
+        /** @type {FormComponent | null} */
         this.form = this.querySelector('.listFilters__form');
         await this.form?.promise;
         this.form?.onSubmit(this.onSubmit);
         await customElements.whenDefined('arpa-form');
-        /** @type {Field} */
-        this.pageField = this.form.getField('page');
-        /** @type {Field} */
-        this.perPageField = this.form.getField('perPage');
-        this.perPageField?.on('change', (value, field, event) => this.form.submitForm(event));
+        /** @type {NumberField} */
+        this.pageField = this.form?.getField('page');
+        /** @type {SelectCombo} */
+        this.perPageField = this.form?.getField('perPage');
+        this.perPageField?.on(
+            'change',
+            (/** @type {unknown} */ value, /** @type {Field} */ field, /** @type {Event} */ event) =>
+                this.form?.submitForm(event)
+        );
     }
 
     /**
      * Renders the form for the list filters.
-     * @param {ListFilter} pageFilter
-     * @param {ListFilter} perPageFilter
+     * @param {ListFilter} [pageFilter]
+     * @param {ListFilter} [perPageFilter]
      * @returns {string} The form HTML.
      */
     renderForm(pageFilter = this.pageFilter, perPageFilter = this.perPageFilter) {
-        /** @type {ListFilter} */
-        const perPageOptions = this.getArrayProperty('per-page-options');
+        const opt = this.getArrayProperty('per-page-options');
+        /** @type {number[]} */
+        const perPageOptions = Array.isArray(opt) ? opt : [];
         const page = pageFilter?.getValue();
         const perPage = perPageFilter?.getValue();
         return html`<form
             variant="compact"
-            id="${this.list.getId()}-filters-form"
+            id="${this.list?.getId()}-filters-form"
             has-submit="false"
             is="arpa-form"
             class="listFilters__form"
@@ -105,7 +116,8 @@ class ListFilters extends ArpaElement {
                 <select-combo id="perPage" label="Per page" value="${perPage || ''}" variant="small">
                     ${mapHTML(
                         perPageOptions,
-                        value => html`<select-option label="${value}" value="${value}"></select-option>`
+                        (/** @type {number}*/ value) =>
+                            html`<select-option label="${value}" value="${value}"></select-option>`
                     )}
                 </select-combo>
                 <number-field
@@ -122,25 +134,31 @@ class ListFilters extends ArpaElement {
 
     /**
      * Updates the list filters.
-     * @param {ListResource} listResource
+     * @param {ListResource} [listResource]
      */
     async update(listResource = this.listResource) {
         await this.promise;
         this.pageField?.setValue(listResource?.getPage());
-        this.pageField?.setMax(listResource?.getTotalPages());
+        this.pageField?.setMax(listResource?.getTotalPages() || 1);
         this.perPageField?.setValue(listResource?.getPerPage());
     }
 
+    /**
+     * Handles the form submission.
+     * @param {ListFiltersSubmitPayloadType} payload - The form payload.
+     */
     onSubmit(payload) {
         if (payload.perPage != this.perPageFilter?.getValue()) {
             payload.page = 1;
             this.pageField?.setValue(1);
         }
-        const newURL = editURL(window.location.href, {
-            [this.list.getParamName('page')]: payload.page,
-            [this.list.getParamName('perPage')]: payload.perPage
-        });
-        this.router.go(newURL);
+        if (this.router) {
+            const newURL = editURL(window.location.href, {
+                [this.list?.getParamName('page') || 'page']: payload.page,
+                [this.list?.getParamName('perPage') || 'perPage']: payload.perPage
+            });
+            this.router?.go(newURL);
+        }
     }
 
     // #endregion

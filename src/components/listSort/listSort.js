@@ -1,18 +1,28 @@
 /**
- * @typedef {import('../list-item/listItemInterface.d.ts').ListItemInterface} ListItemInterface
- * @typedef {import('./listInterface.js').ListInterface} ListInterface
+ * @typedef {import('@arpadroid/ui').Icon} Icon
+ * @typedef {import('@arpadroid/ui').Tooltip} Tooltip
+ * @typedef {any} SearchField
+ * @typedef {any} SelectCombo
+ * @typedef {any} FieldOptionConfigType
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
- * @typedef {import('../list/list.js').default} List
- * @typedef {import('../../../form/components/fields/searchField/searchField.js').default} SearchField
- * @typedef {import('../../../form/components/fields/selectCombo/selectCombo.js').default} SelectCombo
- * @typedef {import('@arpadroid/application/src/resources/listResource/listFilter').default} ListFilter
+ * @typedef {import('@arpadroid/resources').ListFilter} ListFilter
  * @typedef {import('@arpadroid/services').Router} Router
+ * @typedef {import('../listItem/listItem.types').ListItemConfigType} ListItemConfigType
+ * @typedef {import('../list/list.types').ListConfigType} ListConfigType
+ * @typedef {import('../list/list.js').default} List
+ * @typedef {import('../multiSelect/multiSelect.js').IconMenu} IconMenu
+ * @typedef {import('../listItem/listItem.js').default} ListItem
+ * @typedef {import('./listSort.types').ListSortConfigType} ListSortConfigType
+ * @typedef {any} NavList
  */
 
 import { mapHTML, attr } from '@arpadroid/tools';
 import { ArpaElement } from '@arpadroid/ui';
+
 const html = String.raw;
 class ListSort extends ArpaElement {
+    /** @type {ListSortConfigType} */ // @ts-ignore
+    _config = this._config;
     //////////////////////////////
     // #region INITIALIZATION
     /////////////////////////////
@@ -29,8 +39,8 @@ class ListSort extends ArpaElement {
         };
     }
 
-    async initializeProperties() {
-        /** @type {List} */
+    initializeProperties() {
+        /** @type {List | null} */
         this.list = this.closest('.arpaList');
         /** @type {Router} */
         this.router = this.list?.getRouter();
@@ -70,7 +80,7 @@ class ListSort extends ArpaElement {
     ////////////////////////////
 
     _onConnected() {
-        this.router.on('route_changed', this._onRouteChange);
+        this.router?.on('route_changed', this._onRouteChange);
     }
 
     _onRouteChange() {
@@ -79,9 +89,13 @@ class ListSort extends ArpaElement {
 
     updateSortLink(sortLink = this.sortLink) {
         const sortDir = this.getSortDir();
-        sortLink?.querySelector('arpa-icon')?.setIcon(this.getSortDirIcon());
+        /** @type {Icon | null | undefined} */
+        const icon = sortLink?.querySelector('arpa-icon');
+        icon?.setIcon(this.getSortDirIcon());
         sortLink?.setAttribute('param-value', sortDir === 'asc' ? 'desc' : 'asc');
-        sortLink?.querySelector('arpa-tooltip')?.setContent(this.getSortDirTooltip());
+        /** @type {Tooltip | null | undefined} */
+        const tooltip = sortLink?.querySelector('arpa-tooltip');
+        tooltip?.setContent(this.getSortDirTooltip());
     }
 
     /////////////////////////////
@@ -100,7 +114,8 @@ class ListSort extends ArpaElement {
                 tooltip="${this.i18nText('lblSortBy')}"
                 zone="sort-options"
             >
-                ${mapHTML(this.list?.getSortOptions(), ({ value, icon, label }) => {
+                ${mapHTML(this.list?.getSortOptions() || [], (/** @type {FieldOptionConfigType} */ payload) => {
+                    const { value = '', icon = '', label = '' } = payload;
                     return html`<nav-link link="${value}" icon-left="${icon}" label="${label}"></nav-link>`;
                 })}
             </icon-menu>
@@ -120,21 +135,28 @@ class ListSort extends ArpaElement {
     }
 
     _initializeNav() {
+        /** @type {IconMenu | null} */
         this.sortByMenu = this.querySelector('icon-menu');
         this.sortByMenu &&
             this.sortByMenu?.onRenderReady(async () => {
                 await customElements.whenDefined('nav-list');
+                /** @type {NavList | null} */
                 this.sortNav = this.sortByMenu?.navigation;
-                this.sortNav._config.isItemSelected = this._isItemSelected;
-                attr(this.sortNav, {
-                    'param-name': this.list?.getParamName('sortBy'),
-                    'use-router': '',
-                    'param-clear': this.list?.getParamName('page')
-                });
-                this.sortNav.on('selected', this._onSortBySelected, this._unsubscribes);
+                if (this.sortNav) {
+                    // @ts-ignore
+                    this.sortNav?._config && (this.sortNav._config.isItemSelected = this._isItemSelected);
+                    // @ts-ignore
+                    attr(this.sortNav, {
+                        'param-name': this.list?.getParamName('sortBy'),
+                        'use-router': '',
+                        'param-clear': this.list?.getParamName('page')
+                    });
+                    this.sortNav.on('selected', this._onSortBySelected, this._unsubscribes);
+                }
             });
     }
 
+    // @ts-ignore
     _isItemSelected({ node }) {
         const sortByValue = this.sortFilter?.getValue();
         if (!sortByValue) return;
@@ -142,10 +164,14 @@ class ListSort extends ArpaElement {
         return itemValue === sortByValue;
     }
 
+    /**
+     * When a sort option is selected.
+     * @param {ListItem} item
+     */
     _onSortBySelected(item) {
         const icon = item.getProperty('icon') || item.getProperty('icon-right');
-        this.sortByMenu.setIcon(icon);
-        this.sortByMenu.setTooltip(
+        this.sortByMenu?.setIcon(icon);
+        this.sortByMenu?.setTooltip(
             html`<span>${this.i18n('lblSortedBy')}</span> <strong>${item.getLabelText()}</strong>`
         );
     }

@@ -1,34 +1,45 @@
 /* eslint-disable sonarjs/no-nested-template-literals */
 /**
- * @typedef {import('@arpadroid/resources/src').ListResource} ListResource
- * @typedef {import('@arpadroid/resources/src').ListFilter} ListFilter
- * @typedef {import('@arpadroid/forms').FormComponent} FormComponent
- * @typedef {import('@arpadroid/forms').Field} Field
+ * @typedef {import('@arpadroid/resources').ListResource} ListResource
+ * @typedef {import('@arpadroid/resources').ListFilter} ListFilter
+ * @typedef {any} FormComponent
+ * @typedef {any} Field
  * @typedef {import('../list/list.js').default} List
+ * @typedef {import('./listInfo.types').ListInfoConfigType} ListInfoConfigType
  */
 import { ArpaElement } from '@arpadroid/ui';
 import { mergeObjects, bind, renderNode } from '@arpadroid/tools';
 const html = String.raw;
 class ListInfo extends ArpaElement {
+    /** @type {ListInfoConfigType} */ // @ts-ignore
+    _config = this._config;
+
+    /**
+     * Default component config.
+     * @returns {ListInfoConfigType}
+     */
     getDefaultConfig() {
         this.i18nKey = 'lists.list';
         bind(this, 'reRender', 'updateText');
-        return mergeObjects(super.getDefaultConfig(), {
+        /** @type {ListInfoConfigType} */
+        const conf = {
             className: 'listInfo',
             hasPrevNext: true,
             hasRefresh: true
-        });
+        };
+        return mergeObjects(super.getDefaultConfig(), conf);
     }
 
     initializeProperties() {
         super.initializeProperties();
-        /** @type {List} */
+        /** @type {List | null} */
         this.list = this.closest('.arpaList');
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
         this.listResource?.on('items', this.updateText);
         /** @type {ListFilter} */
         this.searchFilter = this.listResource?.getSearchFilter();
+        return true;
     }
 
     updateText() {
@@ -40,7 +51,7 @@ class ListInfo extends ArpaElement {
         this.textNode = newNode;
         const buttons = this.querySelectorAll('.listInfo__next, .listInfo__previous');
         buttons.forEach(button => {
-            if (this.listResource?.getTotalPages() <= 1) button.setAttribute('disabled', 'disabled');
+            if (this.listResource?.getTotalPages() || 0 <= 1) button.setAttribute('disabled', 'disabled');
             else button.removeAttribute('disabled');
         });
     }
@@ -64,7 +75,7 @@ class ListInfo extends ArpaElement {
 
     renderInfoText() {
         const hasSearchResults = this.listResource?.hasResults();
-        const query = this.searchFilter?.getValue();
+        const query = /** @type {string} */ (this.searchFilter?.getValue() || '');
         if (this.listResource) {
             if (query?.length) {
                 return !hasSearchResults ? this.renderNoResults() : this.renderSearchResults();
@@ -121,7 +132,7 @@ class ListInfo extends ArpaElement {
      * @returns {string}
      */
     renderResults(range = this.listResource?.getItemRange() ?? [], total = this.listResource?.getTotalItems()) {
-        const { showResultsText } = this.list.getConfig();
+        const { showResultsText } = this.list?.getConfig() ?? {};
         const [fistItem, lastItem] = range;
         if (!showResultsText || !range[0] || !range[1]) return '';
         return html`
@@ -138,7 +149,10 @@ class ListInfo extends ArpaElement {
      * @param {string} query
      * @returns {string}
      */
-    renderSearchResults(resultTotal = this.listResource?.getTotalItems(), query = this.searchFilter?.getValue()) {
+    renderSearchResults(
+        resultTotal = this.listResource?.getTotalItems(),
+        query = String(this.searchFilter?.getValue() || '')
+    ) {
         return html`
             <i18n-text key="${this.i18nKey}.txtSearchResults" class="listInfo__text">
                 <i18n-replace name="resultCount"><strong>${resultTotal}</strong></i18n-replace>
@@ -152,7 +166,7 @@ class ListInfo extends ArpaElement {
      * @param {string} query
      * @returns {string}
      */
-    renderNoResults(query = this.searchFilter?.getValue()) {
+    renderNoResults(query = String(this.searchFilter?.getValue() || '')) {
         return html`
             <i18n-text key="${this.i18nKey}.txtNoResults" class="listInfo__text">
                 <i18n-replace name="result"><strong>${query}</strong></i18n-replace>

@@ -1,10 +1,17 @@
 import { ListResource } from '@arpadroid/resources';
-import { ListItemInterface } from '../../types.compiled';
 import ListItem from '../listItem/listItem.js';
+import { ListItemConfigType } from '../listItem/listItem.types';
+import { ArpaElementConfigType } from '@arpadroid/ui/src/components/arpaElement/arpaElement.types';
+import { ListResourceItemType, Router } from './list.js';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import { FieldOptionConfigType } from '@arpadroid/forms';
 
-export interface ListInterface {
+export type ListConfigType = ArpaElementConfigType & {
     allControls?: boolean;
+    actions?: FieldOptionConfigType[];
     canCollapse?: boolean;
+    controls?: string[];
     defaultView?: string;
     paramNamespace?: string;
     hasControls?: boolean;
@@ -19,7 +26,7 @@ export interface ListInterface {
     id?: string;
     isCollapsed?: boolean;
     itemComponent?: typeof ListItem;
-    items?: ListItemInterface[];
+    items?: ListItemConfigType[];
     itemsPerPage?: number;
     itemTag?: string;
     listResource?: ListResource;
@@ -28,8 +35,8 @@ export interface ListInterface {
     onSearch?: (value: string) => void;
     pageParam?: string;
     perPageParam?: string;
-    preProcessItem?: (item: ListInterface) => void;
-    preProcessNode?: (node: HTMLElement) => void;
+    preProcessItem?: (item: ListConfigType) => ListConfigType;
+    preProcessNode?: (node?: ListItem | HTMLElement) => ListItem | HTMLElement;
     renderMode?: 'minimal' | 'full';
     resetScrollOnLoad?: boolean;
     searchParam?: string;
@@ -39,8 +46,13 @@ export interface ListInterface {
     sortDirParam?: string;
     sortOptions?: any[];
     stickyControls?: boolean;
+    router?: Router;
     template?: string;
-    title?: string;
-    viewOptions?: NavLinkInterface[];
+    title?: string | null;
+    /** @todo fix type below */
+    // viewOptions?: NavLinkConfigType[];
+    viewOptions?: Record<string, any>[];
     views?: string[];
-}
+    zoneSelector?: string;
+    mapItemId?: (item: ListResourceItemType) => string;
+};

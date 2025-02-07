@@ -1,7 +1,12 @@
 /**
- * @typedef {import('@arpadroid/resources/src').ListResource} ListResource
+ * @typedef {import('@arpadroid/resources').ListResource} ListResource
  * @typedef {import('../list/list.js').default} List
  * @typedef {import('@arpadroid/services').Router} Router
+ * @typedef {any} NavLink
+ * @typedef {import('@arpadroid/navigation/src/components/navLink/navLink.types').NavLinkConfigType} NavLinkConfigType
+ * @typedef {import('./listViews.types').ListViewConfigType} ListViewConfigType
+ * @typedef {import('./listViews.types').ListViewsConfigType} ListViewsConfigType
+ * @typedef {any} IconMenu
  */
 import { mergeObjects, attrString, clearLazyQueue } from '@arpadroid/tools';
 import { ArpaElement } from '@arpadroid/ui';
@@ -12,10 +17,13 @@ export const LIST_VIEW_LIST = 'list';
 export const LIST_VIEW_LIST_COMPACT = 'list-compact';
 const html = String.raw;
 class ListViews extends ArpaElement {
+    /** @type {ListViewsConfigType} */ // @ts-ignore
+    _config = this._config;
     // #region INITIALIZATION
     getDefaultConfig() {
         this.onChange = this.onChange.bind(this);
-        return mergeObjects(super.getDefaultConfig(), {
+        /** @type {ListViewsConfigType} */
+        const conf = {
             icon: 'visibility',
             label: 'Views',
             views: [LIST_VIEW_LIST, LIST_VIEW_LIST_COMPACT, LIST_VIEW_GRID, LIST_VIEW_GRID_COMPACT],
@@ -43,7 +51,8 @@ class ListViews extends ArpaElement {
                     value: LIST_VIEW_GRID_COMPACT
                 }
             ]
-        });
+        };
+        return mergeObjects(super.getDefaultConfig(), conf);
     }
     render() {
         const views = this.getViewsConfig();
@@ -57,7 +66,7 @@ class ListViews extends ArpaElement {
 
     initializeProperties() {
         super.initializeProperties();
-        /** @type {List} */
+        /** @type {List | null} */
         this.list = this.closest('.arpaList, .gallery');
         /** @type {Router} */
         this.router = this.list?.getRouter();
@@ -65,8 +74,9 @@ class ListViews extends ArpaElement {
         this.listResource = this.list?.listResource;
         this._initializeViewFilter();
         this._initializeViewsConfig();
-        this.viewClasses = this._config.links.map(link => 'listView--' + link.value);
-        this.itemViewClasses = this._config.links.map(link => 'listItem--' + link.value);
+        const { links = [] } = this._config;
+        this.viewClasses = links.map(link => 'listView--' + link.value);
+        this.itemViewClasses = links.map(link => 'listItem--' + link.value);
         this.router?.on('route_changed', () => this.initializeView());
         return true;
     }
@@ -86,19 +96,33 @@ class ListViews extends ArpaElement {
 
     // #region ACCESSORS
 
+    /**
+     * Returns the options.
+     * @returns {ListViewConfigType[]}
+     */
     getOptions() {
         const { options, defaultOptions } = this._config;
-        return (options ?? defaultOptions ?? []).filter(link => this.getViewsConfig().includes(link.value));
+        const opt = Array.from(options ?? defaultOptions ?? []);
+        return opt?.filter(link => link.value && this.getViewsConfig()?.includes(link.value));
     }
 
     getDefaultOptions() {
         return this.list?._config?.viewOptions ?? this._config?.defaultOptions;
     }
 
+    /**
+     * Returns the views config.
+     * @returns {string[]}
+     */
     getViewsConfig() {
-        return this.list.getArrayProperty('views') ?? this.getArrayProperty('views') ?? [];
+        const rv = this.list?.getArrayProperty('views') ?? this.getArrayProperty('views') ?? [];
+        return Array.isArray(rv) ? rv : [];
     }
 
+    /**
+     * Adds a view.
+     * @param {ListViewConfigType} view
+     */
     addView(view) {
         const defaults = {
             selected: this.viewFilter?.getValue() === view.value,
@@ -108,33 +132,48 @@ class ListViews extends ArpaElement {
             }
         };
         const link = mergeObjects(defaults, view);
-        this._config.links.push(link);
+        this._config.links?.push(link);
     }
 
+    /**
+     * Sets the view.
+     * @param {string} view
+     */
     async setView(view) {
         const viewExists = this.viewExists(view);
         if (!viewExists) {
-            view = this?.viewFilter?.getDefaultValue();
+            view = String(this?.viewFilter?.getDefaultValue() || '');
         }
         clearLazyQueue();
         this?.viewFilter?.setValue(view);
         this.applyView(view);
     }
 
+    /**
+     * Checks if the view exists.
+     * @param {string} view
+     * @returns {boolean}
+     */
     viewExists(view) {
-        return Boolean(this._config.links.find(link => link.value === view));
+        return Boolean(this._config?.links?.find((/** @type {ListViewConfigType} */ link) => link.value === view));
     }
 
+    /**
+     * Applies the view.
+     * @param {string} view
+     */
     applyView(view) {
-        this.list?.classList.remove(...this.viewClasses);
+        this.list?.classList.remove(...(this.viewClasses || []));
         this.list?.classList.add('listView--' + view);
         view === 'grid-compact' && this.list?.classList.add('listView--grid');
-        this.list?.getItems().forEach(item => {
-            item?.node?.classList.remove(...this.itemViewClasses);
-            item?.node?.classList.add('listItem--' + view);
+        this.list?.getItemNodes()?.forEach(item => {
+            item?.classList.remove(...(this.itemViewClasses || []));
+            item?.classList.add('listItem--' + view);
         });
+        // @ts-ignore
         const prevSelected = this.navigation?.querySelectorAll('[aria-current]');
-        prevSelected?.forEach(node => node.removeAttribute('aria-current'));
+        prevSelected?.forEach((/** @type {HTMLElement} */ node) => node.removeAttribute('aria-current'));
+        // @ts-ignore
         const selected = this.navigation?.querySelector(`[data-value="${view}"]`);
         selected?.setAttribute('aria-current', 'location');
     }
@@ -142,11 +181,12 @@ class ListViews extends ArpaElement {
     async _onConnected() {
         super._onConnected();
         await customElements.whenDefined('icon-menu');
+        /** @type {IconMenu | null} */
         this.iconMenu = this.querySelector('icon-menu');
         if (this.iconMenu) {
             this.iconMenu.setLinks(this._config.links);
             return this.iconMenu?.onRendered(() => {
-                this.navigation = this.iconMenu.navigation;
+                this.navigation = this.iconMenu?.navigation;
                 this.initializeView();
                 return true;
             });
@@ -155,7 +195,11 @@ class ListViews extends ArpaElement {
         }
     }
 
-    initializeView(view = this.viewFilter?.getValue()) {
+    /**
+     * Initializes the view.
+     * @param {string} [view]
+     */
+    initializeView(view = String(this.viewFilter?.getValue() || '')) {
         this.setView(view);
     }
 
@@ -163,6 +207,11 @@ class ListViews extends ArpaElement {
 
     // #region EVENTS
 
+    /**
+     * On change view callback.
+     * @param {Event} event
+     * @param {NavLink} navLink
+     */
     onChange(event, navLink) {
         event.preventDefault();
         event.stopPropagation();

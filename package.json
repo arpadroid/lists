@@ -3,8 +3,7 @@
     "version": "0.0.1",
     "description": "A library of web components for building list interfaces featuring search, pagination, views, filters and many other features.",
     "exports": "./dist/arpadroid-lists.js",
-    "module": "./dist/arpadroid-lists.js",
-    "browser": "./dist/arpadroid-lists.js",
+    "types": "./dist/@types/types.compiled.d.ts",
     "type": "module",
     "scripts": {
         "build": "node ./node_modules/@arpadroid/arpadroid/scripts/build-project.mjs --project=lists --minify",

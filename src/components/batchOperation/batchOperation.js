@@ -9,7 +9,7 @@ class BatchOperation extends ArpaFragment {
             ${this.innerHTML}
         </select-option>`;
         this.node = this.querySelector('select-option');
-        appendNodes(this.node, this._childNodes);
+        this.node && appendNodes(this.node, this._childNodes);
     }
 }
 

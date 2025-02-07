@@ -1,8 +1,11 @@
 /**
- * @typedef {import('./listItemInterface').ListItemInterface} ListItemInterface
+ * @typedef {import('./listItem.types').ListItemConfigType} ListItemConfigType
  * @typedef {import('../list/list.js').default} List
- * @typedef {import('@arpadroid/resources/src').ListResource} ListResource
- * @typedef {import('@arpadroid/resources/src').ListFilter} ListFilter
+ * @typedef {import('@arpadroid/resources').ListResource} ListResource
+ * @typedef {import('@arpadroid/resources').ListFilter} ListFilter
+ * @typedef {import('@arpadroid/ui').Image} ArpaImage
+ * @typedef {import('@arpadroid/navigation/src/components/navList/navList.js').default} NavList
+ * @typedef {import('./listItem.types').ListItemImageSizeType} ListItemImageSizeType
  */
 
 import { ArpaElement } from '@arpadroid/ui';
@@ -10,10 +13,20 @@ import { render, classNames, attrString, getViewportWidth, getViewportHeight } f
 
 const html = String.raw;
 class ListItem extends ArpaElement {
+    /** @type {ListItemConfigType} */ //@ts-ignore
+    _config = this._config;
+    /** @type {boolean} */ //@ts-ignore
+    isGrid = this.isGrid || false;
     /////////////////////
     // #region INIT
     /////////////////////
 
+    /**
+     * Creates a new list item.
+     * @param {ListItemConfigType} config - The configuration for the list item.
+     * @param {Record<string, unknown>} payload - The payload for the list item.
+     * @param {Record<string, unknown>} map - The map for the list item.
+     */
     constructor(config = {}, payload, map) {
         super(config);
         this.payload = payload;
@@ -22,11 +35,20 @@ class ListItem extends ArpaElement {
 
     /**
      * Gets the default config for the component.
-     * @returns {ListItemInterface}
+     * @returns {ListItemConfigType}
      */
     getDefaultConfig() {
-        this.bind('_onImageLoaded', '_onImageError', 'setSelected', '_onViewChange', '_onSelected', '_onDeselected', '_doAction');
-        return super.getDefaultConfig({
+        this.bind(
+            '_onImageLoaded',
+            '_onImageError',
+            'setSelected',
+            '_onViewChange',
+            '_onSelected',
+            '_onDeselected',
+            '_doAction'
+        );
+        /** @type {ListItemConfigType} */
+        const conf = {
             lazyLoad: false,
             selectedClass: 'listItem--selected',
             truncateContent: 0,
@@ -50,7 +72,8 @@ class ListItem extends ArpaElement {
             imageConfig: {
                 showPreloader: true
             }
-        });
+        };
+        return super.getDefaultConfig(conf);
     }
 
     _initializeTemplate() {
@@ -63,8 +86,8 @@ class ListItem extends ArpaElement {
         this.grabList();
         const id = this.getId();
         if (typeof this.list?.hasMultiSelect === 'function' && this.list?.hasMultiSelect()) {
-            this.listResource.on(`item_selected_${id}`, this._onSelected, this._unsubscribes);
-            this.listResource.on(`item_deselected_${id}`, this._onDeselected, this._unsubscribes);
+            this.listResource?.on(`item_selected_${id}`, this._onSelected, this._unsubscribes);
+            this.listResource?.on(`item_deselected_${id}`, this._onDeselected, this._unsubscribes);
         }
         !this.listResource && typeof this.list?.preProcessNode === 'function' && this.list?.preProcessNode(this);
 
@@ -85,12 +108,12 @@ class ListItem extends ArpaElement {
     }
 
     _onSelected() {
-        this.checkbox.checked = true;
+        this.checkbox && (this.checkbox.checked = true);
         this.classList.add(this.getSelectedClass());
     }
 
     _onDeselected() {
-        this.checkbox.checked = false;
+        this.checkbox && (this.checkbox.checked = false);
         this.classList.remove(this.getSelectedClass());
     }
     /////////////////////////////
@@ -174,7 +197,7 @@ class ListItem extends ArpaElement {
      * Returns the payload for the list item.
      * Each item has a unique payload. When using the listResource, the payload may be what is returned from the server.
      * Otherwise, it is the config object.
-     * @returns {Record<string, unknown> | unknown}
+     * @returns {Record<string, unknown>}
      */
     getPayload() {
         return this.payload ?? this._config;
@@ -205,6 +228,11 @@ class ListItem extends ArpaElement {
         }
     }
 
+    /**
+     * Sets the action for the list item.
+     * @param {ListItemConfigType['action']} action
+     * @throws {Error} - If the action is not a function.
+     */
     setAction(action) {
         if (typeof action !== 'function') {
             throw new Error('Action must be a function');
@@ -218,15 +246,16 @@ class ListItem extends ArpaElement {
 
     /**
      * Sets the selected state of the list item.
-     * @param {Event} event
+     * @param {Event} [event]
      */
     setSelected(event) {
-        const checked = event?.target?.checked ?? this.checkbox?.checked;
+        const checkbox = /** @type {HTMLInputElement} */ (event?.target);
+        const checked = checkbox?.checked ?? this.checkbox?.checked;
         if (checked) {
             this.listResource?.selectItem(this.getPayload());
             this.classList.add(this.getSelectedClass());
         } else {
-            this.listResource.deselectItem(this.getPayload());
+            this.listResource?.deselectItem(this.getPayload());
             this.classList.remove(this.getSelectedClass());
         }
     }
@@ -259,7 +288,7 @@ class ListItem extends ArpaElement {
      * @returns {HTMLTemplateElement | undefined}
      */
     getTemplateNode() {
-        return this.list?.itemTemplate?.cloneNode(true);
+        return /** @type {HTMLTemplateElement} */ (this.list?.itemTemplate?.cloneNode(true));
     }
 
     getTemplateVars() {
@@ -309,7 +338,7 @@ class ListItem extends ArpaElement {
         const wrapperComponent = this.getWrapperComponent();
         const icon = this.getIcon();
         const iconRight = this.getIconRight();
-        const innerContent = this.renderInnerContent(isGrid) || this.hasZone('content');
+        const innerContent = /** @type {string} */ (this.renderInnerContent(isGrid) || this.hasZone('content'));
         const hasInnerContent = innerContent && innerContent?.trim()?.length;
         return html`
             <${wrapperComponent} ${this.getWrapperAttrs()}>
@@ -324,7 +353,7 @@ class ListItem extends ArpaElement {
 
     getWrapperAttrs() {
         return attrString({
-            href: this.ling,
+            href: this.link,
             class: classNames('listItem__main', { listItem__link: this.link })
         });
     }
@@ -340,14 +369,21 @@ class ListItem extends ArpaElement {
         return html`${contentHeader}${this.renderContent()}`;
     }
 
+    /**
+     * Returns whether the list item has content.
+     * @param {string} property - The property to check for content.
+     * @returns {boolean}
+     */
     hasContent(property) {
         if (this.payload?.[property]) return true;
         return super.hasContent(property);
     }
 
     async initializeNav() {
-        this.navNode = this.querySelector('.listItem__nav');
+        /** @type {NavList | null} */
+        this.navNode = /** @type {NavList | null} */ (this.querySelector('.listItem__nav'));
         await customElements.whenDefined('icon-menu');
+        // @ts-ignore
         this.navNode?.setConfig(this._config.nav);
     }
 
@@ -384,11 +420,18 @@ class ListItem extends ArpaElement {
     renderTags() {
         const { tags = [] } = this._config;
         if (!tags?.length && !this.hasZone('tags')) return '';
+        // @ts-ignore
+        const tagsHTML = tags?.map(tag => this.renderTag(tag)) || '';
         return html`<tag-list id="item-${this.getId()}-tagList" variant="compact" class="listItem__tags" zone="tags">
-            ${tags?.map(tag => this.renderTag(tag)) || ''}
+            ${tagsHTML}
         </tag-list>`;
     }
 
+    /**
+     * Renders a tag for the list item.
+     * @param {Record<string, unknown>} tag - The tag to render. @todo Add type for tag.
+     * @returns {string} - The rendered tag as a string.
+     */
     renderTag(tag) {
         return html`<tag-item class="listItem__tag" text="${tag.label}" icon="${tag.icon}"></tag-item>`;
     }
@@ -432,7 +475,8 @@ class ListItem extends ArpaElement {
     getImageAttributes() {
         const totalItems = this.list?.getItemCount();
         const lazyLoad = this.getLazyLoad();
-        const isAuto = lazyLoad === 'auto' && totalItems > 100;
+        const isAuto = lazyLoad === 'auto' && (totalItems || 0) > 100;
+        /** @type {Record<string, unknown>} */
         const attr = {
             'lazy-load': lazyLoad || isAuto,
             'has-native-lazy': this.getProperty('has-native-lazy') || isAuto
@@ -457,25 +501,40 @@ class ListItem extends ArpaElement {
         return this.list?.getLazyLoadImages() ?? this.getProperty('lazy-load-image');
     }
 
+    /**
+     * Returns the image dimensions for the list item.
+     * @param {boolean} memoized - Indicates whether to use the memoized dimensions.
+     * @returns {ListItemImageSizeType}
+     */
     getImageDimensions(memoized = true) {
         (!memoized || !this.imageDimensions) && (this.imageDimensions = this._getImageDimensions(memoized));
         this.list && (this.list.itemImageDimensions = this.imageDimensions);
         return this.imageDimensions;
     }
 
+    /**
+     * Returns the image dimensions for the list item.
+     * @param {boolean} memoized - Indicates whether to use the memoized dimensions.
+     * @returns {ListItemImageSizeType}
+     */
     _getImageDimensions(memoized) {
         if (memoized && this.list?.itemImageDimensions) return this.list.itemImageDimensions;
         const { imageSizes = { list: { width: 100 } } } = this._config;
         const size = this.getProperty('image-size');
 
         if (imageSizes[size]) {
+            // @ts-ignore
             if (typeof imageSizes[size] === 'function') return imageSizes[size]();
+            // @ts-ignore
             return imageSizes[size];
         }
         const width = this.getProperty('image-width') || size;
         const height = this.getProperty('image-height');
         if (width || height) return { width, height };
-        return imageSizes[this.view?.replace(/-/g, '_')] || imageSizes.list;
+        const sizeName = /** @type {string} */ (this.view?.replace(/-/g, '_'));
+        let rv = imageSizes[sizeName] || imageSizes.list;
+        if (typeof rv === 'function') rv = rv();
+        return rv;
     }
 
     // #region Render Nav
@@ -504,9 +563,10 @@ class ListItem extends ArpaElement {
 
     async _initializeNodes() {
         this.mainNode = this.querySelector('.listItem__main');
-        this.checkbox = this.querySelector('.listItem__checkbox');
+        this.checkbox = /** @type {HTMLInputElement} */ (this.querySelector('.listItem__checkbox'));
         this.checkboxContainer = this.querySelector('.listItem__checkboxContainer');
         this.rhs = this.querySelector('.listItem__rhs');
+        /** @type {ArpaImage | null} */
         this.image = this.querySelector('.listItem__image');
         this.contentHeaderNode = this.querySelector('.listItem__contentHeader');
         this.contentNode = this.querySelector('.listItem__content');
@@ -514,8 +574,8 @@ class ListItem extends ArpaElement {
         this.contentWrapperNode = this.querySelector('.listItem__contentWrapper');
         this.hasNav() && this.initializeNav();
         this.image?.addConfig({
-            onLoad: event => this._onImageLoaded(event),
-            onError: event => this._onImageError(event)
+            onLoad: this._onImageLoaded,
+            onError: this._onImageError
         });
         this._initializeItem();
     }
@@ -530,16 +590,21 @@ class ListItem extends ArpaElement {
             this.checkbox.addEventListener('change', this.setSelected);
             this.setSelected();
         }
-        if (this.mainNode && typeof action === 'function') {
+        if (this.mainNode && typeof this._config?.action === 'function') {
             this.mainNode.removeEventListener('click', this._doAction);
             this.mainNode.addEventListener('click', this._doAction);
         }
         this.itemInitialized = true;
     }
 
+    /**
+     * Performs the action for the list item.
+     * @param {Event} event - The event that triggered the action.
+     * @returns {unknown} - The result of the action.
+     */
     _doAction(event) {
         const { action } = this._config;
-        return action(event, this);
+        return typeof action === 'function' && action(event, this);
     }
 
     /**
@@ -547,7 +612,8 @@ class ListItem extends ArpaElement {
      * An item can have a view filter that changes the view of the list: grid, list, compact etc...
      */
     _initializeView() {
-        this.view = this.viewsFilter?.getValue();
+        /** @type {string} */
+        this.view = /** @type {string} */ (this.viewsFilter?.getValue() || 'list');
         this.isGrid = this._isGrid();
         this.viewsFilter?.on('value', this._onViewChange, this._unsubscribes);
     }
@@ -556,6 +622,10 @@ class ListItem extends ArpaElement {
         return this.view?.indexOf('grid') === 0;
     }
 
+    /**
+     * Called when the view changes.
+     * @param {string} view - The new view
+     */
     _onViewChange(view) {
         if (this.view !== view) {
             this.view = view;
@@ -582,14 +652,14 @@ class ListItem extends ArpaElement {
         const targetParentNode = this.isGrid ? this.titleNode || this.contentWrapperNode : this.mainNode;
         if (this.image.parentNode !== targetParentNode) {
             this.isGrid && this.titleNode
-                ? this.titleNode.parentNode.after(this.image)
-                : targetParentNode.prepend(this.image);
+                ? this.titleNode?.parentNode instanceof HTMLElement && this.titleNode?.parentNode?.after(this.image)
+                : targetParentNode?.prepend(this.image);
         }
     }
 
     updateImageSize() {
         const { width, height } = this.getImageDimensions(false);
-        this.image?.setSize(width, height);
+        this.image?.setSize(Number(width), Number(height));
     }
 
     /**
@@ -625,7 +695,7 @@ class ListItem extends ArpaElement {
      */
     _onImageError(event) {
         const { onImageError } = this._config;
-        typeof onImageError === 'function' && this._config?.onImageError(event, this);
+        typeof onImageError === 'function' && onImageError(event, this);
     }
     /////////////////////////////
     // #endregion EVENTS
@@ -639,7 +709,7 @@ class ListItem extends ArpaElement {
      * Deletes the list item.
      * @returns {Promise<void>}
      */
-    delete() {
+    async delete() {
         return this.listResource ? this.listResource.removeItem({ id: this.getId() }) : this.remove();
     }
     /////////////////////////////

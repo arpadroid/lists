@@ -1,9 +1,10 @@
 /**
- * @typedef {import('@arpadroid/forms').SelectCombo} SelectCombo
- * @typedef {import('@arpadroid/forms').FormComponent} FormComponent
+ * @typedef {any} SelectCombo
+ * @typedef {any} FormComponent
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
- * @typedef {import('@arpadroid/navigation').IconMenu} IconMenu
- * @typedef {import('@arpadroid/resources/src/resources/listResource/listResource.js').default} ListResource
+ * @typedef {any} IconMenu
+ * @typedef {any} Field
+ * @typedef {import('../list/list.js').default} List
  */
 import { ArpaElement } from '@arpadroid/ui';
 import { attrString } from '@arpadroid/tools';
@@ -14,8 +15,9 @@ class MultiSelect extends ArpaElement {
 
     _preInitialize() {
         this.i18nKey = 'lists.multiSelect';
+        /** @type {List | null} */
         this.list = this.closest('.arpaList');
-        /** @type {ListResource} */
+        /** @type {ListResource | undefined} */
         this.resource = this.list?.listResource;
     }
 
@@ -23,7 +25,7 @@ class MultiSelect extends ArpaElement {
         return super.getDefaultConfig({
             className: 'listMultiSelect',
             icon: 'check_box_outline_blank',
-            actions: this.list._config.actions,
+            actions: this.list?._config?.actions,
             tooltip: this.getText('txtNoItemsSelected')
         });
     }
@@ -31,6 +33,7 @@ class MultiSelect extends ArpaElement {
     initializeProperties() {
         super.initializeProperties();
         this.resource?.on('selection_change', () => this.update());
+        return true;
     }
 
     // #endregion
@@ -42,13 +45,13 @@ class MultiSelect extends ArpaElement {
     }
 
     getSelectedIcon() {
-        let count = this.resource?.getSelectedCount();
-        if (count > 9) count = '9_plus';
-        return 'filter_' + count;
+        const count = Number(this.resource?.getSelectedCount());
+        if (count > 9) return 'filter_9_plus';
+        return 'filter_' + String(count);
     }
 
     getTooltip() {
-        const count = this?.resource?.getSelectedCount();
+        const count = String(this?.resource?.getSelectedCount() || '');
         return count ? this.i18n('txtItemsSelected', { count }) : this.i18n('txtNoItemsSelected');
     }
 
@@ -66,7 +69,7 @@ class MultiSelect extends ArpaElement {
 
     async render() {
         const menuProps = this.getProperties('icon');
-        const formId = this.list.id + '-multiSelectForm';
+        const formId = this.list?.id + '-multiSelectForm';
         this.innerHTML = html`<icon-menu
             class="listMultiSelect__nav"
             nav-class="listMultiSelect__combo"
@@ -102,46 +105,58 @@ class MultiSelect extends ArpaElement {
     // #region LIFECYCLE
 
     _initializeNodes() {
-        /** @type {FormComponent} */
+        /** @type {FormComponent | null} */
         this.form = this.querySelector('.listMultiSelect__form');
         this.messages = this.querySelector('arpa-messages');
-        /** @type {IconMenu} */
+        /** @type {IconMenu | null} */
         this.menu = this.querySelector('.listMultiSelect__nav');
     }
 
+    /**
+     * Called when the component is connected to the DOM.
+     * @returns {Promise<any>}
+     */
     async _onConnected() {
-        await customElements.whenDefined('arpa-form', 'icon-menu');
+        await customElements.whenDefined('arpa-form');
         this._initializeActions();
         this._initializeToggle();
         this._initializeSelectionFilter();
     }
 
     _initializeSelectionFilter() {
-        this.selectedFilterField = this.form.getField('selectFilter');
-        this.selectedFilterField?.on('change', checked => {
+        this.selectedFilterField = this.form?.getField('selectFilter');
+        this.selectedFilterField?.on('change', (/** @type {boolean} */ checked) => {
             const action = checked ? 'filterBySelections' : 'fetch';
             this.resource?.[action]();
         });
     }
 
     _initializeToggle() {
-        this.toggleAllField = this.form.getField('toggleAll');
-        this.toggleAllField?.on('change', checked => this.resource.setSelections(checked));
+        this.toggleAllField = this.form?.getField('toggleAll');
+        this.toggleAllField?.on('change', (/** @type {boolean} */ checked) => this.resource?.setSelections(checked));
     }
 
-    async _initializeActions(actionsField = this.form?.getField('actions')) {
-        /** @type {SelectCombo} */
+    /**
+     * Initializes the actions field.
+     * @param {SelectCombo} [actionsField]
+     * @returns {Promise<void>}
+     */
+    async _initializeActions(actionsField = /** @type {SelectCombo} */ (this.form?.getField('actions'))) {
+        /** @type {SelectCombo | undefined} */
         this.actionsField = actionsField;
         await actionsField?.onReady();
-        actionsField?.optionsNode.setAttribute('zone', 'batch-operations');
-        actionsField?.on('change', async (value, field, event) => {
-            const option = actionsField.getSelectedOption();
-            if (typeof option?.action === 'function') {
-                option.action(this.resource.getSelectedItems(), this.renderItemList());
+        actionsField?.optionsNode?.setAttribute('zone', 'batch-operations');
+        actionsField?.on(
+            'change',
+            async (/** @type {unknown} */ value, /** @type {Field} */ field, /** @type {Event} */ event) => {
+                const option = actionsField.getSelectedOption();
+                if (typeof option?.action === 'function') {
+                    // option.action(this.resource?.getSelectedItems(), this.renderItemList());
+                }
+                // this.actionsField.removeSelectedOption();
+                event.stopImmediatePropagation();
             }
-            // this.actionsField.removeSelectedOption();
-            event.stopImmediatePropagation();
-        });
+        );
     }
 
     // #endregion
@@ -156,8 +171,8 @@ class MultiSelect extends ArpaElement {
     }
 
     updateMenu() {
-        this.menu.setTooltip(this.getTooltip());
-        this.menu.setIcon(this.getIcon());
+        this.menu?.setTooltip(this.getTooltip());
+        this.menu?.setIcon(this.getIcon());
     }
 
     updateClassNames() {

@@ -1,14 +1,15 @@
-/** @typedef {import('./tagInterface').TagInterface} TagInterface */
+/** @typedef {import('./tagItem.types').TagItemConfigType} TagItemConfigType */
 
-import { render, renderNode, appendNodes } from '@arpadroid/tools';
-import { I18nTool } from '@arpadroid/i18n';
+import { render, renderNode, appendNodes, processTemplate } from '@arpadroid/tools';
 import ListItem from '../../../listItem/listItem.js';
 
 const html = String.raw;
 class TagItem extends ListItem {
+    /** @type {TagItemConfigType} */ // @ts-ignore
+    _config = this._config;
     /**
      * Returns the defaultConfig.
-     * @returns {TagInterface}
+     * @returns {TagItemConfigType}
      */
     getDefaultConfig() {
         this._onDelete = this._onDelete.bind(this);
@@ -16,12 +17,7 @@ class TagItem extends ListItem {
             className: 'tagItem',
             listSelector: 'tag-list',
             tooltip: '',
-            tooltipPosition: 'top',
-            template: html`
-                <arpa-icon size="mini">{icon}</arpa-icon>
-                <div class="tag__text">{text}</div>
-                <arpa-tooltip>{tooltip}</arpa-tooltip>
-            `
+            tooltipPosition: 'top'
         };
     }
 
@@ -48,7 +44,7 @@ class TagItem extends ListItem {
         };
     }
 
-    render() {
+    async render() {
         const tooltip = this.getProperty('tooltip');
         const tooltipPosition = this.getProperty('tooltip-position');
         const text = this.getProperty('text') || this.getProperty('label');
@@ -57,11 +53,11 @@ class TagItem extends ListItem {
             <div class="tag__text">${text}</div>
             ${render(tooltip, html`<arpa-tooltip position="${tooltipPosition}">${tooltip}</arpa-tooltip>`)}
         `;
-        const content = I18nTool.processTemplate(template, this.getTemplateVars());
+        const content = processTemplate(template, this.getTemplateVars());
         this.innerHTML = content;
         this.initializeDeleteButton();
         this.textNode = this.querySelector('.tag__text');
-        appendNodes(this.textNode, this._childNodes);
+        this.textNode && appendNodes(this.textNode, this._childNodes);
         this.classList.add('tag');
         if (this._config.value) {
             this.setAttribute('value', this._config.value);
@@ -87,10 +83,14 @@ class TagItem extends ListItem {
         }
     }
 
-    _onDelete() {
+    /**
+     * Calls the onDelete function from the config.
+     * @param {Event} event
+     */
+    _onDelete(event) {
         const { onDelete } = this._config;
         if (typeof onDelete === 'function') {
-            onDelete(this);
+            onDelete(this, event);
         }
     }
 }
