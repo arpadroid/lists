@@ -1,6 +1,6 @@
 const config = {
     deps: ['messages', 'navigation', 'forms'],
-    buildTypes: false
+    buildTypes: true
 };
 
 export default config;

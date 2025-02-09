@@ -9,7 +9,6 @@
  */
 
 import { ArpaElement } from '@arpadroid/ui';
-// @ts-ignore
 import { ListResource, getResource } from '@arpadroid/resources';
 import ListControls from '../listControls/listControls.js';
 import { mergeObjects, appendNodes, processTemplate, editURL } from '@arpadroid/tools';

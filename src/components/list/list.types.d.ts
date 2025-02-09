@@ -1,8 +1,8 @@
-import { ListResource } from '@arpadroid/resources';
-import ListItem from '../listItem/listItem.js';
-import { ListItemConfigType } from '../listItem/listItem.types';
-import { ArpaElementConfigType } from '@arpadroid/ui/src/components/arpaElement/arpaElement.types';
-import { ListResourceItemType, Router } from './list.js';
+import type { ListResource } from '@arpadroid/resources';
+import type ListItem from '../listItem/listItem.js';
+import type { ListItemConfigType } from '../listItem/listItem.types';
+import type { ArpaElementConfigType } from '@arpadroid/ui';
+import type { ListResourceItemType, Router } from './list.js';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { FieldOptionConfigType } from '@arpadroid/forms';

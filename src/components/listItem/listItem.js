@@ -4,7 +4,7 @@
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
  * @typedef {import('@arpadroid/resources').ListFilter} ListFilter
  * @typedef {import('@arpadroid/ui').Image} ArpaImage
- * @typedef {import('@arpadroid/navigation/src/components/navList/navList.js').default} NavList
+ * @typedef {import('@arpadroid/navigation').NavList} NavList
  * @typedef {import('./listItem.types').ListItemImageSizeType} ListItemImageSizeType
  */
 
@@ -420,7 +420,6 @@ class ListItem extends ArpaElement {
     renderTags() {
         const { tags = [] } = this._config;
         if (!tags?.length && !this.hasZone('tags')) return '';
-        // @ts-ignore
         const tagsHTML = tags?.map(tag => this.renderTag(tag)) || '';
         return html`<tag-list id="item-${this.getId()}-tagList" variant="compact" class="listItem__tags" zone="tags">
             ${tagsHTML}
@@ -522,10 +521,8 @@ class ListItem extends ArpaElement {
         const { imageSizes = { list: { width: 100 } } } = this._config;
         const size = this.getProperty('image-size');
 
-        if (imageSizes[size]) {
-            // @ts-ignore
+        if (Array.isArray(imageSizes) && imageSizes[size]) {
             if (typeof imageSizes[size] === 'function') return imageSizes[size]();
-            // @ts-ignore
             return imageSizes[size];
         }
         const width = this.getProperty('image-width') || size;

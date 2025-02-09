@@ -1,6 +1,6 @@
-import { ArpaElementConfigType } from "@arpadroid/ui/dist/@types/components/arpaElement/arpaElement.types";
+import { ArpaElementConfigType } from '@arpadroid/ui';
 
 export type ListControlsConfigType = ArpaElementConfigType & {
     hasStickControls?: boolean;
     controls?: string[];
-}
+};

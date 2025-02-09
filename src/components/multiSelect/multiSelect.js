@@ -2,7 +2,7 @@
  * @typedef {any} SelectCombo
  * @typedef {any} FormComponent
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
- * @typedef {any} IconMenu
+ * @typedef {import('@arpadroid/navigation').IconMenu} IconMenu
  * @typedef {any} Field
  * @typedef {import('../list/list.js').default} List
  */

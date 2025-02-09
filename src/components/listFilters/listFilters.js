@@ -8,6 +8,7 @@
  * @typedef {any} NumberField
  * @typedef {import('../list/list.js').default} List
  * @typedef {import('@arpadroid/services').Router} Router
+ * @typedef {import('@arpadroid/navigation').IconMenu} IconMenu
  * @typedef {import('./listFilters.types').ListFiltersConfigType} ListFiltersConfigType
  * @typedef {import('./listFilters.types').ListFiltersSubmitPayloadType} ListFiltersSubmitPayloadType
  */
@@ -56,7 +57,7 @@ class ListFilters extends ArpaElement {
         this.innerHTML = html`<icon-menu ${attrString(props)} nav-class="listFilters__nav">
             <div class="listFilters__content">${this.renderForm()}</div>
         </icon-menu>`;
-        /** @type {import('../multiSelect/multiSelect.js').IconMenu} */
+        /** @type {IconMenu | null} */
         this.menuNode = this.querySelector('icon-menu');
         this._hasRendered = true;
         this._initializeForm();
@@ -66,7 +67,8 @@ class ListFilters extends ArpaElement {
     async _initializeIconMenu() {
         await customElements.whenDefined('icon-menu');
         await this.menuNode?.promise;
-        const itemsNode = this.menuNode?.navigation?.itemsNode;
+        // @ts-ignore
+        const itemsNode = /** @type {HTMLElement | null} */ (this.menuNode?.navigation?.itemsNode);
         itemsNode?.setAttribute('zone', 'list-filters');
     }
 

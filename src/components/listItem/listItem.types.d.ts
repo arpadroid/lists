@@ -1,8 +1,7 @@
 import List from '../list/list';
 import ListItem from './listItem';
-import { ArpaElementConfigType } from '@arpadroid/ui/dist/@types/components/arpaElement/arpaElement.types';
+import { ArpaElementConfigType, ImageConfigType } from '@arpadroid/ui';
 import { TagItemConfigType } from '../lists/tagList/tagItem/tagItem.types';
-import { ImageConfigType } from '@arpadroid/ui/dist/@types/components/image/image.types';
 
 export type ListItemImageSizeType = {
     width?: number | 'auto';

@@ -2,11 +2,11 @@
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
  * @typedef {import('../list/list.js').default} List
  * @typedef {import('@arpadroid/services').Router} Router
- * @typedef {any} NavLink
- * @typedef {import('@arpadroid/navigation/src/components/navLink/navLink.types').NavLinkConfigType} NavLinkConfigType
+ * @typedef {import('@arpadroid/navigation').NavLink} NavLink
+ * @typedef {import('@arpadroid/navigation').NavLinkConfigType} NavLinkConfigType
  * @typedef {import('./listViews.types').ListViewConfigType} ListViewConfigType
  * @typedef {import('./listViews.types').ListViewsConfigType} ListViewsConfigType
- * @typedef {any} IconMenu
+ * @typedef {import('@arpadroid/navigation').IconMenu} IconMenu
  */
 import { mergeObjects, attrString, clearLazyQueue } from '@arpadroid/tools';
 import { ArpaElement } from '@arpadroid/ui';
@@ -170,10 +170,10 @@ class ListViews extends ArpaElement {
             item?.classList.remove(...(this.itemViewClasses || []));
             item?.classList.add('listItem--' + view);
         });
-        // @ts-ignore
         const prevSelected = this.navigation?.querySelectorAll('[aria-current]');
-        prevSelected?.forEach((/** @type {HTMLElement} */ node) => node.removeAttribute('aria-current'));
+        
         // @ts-ignore
+        prevSelected?.forEach((/** @type {HTMLElement} */ node) => node.removeAttribute('aria-current'));
         const selected = this.navigation?.querySelector(`[data-value="${view}"]`);
         selected?.setAttribute('aria-current', 'location');
     }
@@ -184,9 +184,10 @@ class ListViews extends ArpaElement {
         /** @type {IconMenu | null} */
         this.iconMenu = this.querySelector('icon-menu');
         if (this.iconMenu) {
-            this.iconMenu.setLinks(this._config.links);
+            this._config.links && this.iconMenu.setLinks(this._config.links);
             return this.iconMenu?.onRendered(() => {
-                this.navigation = this.iconMenu?.navigation;
+                /** @type {HTMLElement | null} */
+                this.navigation = /** @type {HTMLElement | null} */ (this.iconMenu?.navigation);
                 this.initializeView();
                 return true;
             });
@@ -216,8 +217,8 @@ class ListViews extends ArpaElement {
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
-        const value = navLink.linkNode.getAttribute('data-value');
-        this.setView(value);
+        const value = navLink.linkNode?.getAttribute('data-value');
+        value && this.setView(value);
     }
 
     // #endregion

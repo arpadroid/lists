@@ -13,7 +13,7 @@
  * @typedef {import('../multiSelect/multiSelect.js').IconMenu} IconMenu
  * @typedef {import('../listItem/listItem.js').default} ListItem
  * @typedef {import('./listSort.types').ListSortConfigType} ListSortConfigType
- * @typedef {any} NavList
+ * @typedef {import('@arpadroid/navigation').NavList} NavList
  */
 
 import { mapHTML, attr } from '@arpadroid/tools';
@@ -142,10 +142,12 @@ class ListSort extends ArpaElement {
                 await customElements.whenDefined('nav-list');
                 /** @type {NavList | null} */
                 this.sortNav = this.sortByMenu?.navigation;
-                if (this.sortNav) {
-                    // @ts-ignore
-                    this.sortNav?._config && (this.sortNav._config.isItemSelected = this._isItemSelected);
-                    // @ts-ignore
+                if (this.sortNav instanceof HTMLElement) {
+                    if (this.sortNav?._config && typeof this._isItemSelected === 'function') {
+                        // @ts-ignore
+                        this.sortNav._config.isItemSelected = this._isItemSelected;
+                    }
+
                     attr(this.sortNav, {
                         'param-name': this.list?.getParamName('sortBy'),
                         'use-router': '',
@@ -156,7 +158,11 @@ class ListSort extends ArpaElement {
             });
     }
 
-    // @ts-ignore
+    /**
+     * Checks if the item is selected.
+     * @param {{node: HTMLElement}} item
+     * @returns {boolean | undefined}
+     */
     _isItemSelected({ node }) {
         const sortByValue = this.sortFilter?.getValue();
         if (!sortByValue) return;
