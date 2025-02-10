@@ -1,16 +1,17 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 /**
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
- * @typedef {import('@arpadroid/resources').ListFilter} ListFilter // @ts-ignore
- * @typedef {any} FormComponent // @ts-ignore
- * @typedef {any} Field // @ts-ignore
- * @typedef {any} SelectCombo // @ts-ignore
- * @typedef {any} NumberField
+ * @typedef {import('@arpadroid/resources').ListFilter} ListFilter
+ * @typedef {import('@arpadroid/forms').FormComponent} FormComponent
+ * @typedef {import('@arpadroid/forms').Field} Field
+ * @typedef {import('@arpadroid/forms').SelectCombo} SelectCombo
+ * @typedef {import('@arpadroid/forms').NumberField} NumberField
  * @typedef {import('../list/list.js').default} List
  * @typedef {import('@arpadroid/services').Router} Router
  * @typedef {import('@arpadroid/navigation').IconMenu} IconMenu
  * @typedef {import('./listFilters.types').ListFiltersConfigType} ListFiltersConfigType
  * @typedef {import('./listFilters.types').ListFiltersSubmitPayloadType} ListFiltersSubmitPayloadType
+ * @typedef {import('@arpadroid/forms').FormSubmitType} FormSubmitType
  */
 import { mergeObjects, attrString, mapHTML, editURL } from '@arpadroid/tools';
 import { ArpaElement } from '@arpadroid/ui';
@@ -76,12 +77,11 @@ class ListFilters extends ArpaElement {
         /** @type {FormComponent | null} */
         this.form = this.querySelector('.listFilters__form');
         await this.form?.promise;
+        // @ts-ignore
         this.form?.onSubmit(this.onSubmit);
         await customElements.whenDefined('arpa-form');
-        /** @type {NumberField} */
-        this.pageField = this.form?.getField('page');
-        /** @type {SelectCombo} */
-        this.perPageField = this.form?.getField('perPage');
+        this.pageField = /** @type {NumberField} */ (this.form?.getField('page'));
+        this.perPageField = /** @type {SelectCombo} */ (this.form?.getField('perPage'));
         this.perPageField?.on(
             'change',
             (/** @type {unknown} */ value, /** @type {Field} */ field, /** @type {Event} */ event) =>
@@ -142,12 +142,13 @@ class ListFilters extends ArpaElement {
         await this.promise;
         this.pageField?.setValue(listResource?.getPage());
         this.pageField?.setMax(listResource?.getTotalPages() || 1);
-        this.perPageField?.setValue(listResource?.getPerPage());
+        const perPage = listResource?.getPerPage();
+        perPage && this.perPageField?.setValue(perPage?.toString());
     }
 
     /**
-     * Handles the form submission.
-     * @param {ListFiltersSubmitPayloadType} payload - The form payload.
+     * When the form is submitted.
+     * @param {Record<string, unknown>} payload
      */
     onSubmit(payload) {
         if (payload.perPage != this.perPageFilter?.getValue()) {
@@ -162,10 +163,6 @@ class ListFilters extends ArpaElement {
             this.router?.go(newURL);
         }
     }
-
-    // #endregion
-
-    // #region ACCESSORS
 
     // #endregion
 }

@@ -1,9 +1,9 @@
 /**
  * @typedef {import('@arpadroid/ui').Icon} Icon
  * @typedef {import('@arpadroid/ui').Tooltip} Tooltip
- * @typedef {any} SearchField
- * @typedef {any} SelectCombo
- * @typedef {any} FieldOptionConfigType
+ * @typedef {import('@arpadroid/forms').SearchField} SearchField
+ * @typedef {import('@arpadroid/forms').SelectCombo} SelectCombo
+ * @typedef {import('@arpadroid/forms').FieldOptionConfigType} FieldOptionConfigType
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
  * @typedef {import('@arpadroid/resources').ListFilter} ListFilter
  * @typedef {import('@arpadroid/services').Router} Router

@@ -4,11 +4,11 @@
  * @typedef {import('../list/list.js').default} List
  * @typedef {import('./listSearch.types').ListSearchConfigType} ListSearchConfigType
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
- * @typedef {any} SearchField
- * @typedef {any} SelectCombo
+ * @typedef {import('@arpadroid/forms').SearchField} SearchField
+ * @typedef {import('@arpadroid/forms').SelectCombo} SelectCombo
+ * @typedef {import('@arpadroid/forms').FormComponent} FormComponent
  * @typedef {import('@arpadroid/resources').ListFilter} ListFilter
  * @typedef {import('@arpadroid/services').Router} Router
- * @typedef {any} FormComponent
  */
 
 import { editURL, attrString, SearchTool, processTemplate } from '@arpadroid/tools';
@@ -56,12 +56,12 @@ class ListSearch extends ArpaElement {
     }
 
     async _initializeNodes() {
-        /** @type {FormComponent} */
-        this.form = this.querySelector('form');
+        /** @type {FormComponent | null} */
+        this.form = /** @type {FormComponent | null} */ (this.querySelector('form'));
         await customElements.whenDefined('arpa-form');
         this.form?.onSubmit(this._onSubmit);
-        /** @type {SearchField} */
-        this.searchField = this.form?.getField('search');
+        /** @type {SearchField | null} */
+        this.searchField = /** @type {SearchField | null} */ (this.form?.getField('search'));
         this.initializeSearch();
     }
 
@@ -69,6 +69,7 @@ class ListSearch extends ArpaElement {
         if (!this.searchFilter) {
             return;
         }
+        // @ts-ignore
         this.search = new SearchTool(this.searchField?.input, {
             container: this.list?.itemsNode,
             searchSelector: this.getProperty('search-selector'),
@@ -121,13 +122,17 @@ class ListSearch extends ArpaElement {
     }
 
     // #endregion
-
+    /**
+     * Called when the form is submitted.
+     * @type {import('@arpadroid/forms').FormSubmitType}
+     */
     _onSubmit() {
         this._onSearch();
         const searchValue = this.searchField?.getValue() || '';
         if (typeof this._config.onSubmit === 'function') {
             this._config.onSubmit(String(searchValue));
         }
+        return true;
     }
 
     async _onSearch() {

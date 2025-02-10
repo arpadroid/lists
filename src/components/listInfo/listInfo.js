@@ -2,8 +2,8 @@
 /**
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
  * @typedef {import('@arpadroid/resources').ListFilter} ListFilter
- * @typedef {any} FormComponent
- * @typedef {any} Field
+ * @typedef {import('@arpadroid/forms').FormComponent} FormComponent
+ * @typedef {import('@arpadroid/forms').Field} Field
  * @typedef {import('../list/list.js').default} List
  * @typedef {import('./listInfo.types').ListInfoConfigType} ListInfoConfigType
  */

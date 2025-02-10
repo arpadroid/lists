@@ -3,7 +3,10 @@
     "compilerOptions": {
         "rootDir": "./src",
         "outDir": "./.tmp/.types",
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "paths": {
+            "@arpadroid/forms": ["../forms/.tmp/.types/types.compiled.d.ts"]
+        }
     },
     "include": ["src/**/*"],
     "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.stories.js", "**/*.test.js", "./dist/@types"]

@@ -6,6 +6,7 @@ export type TagItemConfigType = ListItemConfigType & {
     text?: string;
     value?: string;
     tooltip?: string;
+    label?: string;
     tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
     onDelete?: (item: TagItem, event: Event) => void;
 };

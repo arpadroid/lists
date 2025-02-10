@@ -1,9 +1,9 @@
 /**
- * @typedef {any} SelectCombo
- * @typedef {any} FormComponent
+ * @typedef {import('@arpadroid/forms').SelectCombo} SelectCombo
+ * @typedef {import('@arpadroid/forms').FormComponent} FormComponent
+ * @typedef {import('@arpadroid/forms').Field} Field
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
  * @typedef {import('@arpadroid/navigation').IconMenu} IconMenu
- * @typedef {any} Field
  * @typedef {import('../list/list.js').default} List
  */
 import { ArpaElement } from '@arpadroid/ui';
@@ -150,6 +150,7 @@ class MultiSelect extends ArpaElement {
             'change',
             async (/** @type {unknown} */ value, /** @type {Field} */ field, /** @type {Event} */ event) => {
                 const option = actionsField.getSelectedOption();
+                // @ts-ignore
                 if (typeof option?.action === 'function') {
                     // option.action(this.resource?.getSelectedItems(), this.renderItemList());
                 }
