@@ -32,6 +32,10 @@ class ListControls extends ArpaElement {
         return true;
     }
 
+    /**
+     * Returns the default config.
+     * @returns {ListControlsConfigType}
+     */
     getDefaultConfig() {
         return {
             className: 'listControls',

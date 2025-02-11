@@ -3,12 +3,25 @@ import ListItem from './listItem';
 import { ArpaElementConfigType, ImageConfigType } from '@arpadroid/ui';
 import { TagItemConfigType } from '../lists/tagList/tagItem/tagItem.types';
 
+export type ListItemImageTypes =
+    | 'list_compact'
+    | 'list'
+    | 'grid'
+    | 'grid_compact'
+    | 'grid_large'
+    | 'thumbnail'
+    | 'thumbnail_vertical'
+    | 'full_screen';
+
 export type ListItemImageSizeType = {
     width?: number | 'auto';
     height?: number | 'auto';
 };
 
-export type ListItemImageSizesType = Record<string, ListItemImageSizeType | (() => ListItemImageSizeType)>;
+export type ListItemImageSizesType = Record<
+    ListItemImageTypes | string,
+    ListItemImageSizeType | (() => ListItemImageSizeType)
+>;
 
 export type ListItemConfigType = ArpaElementConfigType & {
     // defaultImage?: string;

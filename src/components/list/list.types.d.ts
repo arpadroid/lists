@@ -16,6 +16,7 @@ export type ListConfigType = ArpaElementConfigType & {
     paramNamespace?: string;
     hasControls?: boolean;
     hasInfo?: boolean;
+    hasItemsTransition?: boolean;
     hasMiniSearch?: boolean;
     hasPager?: boolean;
     hasResource?: boolean;
@@ -30,6 +31,7 @@ export type ListConfigType = ArpaElementConfigType & {
     itemsPerPage?: number;
     itemTag?: string;
     listResource?: ListResource;
+    listSelector?: string;
     noItemsContent?: string;
     noItemsIcon?: string;
     onSearch?: (value: string) => void;
