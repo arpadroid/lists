@@ -51,6 +51,7 @@ export const Test = {
             const gridView = within(viewsMenu).getByText('Grid');
             expect(listView).toBeInTheDocument();
             expect(gridView).toBeInTheDocument();
+            // @ts-ignore
             expect(viewsMenu?.querySelectorAll('nav-link')).toHaveLength(2);
         });
 

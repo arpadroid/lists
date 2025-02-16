@@ -9,6 +9,9 @@ import TagItem from './tagItem/tagItem.js';
 
 const html = String.raw;
 class TagList extends List {
+    /** @type {TagListConfigType} */ // @ts-ignore
+    _config = this._config;
+
     /**
      * Creates an instance of TagList.
      * @param {TagListConfigType} config
@@ -50,6 +53,13 @@ class TagList extends List {
     onDeleteTag(tag) {
         this.signal('delete_tag', tag);
     }
+
+    /** @type {(item: TagItemConfigType) => Promise<void>} */ // @ts-ignore
+    addItem = this.addItem;
+    /** @type {(items: TagItemConfigType[]) => Promise<void>} */ // @ts-ignore
+    setItems = this.setItems;
+    /** @type {(item: TagItemConfigType) => Promise<void>} */ // @ts-ignore
+    removeItem = this.removeItem;
 }
 
 customElements.define('tag-list', TagList);

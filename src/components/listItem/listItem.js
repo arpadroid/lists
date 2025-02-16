@@ -6,7 +6,7 @@
  * @typedef {import('@arpadroid/ui').Image} ArpaImage
  * @typedef {import('@arpadroid/navigation').NavList} NavList
  * @typedef {import('./listItem.types').ListItemImageSizeType} ListItemImageSizeType
- * @typedef {import('../../../dist/@types/types.compiled').TagItemConfigType} TagItemConfigType
+ * @typedef {import('../lists/tagList/tagItem/tagItem.types').TagItemConfigType} TagItemConfigType
  */
 
 import { ArpaElement } from '@arpadroid/ui';
@@ -627,7 +627,7 @@ class ListItem extends ArpaElement {
 
     /**
      * Called when the view changes.
-     * @param {string} view - The new view
+     * @param {string} view
      */
     _onViewChange(view) {
         if (this.view !== view) {
