@@ -3,9 +3,8 @@ import type ListItem from '../listItem/listItem.js';
 import type { ListItemConfigType } from '../listItem/listItem.types';
 import type { ArpaElementConfigType } from '@arpadroid/ui';
 import type { ListResourceItemType, Router } from './list.js';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { FieldOptionConfigType } from '@arpadroid/forms';
+import { NavLinkConfigType } from '@arpadroid/navigation';
 
 export type ListConfigType = ArpaElementConfigType & {
     allControls?: boolean;
@@ -46,14 +45,12 @@ export type ListConfigType = ArpaElementConfigType & {
     sortByParam?: string;
     sortDefault?: string;
     sortDirParam?: string;
-    sortOptions?: any[];
+    sortOptions?: FieldOptionConfigType[];
     stickyControls?: boolean;
     router?: Router;
     template?: string;
     title?: string | null;
-    /** @todo fix type below */
-    // viewOptions?: NavLinkConfigType[];
-    viewOptions?: Record<string, any>[];
+    viewOptions?: NavLinkConfigType[];
     views?: string[];
     zoneSelector?: string;
     mapItemId?: (item: ListResourceItemType) => string;

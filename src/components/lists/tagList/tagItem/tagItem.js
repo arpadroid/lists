@@ -1,4 +1,7 @@
-/** @typedef {import('./tagItem.types').TagItemConfigType} TagItemConfigType */
+/**
+ * @typedef {import('./tagItem.types').TagItemConfigType} TagItemConfigType
+ * @typedef {import('../tagList.js').default} TagList
+ */
 
 import { render, renderNode, appendNodes, processTemplate } from '@arpadroid/tools';
 import ListItem from '../../../listItem/listItem.js';
@@ -7,6 +10,9 @@ const html = String.raw;
 class TagItem extends ListItem {
     /** @type {TagItemConfigType} */ // @ts-ignore
     _config = this._config;
+    /** @type {TagList | undefined} */ // @ts-ignore
+    list = this.list;
+
     /**
      * Returns the defaultConfig.
      * @returns {TagItemConfigType}
@@ -17,7 +23,10 @@ class TagItem extends ListItem {
             className: 'tagItem',
             listSelector: 'tag-list',
             tooltip: '',
-            tooltipPosition: 'top'
+            tooltipPosition: 'top',
+            attributes: {
+                role: 'listitem'
+            }
         };
     }
 
@@ -36,6 +45,7 @@ class TagItem extends ListItem {
     hasOnDelete() {
         return this.hasAttribute('has-delete') || typeof this._config.onDelete === 'function';
     }
+
     getPayload() {
         return {
             id: this.getId(),
@@ -47,7 +57,7 @@ class TagItem extends ListItem {
     async render() {
         const tooltip = this.getProperty('tooltip');
         const tooltipPosition = this.getProperty('tooltip-position');
-        const text = this.getProperty('text') || this.getProperty('label');
+        const text = this.getProperty('text') || this.getProperty('label') || '';
         const template = html`
             <arpa-icon>{icon}</arpa-icon>
             <div class="tag__text">${text}</div>
@@ -68,7 +78,8 @@ class TagItem extends ListItem {
         return html`<button
             is="icon-button"
             class="tag__delete iconButton--mini"
-            label="Delete"
+            label="Delete tag"
+            aria-label="Delete tag"
             icon="delete"
             tooltip-position="left"
         ></button>`;
@@ -86,12 +97,17 @@ class TagItem extends ListItem {
     /**
      * Calls the onDelete function from the config.
      * @param {Event} event
+     * @returns {Promise<boolean| undefined>}
      */
-    _onDelete(event) {
+    async _onDelete(event) {
         const { onDelete } = this._config;
-        if (typeof onDelete === 'function') {
-            onDelete(this, event);
-        }
+        /** @type {boolean | Promise<boolean>} */
+        let rv = true;
+        typeof onDelete === 'function' && (rv = onDelete(this, event));
+        rv instanceof Promise && (await rv);
+        rv !== false && this.remove();
+        this.list?.onDeleteTag(this);
+        return rv;
     }
 }
 

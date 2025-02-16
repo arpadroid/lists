@@ -51,8 +51,11 @@ class ListInfo extends ArpaElement {
         this.textNode = newNode;
         const buttons = this.querySelectorAll('.listInfo__next, .listInfo__previous');
         buttons.forEach(button => {
-            if (this.listResource?.getTotalPages() || 0 <= 1) button.setAttribute('disabled', 'disabled');
-            else button.removeAttribute('disabled');
+            if ((this.listResource?.getTotalPages() || 0) <= 1) {
+                button.setAttribute('disabled', 'disabled');
+            } else {
+                button.removeAttribute('disabled');
+            }
         });
     }
 

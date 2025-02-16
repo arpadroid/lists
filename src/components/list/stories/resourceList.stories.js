@@ -1,13 +1,16 @@
 /**
  * @typedef {import('../list.js').default} List
+ * @typedef {import('../../listItem/listItem.js').default} ListItem
+ * @typedef {import('./list.stories.types.js').ListPlaySetupResponseType} ListPlaySetupResponseType
  */
 import ListStory from './list.stories.js';
-import { attrString, getInitials } from '@arpadroid/tools';
+import { attrString, getInitials } from '@arpadroid/tools'; // @ts-ignore
 import { within } from '@storybook/test';
 
 const html = String.raw;
 const ApiDrivenListStory = {
-    title: 'API Resource List',
+    // @ts-ignore
+    title: 'Lists/Lists/Resource List',
     ...ListStory
 };
 
@@ -23,26 +26,44 @@ export const Default = {
         hasSelection: true,
         itemsPerPage: 10
     },
+    /**
+     * Initializes the list.
+     * @param {string} id
+     * @returns {Promise<void>}
+     */
     initializeList: async id => {
-        const list = document.getElementById(id);
-        const resource = list.listResource;
-        resource?.mapItem(item => {
+        /** @type {List | null} */
+        const list = /** @type {List | null} */ (document.getElementById(id));
+        const resource = list?.listResource;
+        resource?.mapItem((/** @type {Record<string, any>} */ item) => {
             item.author_initials = getInitials(item.author_name + ' ' + item.author_surname);
             item.date = new Date(item.date)?.getFullYear() ?? '?';
             return item;
         });
-        await resource?.fetch().catch(() => {});
+        await resource?.fetch()?.catch(() => {});
     },
+    /**
+     * Sets up the test scenario.
+     * @param {HTMLElement} canvasElement
+     * @param {boolean} [initializeList]
+     * @returns {Promise<ListPlaySetupResponseType>}
+     */
     playSetup: async (canvasElement, initializeList = true) => {
         await customElements.whenDefined('arpa-list');
         await customElements.whenDefined('list-item');
         const canvas = within(canvasElement);
+        /** @type {List | null} */
         const listNode = canvasElement.querySelector('arpa-list');
+        /** @type {ListItem | null} */
         const listItem = canvasElement.querySelector('list-item');
-        await listNode.promise;
-        initializeList && (await Default.initializeList(listNode.id));
+        await listNode?.promise;
+        listNode?.id && initializeList && (await Default.initializeList(listNode?.id));
         return { canvas, listNode, listItem };
     },
+    /**
+     * Plays the test scenario.
+     * @param {{ canvasElement: HTMLElement }} options
+     */
     play: async ({ canvasElement }) => {
         await Default.playSetup(canvasElement);
     },
@@ -63,6 +84,11 @@ export const Default = {
             </zone>
         </template>`;
     },
+    /**
+     * Renders the list component.
+     * @param {Record<string, unknown>} args
+     * @returns {string}
+     */
     render: args => {
         return html`
             <style>

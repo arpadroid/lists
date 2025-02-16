@@ -1,15 +1,16 @@
 /**
- * @typedef {import('../list.js').default} List
+ * @typedef {import('../list/list.js').default} List
+ * @typedef {import('@arpadroid/arpadroid/node_modules/@storybook/types').StepFunction} StepFunction
  */
 import { Default as ListStory } from '../list/stories/list.stories.js';
-import { attrString } from '@arpadroid/tools';
+import { attrString } from '@arpadroid/tools'; // @ts-ignore
 import { expect } from '@storybook/test';
 
 const html = String.raw;
 
 const Default = {
     ...ListStory,
-    title: 'Components/List Item',
+    title: 'Lists/Components/List Item',
     args: {
         ...ListStory.args,
         id: 'list-item',
@@ -28,6 +29,11 @@ export const HTMLItems = {
         id: 'list-item-test',
         title: 'HTML Items'
     },
+    /**
+     * Renders the list component.
+     * @param {Record<string, unknown>} args
+     * @returns {string}
+     */
     render: args => {
         return html`<arpa-list ${attrString(args)}>
             <template template-id="list-item-template" truncate-content="70"></template>
@@ -112,6 +118,11 @@ export const HTMLItems = {
             </list-item>
         </arpa-list>`;
     },
+    /**
+     * Plays the test scenario.
+     * @param {{ canvasElement: HTMLElement, step: StepFunction }} options
+     * @returns {Promise<void>}
+     */
     play: async ({ canvasElement, step }) => {
         const { canvas } = await Default.playSetup(canvasElement, false);
         step('Renders the items', async () => {

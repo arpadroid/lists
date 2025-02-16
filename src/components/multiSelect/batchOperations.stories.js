@@ -1,14 +1,16 @@
 /**
- * @typedef {import('../list.js').default} List
+ * @typedef {import('../list/list.js').default} List
+ * @typedef {import('../listViews/listViews.stories.js').StepFunction} StepFunction
  */
 
 import { Default as ListStory } from '../list/stories/list.stories.js';
+// @ts-ignore
 import { within, waitFor, userEvent, expect, fireEvent } from '@storybook/test';
 import { attrString } from '@arpadroid/tools';
 const html = String.raw;
 const Default = {
     ...ListStory,
-    title: 'Components/Batch Operations',
+    title: 'Lists/Components/Batch Operations',
     parameters: {},
     args: {
         ...ListStory.args,
@@ -18,6 +20,11 @@ const Default = {
         itemsPerPage: 4,
         title: 'Batch Operations'
     },
+    /**
+     * Renders the list component.
+     * @param {Record<string, unknown>} args
+     * @returns {string}
+     */
     render: args => {
         return html`
             <arpa-list ${attrString(args)}>
@@ -29,7 +36,7 @@ const Default = {
                         </delete-dialog>
                     </select-option>
                 </zone>
-                ${ListStory.renderItemTemplate(args)}
+                ${ListStory.renderItemTemplate()}
             </arpa-list>
         `;
     }
@@ -43,6 +50,11 @@ export const Test = {
         id: 'test-batch-operations',
         itemsPerPage: 2
     },
+    /**
+     * Plays the test scenario.
+     * @param {{ canvasElement: HTMLElement, step: StepFunction }} options
+     * @returns {Promise<void>}
+     */
     play: async ({ canvasElement, step }) => {
         const setup = await ListStory.playSetup(canvasElement);
         await waitFor(() => expect(document.querySelector('.listMultiSelect__form')).toBeInTheDocument());
@@ -51,11 +63,10 @@ export const Test = {
         const getForm = () => within(formNode);
         const form = getForm();
 
-        const getToggleAllCheckbox = () => formNode.querySelector('input[type="checkbox"][name="toggleAll"]');
+        const getToggleAllCheckbox = () => /** @type {HTMLElement} */ (formNode?.querySelector('input[type="checkbox"][name="toggleAll"]'));
         const getItemCheckbox = () => document.querySelector('.listItem__checkbox');
 
         await step('Opens and renders Batch Operations panel.', async () => {
-            
             const filtersMenu = canvas.getByRole('button', { name: /Batch Operations/i });
             await userEvent.click(filtersMenu);
 
@@ -75,7 +86,7 @@ export const Test = {
 
         await step('Clicks on Select all and verifies the selected item count.', async () => {
             await waitFor(() => expect(getToggleAllCheckbox()).toBeInTheDocument());
-            getToggleAllCheckbox().click();
+            getToggleAllCheckbox()?.click();
             await waitFor(() => expect(form.getByText('2 items selected')).toBeInTheDocument());
         });
 

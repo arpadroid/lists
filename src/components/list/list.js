@@ -6,6 +6,7 @@
  * @typedef {import('@arpadroid/services').Router} Router
  * @typedef {import('../listItem/listItem.types').ListItemImageSizeType} ListItemImageSizeType
  * @typedef {import('../listSort/listSort.js').default} ListSort
+ * @typedef {import('@arpadroid/forms').FieldOptionConfigType} FieldOptionConfigType
  */
 
 import { ArpaElement } from '@arpadroid/ui';
@@ -302,6 +303,20 @@ class List extends ArpaElement {
         return this._config?.router || getService('router');
     }
 
+    getViewFilter() {
+        return this.listResource?.getViewFilter({
+            defaultValue: this.getDefaultView()
+        });
+    }
+
+    /**
+     * Sets the view for the list.
+     * @param {string} view
+     */
+    setView(view) {
+        this.getViewFilter()?.setValue(view);
+    }
+
     /**
      * Returns the component id.
      * @returns {string}
@@ -336,8 +351,7 @@ class List extends ArpaElement {
 
     /**
      * Returns the different options by which the list items can be sorted.
-     * @returns {Record<string,unknown>[]}
-     * @todo - Implement FieldOptionInterface as return type.
+     * @returns {FieldOptionConfigType[]}
      * Have to sort out the forms library types first.
      */
     getSortOptions() {
@@ -387,9 +401,8 @@ class List extends ArpaElement {
 
     /**
      * Sets the sort options for the list.
-     * @param {Record<string,unknown>[]} options
+     * @param {FieldOptionConfigType[]} options
      * @param {string} defaultValue
-     * @todo - Implement FieldOptionInterface as parameter type.
      */
     async setSortOptions(options, defaultValue) {
         this._config.sortOptions = options;

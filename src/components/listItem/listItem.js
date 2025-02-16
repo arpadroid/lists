@@ -6,6 +6,7 @@
  * @typedef {import('@arpadroid/ui').Image} ArpaImage
  * @typedef {import('@arpadroid/navigation').NavList} NavList
  * @typedef {import('./listItem.types').ListItemImageSizeType} ListItemImageSizeType
+ * @typedef {import('../../../dist/@types/types.compiled').TagItemConfigType} TagItemConfigType
  */
 
 import { ArpaElement } from '@arpadroid/ui';
@@ -417,9 +418,14 @@ class ListItem extends ArpaElement {
 
     //#region Render Tags
 
+    /**
+     * Renders the tags for the list item.
+     * @returns {string} - The rendered tags as a string.
+     */
     renderTags() {
         const { tags = [] } = this._config;
         if (!tags?.length && !this.hasZone('tags')) return '';
+        // @ts-ignore
         const tagsHTML = tags?.map(tag => this.renderTag(tag)) || '';
         return html`<tag-list id="item-${this.getId()}-tagList" variant="compact" class="listItem__tags" zone="tags">
             ${tagsHTML}
@@ -428,7 +434,7 @@ class ListItem extends ArpaElement {
 
     /**
      * Renders a tag for the list item.
-     * @param {Record<string, unknown>} tag - The tag to render. @todo Add type for tag.
+     * @param {TagItemConfigType} tag
      * @returns {string} - The rendered tag as a string.
      */
     renderTag(tag) {

@@ -2,6 +2,7 @@ import List from '../list/list';
 import ListItem from './listItem';
 import { ArpaElementConfigType, ImageConfigType } from '@arpadroid/ui';
 import { TagItemConfigType } from '../lists/tagList/tagItem/tagItem.types';
+import { NavList } from '@arpadroid/navigation';
 
 export type ListItemImageTypes =
     | 'list_compact'
@@ -56,5 +57,5 @@ export type ListItemConfigType = ArpaElementConfigType & {
     imageConfig?: ImageConfigType;
     list?: List;
     renderMode?: 'minimal' | 'full';
-    nav?: any /** @todo Add Nav Config Type Here! */;
+    nav?: NavList;
 };

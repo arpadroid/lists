@@ -1,10 +1,13 @@
-import { Default as ListStory } from '../list/stories/list.stories.js';
-
+/**
+ * @typedef {import('@arpadroid/forms').FormComponent} FormComponent
+ * @typedef {import('@arpadroid/arpadroid/node_modules/@storybook/types').StepFunction} StepFunction
+ */
+import { Default as ListStory } from '../list/stories/list.stories.js'; // @ts-ignore
 import { within, userEvent, expect, waitFor, fireEvent } from '@storybook/test';
 
 const Default = {
     ...ListStory,
-    title: 'Components/Filters',
+    title: 'Lists/Components/Filters',
     args: {
         ...ListStory.args,
         id: 'list-filters',
@@ -21,6 +24,11 @@ export const Test = {
         ...Default.args,
         id: 'test-filters'
     },
+    /**
+     * Plays the test scenario.
+     * @param {{ canvasElement: HTMLElement, step: StepFunction }} options
+     * @returns {Promise<void>}
+     */
     play: async ({ canvasElement, step }) => {
         const setup = await Default.playSetup(canvasElement);
         const { canvas } = setup;
@@ -28,7 +36,9 @@ export const Test = {
         const filtersNode = filtersBtn.closest('icon-menu');
         const filtersCombo = filtersNode.navigation;
         const combo = within(filtersCombo);
+        /** @type {FormComponent | null} */
         const filtersForm = filtersCombo.querySelector('form');
+        filtersForm?._config && (filtersForm._config.debounce = 0);
 
         await step('Renders the filters menu control', async () => {
             expect(filtersBtn).toBeInTheDocument();
@@ -57,7 +67,7 @@ export const Test = {
             pageField.setValue(2);
             fireEvent.submit(filtersForm);
             await waitFor(() => {
-                expect(setup.listResource.getPage()).toEqual(2);
+                expect(setup.listResource?.getPage()).toEqual(2);
                 const currPage = canvas.getByLabelText('Current page');
                 expect(currPage).toHaveAttribute('value', '2');
             });
@@ -66,32 +76,22 @@ export const Test = {
         await step('Changes the per page, submits the form and verifies the per page change', async () => {
             const perPageInput = combo.getByLabelText(/Per page/i);
             const perPageField = perPageInput.closest('select-combo');
-
             perPageInput.click();
-            // await waitFor(() => {
-            //     expect(perPageField.optionsNode).toBeInTheDocument();
-            // });
+            await waitFor(() => {
+                expect(perPageField.optionsNode).toBeInTheDocument();
+            });
+            const options = within(perPageField.optionsNode);
+            expect(perPageField.getValue()).toEqual('10');
+            expect(canvasElement.querySelectorAll('list-item')).toHaveLength(10);
+            const option5 = options.getByText('5').closest('button');
 
-            /**
-             * @todo Complete the test.
-             */
-
-            // const options = within(perPageField.optionsNode);
-            // expect(perPageField.getValue()).toEqual('10');
-            // const option50 = options.getByText( '5').closest('button');
-
-            // await new Promise((resolve) => setTimeout(resolve, 500));
-            // option50.click();
-            // await userEvent.click(option50);
-
-            // expect(canvas.getAllByRole('listitem')).toHaveLength(10);
-            // perPageField.setValue(50);
-            // fireEvent.submit(filtersForm);
-            // await waitFor(() => {
-            //     expect(setup.listResource.getPerPage()).toEqual(50);
-            //     const currPage = canvas.getByLabelText('Current page');
-            //     expect(currPage).toHaveAttribute('value', '1');
-            // });
+            await userEvent.click(option5);
+            await waitFor(() => {
+                expect(setup.listResource?.getPerPage()).toEqual(5);
+                const currPage = canvas.getByLabelText('Current page');
+                expect(currPage).toHaveAttribute('value', '1');
+                expect(canvasElement.querySelectorAll('list-item')).toHaveLength(5);
+            });
         });
     }
 };

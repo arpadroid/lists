@@ -1,5 +1,5 @@
 import { ListItemConfigType } from '../../../listItem/listItem.types';
-import TagItem from './tagItem';
+import { OnDeleteCallbackType } from '../tagList.types';
 
 export type TagItemConfigType = ListItemConfigType & {
     id?: string;
@@ -8,5 +8,5 @@ export type TagItemConfigType = ListItemConfigType & {
     tooltip?: string;
     label?: string;
     tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
-    onDelete?: (item: TagItem, event: Event) => void;
+    onDelete?: OnDeleteCallbackType;
 };

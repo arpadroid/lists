@@ -1,14 +1,18 @@
 /**
  * @typedef {import('../list.js').default} List
+ * @typedef {import('../../listItem/listItem.js').default} ListItem
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
+ * @typedef {import('./list.stories.types').ListPlaySetupPayloadType} ListPlaySetupPayloadType
+ * @typedef {import('./list.stories.types').ListPlaySetupResponseType} ListPlaySetupResponseType
  */
+// @ts-ignore
 import artists from '../../../mockData/artists.json';
-import { attrString, formatDate } from '@arpadroid/tools';
+import { attrString, formatDate } from '@arpadroid/tools'; // @ts-ignore
 import { within } from '@storybook/test';
 
 const html = String.raw;
 const ListStory = {
-    title: 'List',
+    title: 'Lists/List',
     tags: [],
     args: {
         id: 'static-list',
@@ -29,7 +33,11 @@ const ListStory = {
             paramNamespace: { control: { type: 'text' }, table: { category, subcategory: 'Resource' } }
         };
     },
-
+    /**
+     * Renders the list component.
+     * @param {Record<string, unknown>} args
+     * @returns {string}
+     */
     render: args => {
         delete args.text;
         return html`
@@ -59,11 +67,16 @@ export const Default = {
         hasResource: true,
         hasSelection: true
     },
+    /**
+     * Initializes the list with the provided payload.
+     * @param {string} id
+     * @param {any[]} [payload]
+     */
     initializeList: async (id, payload = artists) => {
-        const list = document.getElementById(id);
-        /** @type {ListResource} */
-        const resource = list.listResource;
-        resource?.mapItem(item => {
+        const list = /** @type {List | null} */ (document.getElementById(id));
+        /** @type {ListResource | undefined} */
+        const resource = list?.listResource;
+        resource?.mapItem((/** @type {Record<string, any>} */ item) => {
             const dob = formatDate(item.dateOfBirth, 'YYYY');
             const dod = formatDate(item.dateOfDeath, 'YYYY');
             const lived = `${dob} - ${dod}` || dob;
@@ -75,19 +88,33 @@ export const Default = {
         });
         resource?.setItems(payload);
     },
+    /**
+     * Sets up the test scenario.
+     * @param {HTMLElement} canvasElement
+     * @param {boolean} [initializeList]
+     * @param {(payload: ListPlaySetupPayloadType) => void} [preRenderCallback]
+     * @returns {Promise<ListPlaySetupResponseType>}
+     */
     playSetup: async (canvasElement, initializeList = true, preRenderCallback) => {
         await customElements.whenDefined('arpa-list');
         await customElements.whenDefined('list-item');
         const canvas = within(canvasElement);
+        /** @type {List | null} */
         const listNode = canvasElement.querySelector('arpa-list');
+        /** @type {ListItem | null} */
         const listItem = canvasElement.querySelector('list-item');
-        const listResource = listNode.listResource;
+        const listResource = listNode?.listResource;
         typeof preRenderCallback === 'function' && preRenderCallback({ listResource, listNode, listItem });
-        await listNode.promise;
-        initializeList && (await Default.initializeList(listNode.id));
+        await listNode?.promise;
+        listNode?.id && initializeList && (await Default.initializeList(listNode?.id));
         await new Promise(resolve => setTimeout(resolve, 50));
         return { canvas, listNode, listItem, listResource };
     },
+    /**
+     * Plays the test scenario.
+     * @param {{ canvasElement: HTMLElement }} options
+     * @returns {Promise<void>}
+     */
     play: async ({ canvasElement }) => {
         await Default.playSetup(canvasElement);
     },
@@ -104,9 +131,19 @@ export const Default = {
             <zone name="content">{legacy}</zone>
         </template>`;
     },
+    /**
+     * Renders the list component.
+     * @param {Record<string, unknown>} args
+     * @returns {string}
+     */
     renderSimple: args => {
-        return html`<arpa-list ${attrString(args)}>${Default.renderItemTemplate(args)}</arpa-list>`;
+        return html`<arpa-list ${attrString(args)}>${Default.renderItemTemplate()}</arpa-list>`;
     },
+    /**
+     * Renders the list component.
+     * @param {Record<string, unknown>} args
+     * @returns {string}
+     */
     render: args => {
         return html`
             <arpa-list ${attrString(args)}>

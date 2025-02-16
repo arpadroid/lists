@@ -1,12 +1,13 @@
 /**
- * @typedef {import('../list.js').default} List
+ * @typedef {import('../list/list.js').default} List
+ * @typedef {import('@arpadroid/arpadroid/node_modules/@storybook/types').StepFunction} StepFunction
  */
-import { Default as ListStory } from '../list/stories/list.stories.js';
+import { Default as ListStory } from '../list/stories/list.stories.js'; // @ts-ignore
 import { expect, waitFor, fireEvent } from '@storybook/test';
 
 const Default = {
     ...ListStory,
-    title: 'Components/Search',
+    title: 'Lists/Components/Search',
     parameters: {},
     args: {
         ...ListStory.args,
@@ -28,6 +29,11 @@ export const Test = {
         id: 'test-search',
         searchPlaceholder: 'List Search Test'
     },
+    /**
+     * Plays the test scenario.
+     * @param {{ canvasElement: HTMLElement, step: StepFunction }} options
+     * @returns {Promise<void>}
+     */
     play: async ({ canvasElement, step }) => {
         const setup = await Default.playSetup(canvasElement);
         await customElements.whenDefined('field-input');
@@ -72,7 +78,7 @@ export const Test = {
                 expect(marks[1]).toHaveTextContent('Mich');
                 expect(marks[1]?.parentNode).toHaveTextContent('Jean-Michel Basquiat');
                 expect(canvasElement.querySelector('list-info')).toHaveTextContent('Found 2 search results for Mich.');
-            }); 
+            });
         });
     }
 };
