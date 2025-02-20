@@ -31,7 +31,7 @@ export const Test = {
      */
     play: async ({ canvasElement, step }) => {
         const setup = await Default.playSetup(canvasElement);
-        const { canvas } = setup;
+        const { canvas, listNode } = setup;
         const filtersBtn = canvas.getByRole('button', { name: /Filters/i });
         const filtersNode = filtersBtn.closest('icon-menu');
         const filtersCombo = filtersNode.navigation;
@@ -82,7 +82,7 @@ export const Test = {
             });
             const options = within(perPageField.optionsNode);
             expect(perPageField.getValue()).toEqual('10');
-            expect(canvasElement.querySelectorAll('list-item')).toHaveLength(10);
+            expect(listNode?.getItemNodes()).toHaveLength(10);
             const option5 = options.getByText('5').closest('button');
 
             await userEvent.click(option5);

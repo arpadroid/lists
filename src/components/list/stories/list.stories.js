@@ -13,24 +13,156 @@ import { within } from '@storybook/test';
 const html = String.raw;
 const ListStory = {
     title: 'Lists/List',
-    tags: [],
+    tags: ['docs'],
     args: {
         id: 'static-list',
         title: '',
-        hasMultiSelect: false,
         hasItemsTransition: true,
         hasInfo: true,
-        hasResource: true
+        hasResource: true,
+        controls: ['search', 'sort', 'views', 'multiselect', 'filters'],
+        views: ['grid', 'list', 'list-compact', 'grid-compact']
     },
     getArgTypes: (category = 'List Props') => {
         return {
-            id: { control: { type: 'text' }, table: { category } },
-            title: { control: { type: 'text' }, table: { category } },
-            hasMultiSelect: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
-            hasItemsTransition: { control: { type: 'boolean' }, table: { category, subcategory: 'Controls' } },
-            url: { control: { type: 'text' }, table: { category, subcategory: 'Resource' } },
-            itemsPerPage: { control: { type: 'number' }, table: { category, subcategory: 'Resource' } },
-            paramNamespace: { control: { type: 'text' }, table: { category, subcategory: 'Resource' } }
+            ////////////////////////
+            // General
+            ////////////////////////
+            id: {
+                description: 'A required unique identifier for the list.',
+                control: { type: 'text' },
+                table: { category, subcategory: 'General' }
+            },
+            hasItemsTransition: {
+                description: 'If true triggers a smooth transition when navigating between pages.',
+                control: { type: 'boolean' },
+                table: {
+                    defaultValue: { summary: 'true' },
+                    category,
+                    subcategory: 'General'
+                }
+            },
+            ///////////////////////////////
+            // Content
+            ///////////////////////////////
+            title: {
+                description: 'The list title',
+                control: { type: 'text' },
+                table: { category, subcategory: 'Content' }
+            },
+            heading: {
+                description: 'The list heading',
+                control: { type: 'text' },
+                table: { category, subcategory: 'Content' }
+            },
+            ////////////////////////
+            // Controls
+            ////////////////////////
+            controls: {
+                description: html`The list of controls to display, defined as a comma-separated list, they map to
+                    different UI components. They are all enabled by default and can be sorted as per definition e.g.
+                    <strong>'controls="filters,views,sort"</strong>`,
+                control: { type: 'multi-select' },
+                options: ['search', 'sort', 'views', 'multiselect', 'filters'],
+                table: {
+                    defaultValue: {
+                        summary: 'search,sort,views,multiselect,filters'
+                    },
+                    category,
+                    subcategory: 'Components'
+                }
+            },
+            hasInfo: {
+                description: html`If true displays information associated with the number of items in the list, current
+                page, and search results. It also includes a refresh button to reload the list, and previous and next
+                page buttons if hasPager is enabled.`,
+                control: { type: 'boolean' },
+                table: {
+                    defaultValue: { summary: 'false' },
+                    category,
+                    subcategory: 'Components'
+                }
+            },
+            ////////////////////////
+            // Views
+            ////////////////////////
+            views: {
+                description: 'The list of views to display, defined as a comma-separated list.',
+                control: { type: 'multi-select' },
+                options: ['grid', 'list', 'list-compact', 'grid-compact'],
+                table: {
+                    category,
+                    subcategory: 'Components'
+                }
+            },
+
+            ////////////////////////
+            // Pagination
+            ////////////////////////
+            hasPager: {
+                description: 'When enabled it displays a pager control to navigate between pages.',
+                control: { type: 'boolean' },
+                table: {
+                    defaultValue: { summary: 'false' },
+                    category,
+                    subcategory: 'Pagination'
+                }
+            },
+            itemsPerPage: {
+                description: 'The number of items to display per page.',
+                control: { type: 'number' },
+                table: {
+                    defaultValue: { summary: 50 },
+                    category,
+                    subcategory: 'Pagination'
+                }
+            },
+            pageParam: {
+                description: 'The query parameter used to set the current page.',
+                control: { type: 'text' },
+                table: {
+                    defaultValue: { summary: 'page' },
+                    category,
+                    subcategory: 'Pagination'
+                }
+            },
+            perPageParam: {
+                description: 'The query parameter used to set the number of items per page.',
+                control: { type: 'text' },
+                table: {
+                    defaultValue: { summary: 'perPage' },
+                    category,
+                    subcategory: 'Pagination'
+                }
+            },
+            ///////////////////////////////
+            // Resource
+            ///////////////////////////////
+            hasResource: {
+                description: html`If true it uses a resource class to manage the list items and associated data. These
+                can be fetched from a URL configured via the url attribute or handled statically via the addItems and
+                similar methods in the list component. The resource class can be interfaced with via the listResource
+                property in the list component or the list component's public methods.`,
+                control: { type: 'boolean' },
+                table: { 
+                    defaultValue: { summary: 'false' },
+                    category, subcategory: 'Resource' }
+            },
+            url: {
+                description: html`The URL used by the list resource to fetch the list items. It is not required to
+                define a URL for static lists where items are added manually via the list component.`,
+                control: { type: 'text' },
+                table: { category, subcategory: 'Resource' }
+            },
+            paramNamespace: {
+                description: html`The namespace used to prefix the query parameters for the list filters. List filters
+                are dynamic and can be created, configured and added to the list, which managed via the listResource.`,
+                control: { type: 'text' },
+                table: { category, subcategory: 'Resource' }
+            }
+            ///////////////////////////////
+            // Callbacks
+            //////////////////////////////
         };
     },
     /**
@@ -61,11 +193,11 @@ export const Default = {
     name: 'Render',
     argTypes: ListStory.getArgTypes(),
     args: {
+        ...ListStory.args,
         id: 'static-list',
         title: 'List',
         itemsPerPage: 10,
-        hasResource: true,
-        hasSelection: true
+        hasResource: true
     },
     /**
      * Initializes the list with the provided payload.

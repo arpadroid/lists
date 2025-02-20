@@ -7,7 +7,7 @@
  * @typedef {import('../list/list.js').default} List
  */
 import { ArpaElement } from '@arpadroid/ui';
-import { attrString } from '@arpadroid/tools';
+import { attrString, defineCustomElement } from '@arpadroid/tools';
 
 const html = String.raw;
 class MultiSelect extends ArpaElement {
@@ -235,6 +235,6 @@ class MultiSelect extends ArpaElement {
     // }
 }
 
-customElements.define('list-multi-select', MultiSelect);
+defineCustomElement('list-multi-select', MultiSelect);
 
 export default MultiSelect;

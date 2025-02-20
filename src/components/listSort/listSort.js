@@ -16,7 +16,7 @@
  * @typedef {import('@arpadroid/navigation').NavList} NavList
  */
 
-import { mapHTML, attr } from '@arpadroid/tools';
+import { mapHTML, attr, defineCustomElement } from '@arpadroid/tools';
 import { ArpaElement } from '@arpadroid/ui';
 
 const html = String.raw;
@@ -185,7 +185,6 @@ class ListSort extends ArpaElement {
     // #endregion RENDERING
     //////////////////////////
 }
-
-customElements.define('list-sort', ListSort);
+defineCustomElement('list-sort', ListSort);
 
 export default ListSort;

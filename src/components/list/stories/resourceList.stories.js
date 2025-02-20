@@ -19,7 +19,6 @@ export const Default = {
     argTypes: ApiDrivenListStory.getArgTypes(),
     args: {
         id: 'api-driven-list',
-        allControls: true,
         title: 'List',
         url: 'api/gallery/item/get-items',
         paramNamespace: 'galleryList-',

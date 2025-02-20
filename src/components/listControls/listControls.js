@@ -5,8 +5,7 @@
  * @typedef {import('../listViews/listViews').default} ListViews
  */
 import { ArpaElement } from '@arpadroid/ui';
-import { appendNodes, attrString, ucFirst, camelToDashed } from '@arpadroid/tools';
-
+import { appendNodes, attrString, ucFirst, camelToDashed, defineCustomElement } from '@arpadroid/tools';
 
 const html = String.raw;
 class ListControls extends ArpaElement {
@@ -126,6 +125,6 @@ class ListControls extends ArpaElement {
     }
 }
 
-customElements.define('list-controls', ListControls);
+defineCustomElement('list-controls', ListControls);
 
 export default ListControls;

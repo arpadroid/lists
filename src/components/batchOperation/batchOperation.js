@@ -1,5 +1,5 @@
 import { ArpaFragment } from '@arpadroid/ui';
-import { appendNodes } from '@arpadroid/tools';
+import { appendNodes, defineCustomElement } from '@arpadroid/tools';
 
 const html = String.raw;
 class BatchOperation extends ArpaFragment {
@@ -13,6 +13,6 @@ class BatchOperation extends ArpaFragment {
     }
 }
 
-customElements.define('batch-operation', BatchOperation);
+defineCustomElement('batch-operation', BatchOperation);
 
 export default BatchOperation;

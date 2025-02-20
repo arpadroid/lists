@@ -10,7 +10,8 @@
  */
 
 import { ArpaElement } from '@arpadroid/ui';
-import { render, classNames, attrString, getViewportWidth, getViewportHeight } from '@arpadroid/tools';
+import { render, classNames, attrString } from '@arpadroid/tools';
+import { getViewportWidth, getViewportHeight, defineCustomElement } from '@arpadroid/tools';
 
 const html = String.raw;
 class ListItem extends ArpaElement {
@@ -86,7 +87,7 @@ class ListItem extends ArpaElement {
         super.initializeProperties();
         this.grabList();
         const id = this.getId();
-        if (typeof this.list?.hasMultiSelect === 'function' && this.list?.hasMultiSelect()) {
+        if (typeof this.list?.hasControl === 'function' && this.list?.hasControl('multiselect')) {
             this.listResource?.on(`item_selected_${id}`, this._onSelected, this._unsubscribes);
             this.listResource?.on(`item_deselected_${id}`, this._onDeselected, this._unsubscribes);
         }
@@ -209,8 +210,10 @@ class ListItem extends ArpaElement {
     }
 
     hasSelection() {
-        const fn = this.list?.hasMultiSelect;
-        return (typeof fn === 'function' && fn.call(this.list)) ?? this.getProperty('has-selection');
+        return (
+            (typeof this.list?.hasControl === 'function' && this.list?.hasControl('multiselect')) ??
+            this.getProperty('has-selection')
+        );
     }
 
     /**
@@ -720,6 +723,6 @@ class ListItem extends ArpaElement {
     /////////////////////////////
 }
 
-customElements.define(ListItem.prototype.getTagName(), ListItem);
+defineCustomElement(ListItem.prototype.getTagName(), ListItem);
 
 export default ListItem;

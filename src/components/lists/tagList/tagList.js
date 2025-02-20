@@ -3,7 +3,7 @@
  * @typedef {import('../../list/list.types').ListConfigType} ListConfigType
  * @typedef {import('./tagList.types.js').TagListConfigType} TagListConfigType
  */
-import { dummyListener, dummySignal, mergeObjects, observerMixin } from '@arpadroid/tools';
+import { defineCustomElement, dummyListener, dummySignal, mergeObjects, observerMixin } from '@arpadroid/tools';
 import List from '../../list/list.js';
 import TagItem from './tagItem/tagItem.js';
 
@@ -62,6 +62,6 @@ class TagList extends List {
     removeItem = this.removeItem;
 }
 
-customElements.define('tag-list', TagList);
+defineCustomElement('tag-list', TagList);
 
 export default TagList;

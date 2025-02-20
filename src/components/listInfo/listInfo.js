@@ -8,7 +8,7 @@
  * @typedef {import('./listInfo.types').ListInfoConfigType} ListInfoConfigType
  */
 import { ArpaElement } from '@arpadroid/ui';
-import { mergeObjects, bind, renderNode } from '@arpadroid/tools';
+import { mergeObjects, bind, renderNode, defineCustomElement } from '@arpadroid/tools';
 const html = String.raw;
 class ListInfo extends ArpaElement {
     /** @type {ListInfoConfigType} */ // @ts-ignore
@@ -178,6 +178,6 @@ class ListInfo extends ArpaElement {
     }
 }
 
-customElements.define('list-info', ListInfo);
+defineCustomElement('list-info', ListInfo);
 
 export default ListInfo;

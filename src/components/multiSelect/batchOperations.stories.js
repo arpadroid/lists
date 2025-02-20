@@ -15,7 +15,6 @@ const Default = {
     args: {
         ...ListStory.args,
         id: 'batch-operations',
-        allControls: false,
         controls: 'multiselect',
         itemsPerPage: 4,
         title: 'Batch Operations'

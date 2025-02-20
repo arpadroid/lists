@@ -3,7 +3,7 @@
  * @typedef {import('../tagList.js').default} TagList
  */
 
-import { render, renderNode, appendNodes, processTemplate } from '@arpadroid/tools';
+import { render, renderNode, appendNodes, processTemplate, defineCustomElement } from '@arpadroid/tools';
 import ListItem from '../../../listItem/listItem.js';
 
 const html = String.raw;
@@ -111,6 +111,6 @@ class TagItem extends ListItem {
     }
 }
 
-customElements.define('tag-item', TagItem);
+defineCustomElement('tag-item', TagItem);
 
 export default TagItem;

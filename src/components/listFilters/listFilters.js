@@ -13,7 +13,7 @@
  * @typedef {import('./listFilters.types').ListFiltersSubmitPayloadType} ListFiltersSubmitPayloadType
  * @typedef {import('@arpadroid/forms').FormSubmitType} FormSubmitType
  */
-import { mergeObjects, attrString, mapHTML, editURL } from '@arpadroid/tools';
+import { mergeObjects, attrString, mapHTML, editURL, defineCustomElement } from '@arpadroid/tools';
 import { ArpaElement } from '@arpadroid/ui';
 
 const html = String.raw;
@@ -167,6 +167,6 @@ class ListFilters extends ArpaElement {
     // #endregion
 }
 
-customElements.define('list-filters', ListFilters);
+defineCustomElement('list-filters', ListFilters);
 
 export default ListFilters;

@@ -12,7 +12,7 @@
 import { ArpaElement } from '@arpadroid/ui';
 import { ListResource, getResource } from '@arpadroid/resources';
 import ListControls from '../listControls/listControls.js';
-import { mergeObjects, appendNodes, processTemplate, editURL } from '@arpadroid/tools';
+import { mergeObjects, appendNodes, processTemplate, editURL, defineCustomElement } from '@arpadroid/tools';
 import { renderNode, renderAttr, attrString, bind, ucFirst } from '@arpadroid/tools';
 import ListItem from '../listItem/listItem.js';
 import { getService } from '@arpadroid/context';
@@ -141,7 +141,6 @@ class List extends ArpaElement {
      */
     getDefaultConfig(config = {}) {
         const conf = {
-            allControls: false,
             canCollapse: false,
             className: 'arpaList',
             defaultView: 'list',
@@ -151,10 +150,8 @@ class List extends ArpaElement {
             hasMiniSearch: true,
             hasPager: false,
             hasResource: false,
-            hasSelection: false,
             hasPreloader: true,
             hasItemsTransition: false,
-            hasStickyFilters: false,
             controls: ['search', 'sort', 'views', 'multiselect', 'filters'],
             imageSize: 'list',
             isCollapsed: false,
@@ -207,6 +204,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasControl(control) {
+        if (this.getRenderMode() === 'minimal') return false;
         return this.getControls()?.includes(control);
     }
 
@@ -217,14 +215,6 @@ class List extends ArpaElement {
     getControls() {
         const arr = this.getArrayProperty('controls');
         return Array.isArray(arr) ? arr : [];
-    }
-
-    /**
-     * Returns true if all list controls are enabled.
-     * @returns {boolean}
-     */
-    hasAllControls() {
-        return Boolean(this.hasProperty('all-controls'));
     }
 
     /**
@@ -242,22 +232,6 @@ class List extends ArpaElement {
      */
     hasInfo() {
         return Boolean(this.hasProperty('has-info'));
-    }
-
-    /**
-     * Returns true if the list has a search component.
-     * @returns {boolean}
-     */
-    hasSearch() {
-        return Boolean(this._config?.controls?.includes('search'));
-    }
-
-    /**
-     * Returns true if the list has a multi-select component for batch item operations.
-     * @returns {boolean}
-     */
-    hasMultiSelect() {
-        return Boolean(this.hasProperty('has-selection'));
     }
 
     /**
@@ -801,10 +775,7 @@ class List extends ArpaElement {
         const template = renderMode === 'minimal' ? this.renderMinimal() : this.renderFull();
         this.innerHTML = processTemplate(template, this.getTemplateVars());
         this.bodyMainNode = this.querySelector('.arpaList__bodyMain');
-        /** @type {HTMLElement} */
-        this.itemsNode =
-            /** @type {HTMLElement} */ (renderMode === 'minimal' ? this : this.querySelector('.arpaList__items')) ||
-            this;
+        this.itemsNode = (renderMode === 'minimal' ? this : this.querySelector('.arpaList__items')) || this;
         this.itemsNode && appendNodes(this.itemsNode, this._childNodes);
         this.renderItems();
         this.itemsNode && appendNodes(this.itemsNode, this.getInitialItems());
@@ -1018,6 +989,6 @@ class List extends ArpaElement {
     /////////////////////////
 }
 
-customElements.define('arpa-list', List);
+defineCustomElement('arpa-list', List);
 
 export default List;

@@ -11,7 +11,7 @@
  * @typedef {import('@arpadroid/services').Router} Router
  */
 
-import { editURL, attrString, SearchTool, processTemplate } from '@arpadroid/tools';
+import { editURL, attrString, SearchTool, processTemplate, defineCustomElement } from '@arpadroid/tools';
 import { ArpaElement } from '@arpadroid/ui';
 
 const html = String.raw;
@@ -152,7 +152,6 @@ class ListSearch extends ArpaElement {
         }
     }
 }
-
-customElements.define('list-search', ListSearch);
+defineCustomElement('list-search', ListSearch);
 
 export default ListSearch;

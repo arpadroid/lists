@@ -8,7 +8,7 @@
  * @typedef {import('./listViews.types').ListViewsConfigType} ListViewsConfigType
  * @typedef {import('@arpadroid/navigation').IconMenu} IconMenu
  */
-import { mergeObjects, attrString, clearLazyQueue } from '@arpadroid/tools';
+import { mergeObjects, attrString, clearLazyQueue, defineCustomElement } from '@arpadroid/tools';
 import { ArpaElement } from '@arpadroid/ui';
 
 export const LIST_VIEW_GRID = 'grid';
@@ -171,7 +171,7 @@ class ListViews extends ArpaElement {
             item?.classList.add('listItem--' + view);
         });
         const prevSelected = this.navigation?.querySelectorAll('[aria-current]');
-        
+
         // @ts-ignore
         prevSelected?.forEach((/** @type {HTMLElement} */ node) => node.removeAttribute('aria-current'));
         const selected = this.navigation?.querySelector(`[data-value="${view}"]`);
@@ -223,7 +223,6 @@ class ListViews extends ArpaElement {
 
     // #endregion
 }
-
-customElements.define('list-views', ListViews);
+defineCustomElement('list-views', ListViews);
 
 export default ListViews;
