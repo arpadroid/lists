@@ -1,4 +1,4 @@
-import config from '@arpadroid/arpadroid/src/storybook/preview.ui.js';
+import config from '@arpadroid/module/src/storybook/preview.ui.js';
 import { setService } from '@arpadroid/context';
 import { Router, APIService } from '@arpadroid/services';
 setService('router', new Router());

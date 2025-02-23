@@ -6,10 +6,10 @@
     "types": "./dist/@types/types.compiled.d.ts",
     "type": "module",
     "scripts": {
-        "build": "node ./node_modules/@arpadroid/arpadroid/scripts/build-project.mjs --project=lists --minify",
+        "build": "node ./node_modules/@arpadroid/module/scripts/build-project.mjs --project=lists --minify",
         "prepublish": "npm run build",
         "storybook": "npm run build -- --storybook=6008 --deps=forms,navigation,messages --watch",
-        "test": "node ./node_modules/@arpadroid/arpadroid/scripts/test-project.mjs --project=lists --storybook --jest --port=6008"
+        "test": "node ./node_modules/@arpadroid/module/scripts/test-project.mjs --project=lists --storybook --jest --port=6008"
     },
     "repository": {
         "type": "git",
@@ -27,7 +27,7 @@
     },
     "homepage": "https://github.com/arpadroid/lists#readme",
     "devDependencies": {
-        "@arpadroid/arpadroid": "file:../arpadroid",
+        "@arpadroid/module": "file:../module",
         "@arpadroid/stylesheet-bundler": "file:../stylesheet-bundler",
         "@babel/core": "^7.23.9",
         "@babel/plugin-syntax-import-assertions": "^7.23.3",
@@ -38,9 +38,6 @@
         "http-proxy-middleware": "^3.0.3",
         "jsdoc-to-markdown": "^8.0.1",
         "typescript": "^5.4.2"
-    },
-    "dependencies": {
-        "@arpadroid/context": "file:../context"
     },
     "peerDependencies": {
         "@arpadroid/context": "file:../context",
