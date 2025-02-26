@@ -1,6 +1,10 @@
 const config = {
     deps: ['messages', 'navigation', 'forms'],
-    buildTypes: true
+    buildTypes: true,
+    logo: `           ┓    • ┓  ┓•   
+  ┏┓┏┓┏┓┏┓┏┫┏┓┏┓┓┏┫  ┃┓┏╋┏
+  ┗┻┛ ┣┛┗┻┗┻┛ ┗┛┗┗┻  ┗┗┛┗┛
+------┛---------------------`
 };
 
 export default config;
