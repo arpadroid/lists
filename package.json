@@ -1,6 +1,6 @@
 {
     "name": "@arpadroid/lists",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "A library of web components for building list interfaces featuring search, pagination, views, filters and many other features.",
     "exports": "./dist/arpadroid-lists.js",
     "types": "./dist/@types/types.compiled.d.ts",
@@ -27,19 +27,16 @@
     },
     "homepage": "https://github.com/arpadroid/lists#readme",
     "devDependencies": {
-        "@arpadroid/module": "file:../module",
-        "@arpadroid/stylesheet-bundler": "file:../stylesheet-bundler",
-        "@babel/core": "^7.23.9",
+        "@babel/core": "^7.24",
         "@babel/plugin-syntax-import-assertions": "^7.23.3",
         "@babel/preset-env": "^7.23.9",
-        "babel-jest": "^29.7.0",
         "babel-loader": "^9.1.3",
         "dts-bundle-generator": "^9.3.1",
-        "http-proxy-middleware": "^3.0.3",
-        "jsdoc-to-markdown": "^8.0.1",
-        "typescript": "^5.4.2"
+        "jsdoc-to-markdown": "^8.0.1"
     },
     "peerDependencies": {
+        "@arpadroid/stylesheet-bundler": "file:../stylesheet-bundler",
+        "@arpadroid/module": "file:../module",
         "@arpadroid/context": "file:../context",
         "@arpadroid/forms": "file:../forms",
         "@arpadroid/i18n": "file:../i18n",

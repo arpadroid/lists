@@ -5,7 +5,8 @@
         "outDir": "./.tmp/.types",
         "skipLibCheck": true,
         "paths": {
-            "@arpadroid/forms": ["../forms/.tmp/.types/types.compiled.d.ts"]
+            "@arpadroid/forms": ["../forms/.tmp/.types/types.compiled.d.ts"],
+            "@arpadroid/navigation": ["../navigation/.tmp/.types/types.compiled.d.ts"]
         }
     },
     "include": ["src/**/*"],

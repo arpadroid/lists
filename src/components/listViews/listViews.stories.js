@@ -1,7 +1,7 @@
 /**
  * @typedef {import('../list/list.js').default} List
  * @typedef {import('@arpadroid/navigation').IconMenu} IconMenu
- * @typedef {import('@arpadroid/module/node_modules/@storybook/types').StepFunction} StepFunction
+ * @typedef {import('@arpadroid/module').StepFunction} StepFunction
  */
 
 import { Default as ListStory } from '../list/stories/list.stories.js';
