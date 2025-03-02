@@ -14,6 +14,9 @@ const html = String.raw;
 const ListStory = {
     title: 'Lists/List',
     tags: ['docs'],
+    parameters: {
+        layout: 'padded'
+    },
     args: {
         id: 'static-list',
         title: '',
@@ -192,6 +195,9 @@ const ListStory = {
 export const Default = {
     name: 'Render',
     argTypes: ListStory.getArgTypes(),
+    parameters: {
+        layout: 'padded'
+    },
     args: {
         ...ListStory.args,
         id: 'static-list',
