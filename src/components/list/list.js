@@ -18,18 +18,19 @@ import ListItem from '../listItem/listItem.js';
 import { getService } from '@arpadroid/context';
 
 const html = String.raw;
+
 class List extends ArpaElement {
     /** @type {ListConfigType} */
     _config = this._config;
     isSearchInitialized = false;
-    /** @type {ListItemImageSizeType} */ // @ts-ignore
-    itemImageDimensions = this.itemImageDimensions;
 
     /////////////////////////
     // #region Initialization
     //////////////////////////
 
     _preInitialize() {
+        /** @type {ListItemImageSizeType} */
+        this.itemImageDimensions = this.itemImageDimensions;
         bind(this, 'onResourceAddItem', 'onResourceRemoveItem', 'onResourceRemoveItems', '_initializeList');
         bind(this, 'onResourceItemsUpdated', 'onResourceSetItems', 'onResourceAddItems', 'onResourceFetch');
         bind(this, 'onTransitionOut');
@@ -382,10 +383,9 @@ class List extends ArpaElement {
         this._config.sortOptions = options;
         this._config.sortDefault = defaultValue;
         /** @type {ListSort | undefined} */
-        const listSort = /** @type {ListSort | undefined} */ (this.controls?.search?.listSort);
-        const sortField = listSort?.sortByMenu;
-        // @ts-ignore
-        sortField?.setOptions(options, defaultValue);
+        // const listSort = /** @type {ListSort | undefined} */ (this.controls?.search?.listSort);
+        // const sortField = listSort?.sortByMenu;
+        // sortField?.setOptions(options, defaultValue);
     }
 
     /**
@@ -426,8 +426,7 @@ class List extends ArpaElement {
      */
     setPreProcessNode(callback) {
         if (this.listResource) {
-            // @ts-ignore
-            this.listResource?.setPreProcessNode(callback);
+            callback && this.listResource?.setPreProcessNode(callback);
         } else {
             this._config.preProcessNode = callback;
         }
@@ -440,13 +439,13 @@ class List extends ArpaElement {
      */
     preProcessNode(node) {
         const { preProcessNode } = this._config;
-        return typeof preProcessNode === 'function' && preProcessNode(node) || undefined;
+        return (typeof preProcessNode === 'function' && preProcessNode(node)) || undefined;
     }
 
     /**
      * Adds an item to the list.
      * @param {ListItemConfigType} item
-     * @returns {ListItem | ListResourceItemType}
+     * @returns { ListItem | ListResourceItemType | Record<string, any>}
      */
     addItem(item) {
         return this.listResource ? this.listResource.addItem(item) : this.appendChild(this.createItem(item));
@@ -844,9 +843,11 @@ class List extends ArpaElement {
         /** @type {string[]} */
         const controls = /** @type {string[]} */ (this.getArrayProperty('controls') || []);
         const control = controls?.[0];
-        const fn = `render${ucFirst(control)}`;
-        // @ts-ignore
-        if (typeof ListControls.prototype[fn] === 'function') return ListControls.prototype[fn](this);
+        if (!control) return '';
+        const fn = /** @type {keyof ListControls.prototype} */ (`render${ucFirst(control)}`);
+        const method = /** @type {((...args: any[]) => string) | undefined} */ (ListControls.prototype[fn]);
+        if (typeof method === 'function') return method(this);
+        return '';
     }
 
     renderControls(config = {}) {

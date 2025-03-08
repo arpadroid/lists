@@ -17,8 +17,6 @@ const html = String.raw;
 class ListItem extends ArpaElement {
     /** @type {ListItemConfigType} */
     _config = this._config;
-    /** @type {boolean} */
-    isGrid = this.isGrid || false;
     /////////////////////
     // #region INIT
     /////////////////////
@@ -31,6 +29,8 @@ class ListItem extends ArpaElement {
      */
     constructor(config = {}, payload, map) {
         super(config);
+        /** @type {boolean} */
+        this.isGrid = this.isGrid || false;
         this.payload = payload;
         this.map = map;
     }

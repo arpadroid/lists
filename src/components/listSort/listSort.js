@@ -144,7 +144,6 @@ class ListSort extends ArpaElement {
                 this.sortNav = this.sortByMenu?.navigation;
                 if (this.sortNav instanceof HTMLElement) {
                     if (this.sortNav?._config && typeof this._isItemSelected === 'function') {
-                        // @ts-ignore
                         this.sortNav._config.isItemSelected = this._isItemSelected;
                     }
 
@@ -160,13 +159,13 @@ class ListSort extends ArpaElement {
 
     /**
      * Checks if the item is selected.
-     * @param {{node: HTMLElement}} item
-     * @returns {boolean | undefined}
+     * @param {import('@arpadroid/navigation').SelectedCallbackPayloadType} payload
+     * @returns {boolean}
      */
-    _isItemSelected({ node }) {
+    _isItemSelected(payload) {
         const sortByValue = this.sortFilter?.getValue();
-        if (!sortByValue) return;
-        const itemValue = node.getAttribute('param-value');
+        if (!sortByValue) return false;
+        const itemValue = payload?.node?.getAttribute('param-value');
         return itemValue === sortByValue;
     }
 

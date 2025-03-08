@@ -64,14 +64,13 @@ class ListControls extends ArpaElement {
         const controls = this.getControls();
         let content = '';
         controls?.forEach(control => {
-            const fnName = `render${ucFirst(control)}`;
+            const fnName = /** @type {keyof ListControls} */ (`render${ucFirst(control)}`);
             if (this.hasControl(control)) {
-                // @ts-ignore
                 const fn = this[fnName];
-                const tagName = `gallery-${camelToDashed(control)}`;
-                if (fn) {
+                if (typeof fn === 'function') { // @ts-ignore
                     content += fn.call(this);
                 } else {
+                    const tagName = `gallery-${camelToDashed(control)}`;
                     content += html`<${tagName}></${tagName}>`;
                 }
             }

@@ -8,9 +8,10 @@
             "@arpadroid/forms": ["../forms/.tmp/.types/types.compiled.d.ts"],
             "@arpadroid/navigation": ["../navigation/.tmp/.types/types.compiled.d.ts"],
             "@storybook/test": ["./node_modules/@arpadroid/module/node_modules/@storybook/test"],
-            "@storybook/web-components": ["./node_modules/@arpadroid/module/node_modules/@storybook/web-components"]
+            "@storybook/web-components": ["./node_modules/@arpadroid/module/node_modules/@storybook/web-components"],
+            "@storybook/addon-actions": ["./node_modules/@arpadroid/module/node_modules/@storybook/addon-actions"]
         }
     },
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "src/mockData/**/*.json"],
     "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.js", "./dist/@types"]
 }

@@ -150,8 +150,8 @@ class MultiSelect extends ArpaElement {
             'change',
             async (/** @type {unknown} */ value, /** @type {Field} */ field, /** @type {Event} */ event) => {
                 const option = actionsField.getSelectedOption();
-                const action = option?.getAction;
-                if (typeof action === 'function') { // @ts-ignore
+                const action = option?.getAction();
+                if (typeof action === 'function') {
                     action(this.resource?.getSelectedItems(), this.renderItemList());
                 }
                 // this.actionsField.removeSelectedOption();

@@ -54,9 +54,9 @@ class TagList extends List {
         this.signal('delete_tag', tag);
     }
 
-    /** @type {(item: TagItemConfigType) => Promise<void>} */ // @ts-ignore
+    /** @type {(item: TagItemConfigType) => Promise<void>} */
     addItem = this.addItem;
-    /** @type {(items: TagItemConfigType[]) => Promise<void>} */
+    /** @type {(items: (TagItemConfigType & Record<string, any>)[]) => Promise<void>} */
     setItems = this.setItems;
     /** @type {(item: Record<string, any>) => Promise<void>} */
     removeItem = this.removeItem;

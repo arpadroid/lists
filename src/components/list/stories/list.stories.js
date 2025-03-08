@@ -5,7 +5,7 @@
  * @typedef {import('./list.stories.types').ListPlaySetupPayloadType} ListPlaySetupPayloadType
  * @typedef {import('./list.stories.types').ListPlaySetupResponseType} ListPlaySetupResponseType
  */
-// @ts-ignore
+
 import artists from '../../../mockData/artists.json';
 import { attrString, formatDate } from '@arpadroid/tools';
 import { within } from '@storybook/test';
