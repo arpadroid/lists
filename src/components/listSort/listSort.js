@@ -21,7 +21,7 @@ import { ArpaElement } from '@arpadroid/ui';
 
 const html = String.raw;
 class ListSort extends ArpaElement {
-    /** @type {ListSortConfigType} */ // @ts-ignore
+    /** @type {ListSortConfigType} */
     _config = this._config;
     //////////////////////////////
     // #region INITIALIZATION

@@ -9,7 +9,7 @@ import { appendNodes, attrString, ucFirst, camelToDashed, defineCustomElement } 
 
 const html = String.raw;
 class ListControls extends ArpaElement {
-    /** @type {ListControlsConfigType} */ // @ts-ignore
+    /** @type {ListControlsConfigType} */
     _config = this._config;
 
     /**

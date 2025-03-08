@@ -9,7 +9,7 @@ import TagItem from './tagItem/tagItem.js';
 
 const html = String.raw;
 class TagList extends List {
-    /** @type {TagListConfigType} */ // @ts-ignore
+    /** @type {TagListConfigType} */
     _config = this._config;
 
     /**
@@ -56,9 +56,9 @@ class TagList extends List {
 
     /** @type {(item: TagItemConfigType) => Promise<void>} */ // @ts-ignore
     addItem = this.addItem;
-    /** @type {(items: TagItemConfigType[]) => Promise<void>} */ // @ts-ignore
+    /** @type {(items: TagItemConfigType[]) => Promise<void>} */
     setItems = this.setItems;
-    /** @type {(item: TagItemConfigType) => Promise<void>} */ // @ts-ignore
+    /** @type {(item: Record<string, any>) => Promise<void>} */
     removeItem = this.removeItem;
 }
 

@@ -19,7 +19,7 @@ import { getService } from '@arpadroid/context';
 
 const html = String.raw;
 class List extends ArpaElement {
-    /** @type {ListConfigType} */ // @ts-ignore
+    /** @type {ListConfigType} */
     _config = this._config;
     isSearchInitialized = false;
     /** @type {ListItemImageSizeType} */ // @ts-ignore
@@ -435,12 +435,12 @@ class List extends ArpaElement {
 
     /**
      * Preprocess a list item node.
-     * @param {ListItem} node
-     * @returns {ListItem | HTMLElement | false}
+     * @param {ListItem | undefined} node
+     * @returns {ListItem | HTMLElement | undefined}
      */
     preProcessNode(node) {
         const { preProcessNode } = this._config;
-        return typeof preProcessNode === 'function' && preProcessNode(node);
+        return typeof preProcessNode === 'function' && preProcessNode(node) || undefined;
     }
 
     /**
@@ -538,8 +538,7 @@ class List extends ArpaElement {
      * @param {TransitionEvent} event
      */
     onTransitionOut(event) {
-        if (event && event.target === this.oldWrapper) {
-            // @ts-ignore
+        if (event && event.target === this.oldWrapper && event.target instanceof HTMLElement) {
             event.target?.removeEventListener('transitionend', this.onTransitionOut);
             if (this.oldWrapper) {
                 this.oldWrapper.style.display = 'none';
@@ -674,7 +673,6 @@ class List extends ArpaElement {
         this.listResource?.on('items', this.onResourceSetItems);
 
         this.listResource?.on('update_item', (/** @type {ListResourceItemType} */ payload) =>
-            // @ts-ignore
             payload?.node?.reRender()
         );
         this.listResource?.on('fetch', this.onResourceFetch);

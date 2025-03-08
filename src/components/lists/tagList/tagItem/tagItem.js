@@ -8,7 +8,7 @@ import ListItem from '../../../listItem/listItem.js';
 
 const html = String.raw;
 class TagItem extends ListItem {
-    /** @type {TagItemConfigType} */ // @ts-ignore
+    /** @type {TagItemConfigType} */
     _config = this._config;
     /** @type {TagList | undefined} */ // @ts-ignore
     list = this.list;

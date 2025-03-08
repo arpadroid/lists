@@ -16,7 +16,7 @@ import { ArpaElement } from '@arpadroid/ui';
 
 const html = String.raw;
 class ListSearch extends ArpaElement {
-    /** @type {ListSearchConfigType} */ // @ts-ignore
+    /** @type {ListSearchConfigType} */
     _config = this._config;
     //////////////////////////
     // #region INITIALIZATION

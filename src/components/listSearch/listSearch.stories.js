@@ -2,7 +2,7 @@
  * @typedef {import('../list/list.js').default} List
  * @typedef {import('@arpadroid/module').StepFunction} StepFunction
  */
-import { Default as ListStory } from '../list/stories/list.stories.js'; // @ts-ignore
+import { Default as ListStory } from '../list/stories/list.stories.js';
 import { expect, waitFor, fireEvent } from '@storybook/test';
 
 const Default = {

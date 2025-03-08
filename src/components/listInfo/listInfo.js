@@ -11,7 +11,7 @@ import { ArpaElement } from '@arpadroid/ui';
 import { mergeObjects, bind, renderNode, defineCustomElement } from '@arpadroid/tools';
 const html = String.raw;
 class ListInfo extends ArpaElement {
-    /** @type {ListInfoConfigType} */ // @ts-ignore
+    /** @type {ListInfoConfigType} */
     _config = this._config;
 
     /**

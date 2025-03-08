@@ -6,7 +6,9 @@
         "skipLibCheck": true,
         "paths": {
             "@arpadroid/forms": ["../forms/.tmp/.types/types.compiled.d.ts"],
-            "@arpadroid/navigation": ["../navigation/.tmp/.types/types.compiled.d.ts"]
+            "@arpadroid/navigation": ["../navigation/.tmp/.types/types.compiled.d.ts"],
+            "@storybook/test": ["./node_modules/@arpadroid/module/node_modules/@storybook/test"],
+            "@storybook/web-components": ["./node_modules/@arpadroid/module/node_modules/@storybook/web-components"]
         }
     },
     "include": ["src/**/*"],

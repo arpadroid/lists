@@ -5,7 +5,6 @@
  */
 
 import { Default as ListStory } from '../list/stories/list.stories.js';
-// @ts-ignore
 import { userEvent, within, waitFor, expect } from '@storybook/test';
 
 const Default = {
@@ -44,14 +43,16 @@ export const Test = {
         /** @type {IconMenu | null} */
         const iconMenu = canvasElement.querySelector('list-views icon-menu');
         const viewsMenu = iconMenu?.navigation;
-
+        if (!viewsMenu) {
+            throw new Error('Views menu not found');
+        }
         await step('Renders the menu with the expected views', async () => {
             expect(viewsMenu).toBeInTheDocument();
+
             const listView = within(viewsMenu).getByText('List');
             const gridView = within(viewsMenu).getByText('Grid');
             expect(listView).toBeInTheDocument();
             expect(gridView).toBeInTheDocument();
-            // @ts-ignore
             expect(viewsMenu?.querySelectorAll('nav-link')).toHaveLength(2);
         });
 
@@ -69,7 +70,7 @@ export const Test = {
 
         await step('Clicks on the Grid view and verifies the list item is selected', async () => {
             const gridView = within(viewsMenu).getByText('Grid').closest('button');
-            userEvent.click(gridView);
+            gridView && userEvent.click(gridView);
             await waitFor(() => {
                 expect(gridView).toHaveAttribute('aria-current', 'location');
                 expect(listNode).toHaveClass('listView--grid');

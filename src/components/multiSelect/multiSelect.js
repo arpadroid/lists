@@ -150,9 +150,9 @@ class MultiSelect extends ArpaElement {
             'change',
             async (/** @type {unknown} */ value, /** @type {Field} */ field, /** @type {Event} */ event) => {
                 const option = actionsField.getSelectedOption();
-                // @ts-ignore
-                if (typeof option?.action === 'function') {
-                    // option.action(this.resource?.getSelectedItems(), this.renderItemList());
+                const action = option?.getAction;
+                if (typeof action === 'function') { // @ts-ignore
+                    action(this.resource?.getSelectedItems(), this.renderItemList());
                 }
                 // this.actionsField.removeSelectedOption();
                 event.stopImmediatePropagation();
@@ -233,6 +233,10 @@ class MultiSelect extends ArpaElement {
 
     //     return wrapper;
     // }
+
+    renderItemList() {
+        return '';
+    }
 }
 
 defineCustomElement('list-multi-select', MultiSelect);

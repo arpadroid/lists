@@ -7,7 +7,7 @@
  */
 // @ts-ignore
 import artists from '../../../mockData/artists.json';
-import { attrString, formatDate } from '@arpadroid/tools'; // @ts-ignore
+import { attrString, formatDate } from '@arpadroid/tools';
 import { within } from '@storybook/test';
 
 const html = String.raw;
@@ -147,9 +147,11 @@ const ListStory = {
                 similar methods in the list component. The resource class can be interfaced with via the listResource
                 property in the list component or the list component's public methods.`,
                 control: { type: 'boolean' },
-                table: { 
+                table: {
                     defaultValue: { summary: 'false' },
-                    category, subcategory: 'Resource' }
+                    category,
+                    subcategory: 'Resource'
+                }
             },
             url: {
                 description: html`The URL used by the list resource to fetch the list items. It is not required to

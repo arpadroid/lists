@@ -18,7 +18,7 @@ import { ArpaElement } from '@arpadroid/ui';
 
 const html = String.raw;
 class ListFilters extends ArpaElement {
-    /** @type {ListFiltersConfigType} */ // @ts-ignore
+    /** @type {ListFiltersConfigType} */
     _config = this._config;
     // #region INITIALIZATION
     getDefaultConfig() {
@@ -68,7 +68,6 @@ class ListFilters extends ArpaElement {
     async _initializeIconMenu() {
         await customElements.whenDefined('icon-menu');
         await this.menuNode?.promise;
-        // @ts-ignore
         const itemsNode = /** @type {HTMLElement | null} */ (this.menuNode?.navigation?.itemsNode);
         itemsNode?.setAttribute('zone', 'list-filters');
     }
@@ -77,7 +76,6 @@ class ListFilters extends ArpaElement {
         /** @type {FormComponent | null} */
         this.form = this.querySelector('.listFilters__form');
         await this.form?.promise;
-        // @ts-ignore
         this.form?.onSubmit(this.onSubmit);
         await customElements.whenDefined('arpa-form');
         this.pageField = /** @type {NumberField} */ (this.form?.getField('page'));
@@ -147,10 +145,10 @@ class ListFilters extends ArpaElement {
     }
 
     /**
-     * When the form is submitted.
-     * @param {Record<string, unknown>} payload
+     * Called when the form is submitted.
+     * @type {import('@arpadroid/forms').FormSubmitType}
      */
-    onSubmit(payload) {
+    onSubmit(payload = {}) {
         if (payload.perPage != this.perPageFilter?.getValue()) {
             payload.page = 1;
             this.pageField?.setValue(1);
@@ -162,6 +160,7 @@ class ListFilters extends ArpaElement {
             });
             this.router?.go(newURL);
         }
+        return false;
     }
 
     // #endregion

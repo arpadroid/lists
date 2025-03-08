@@ -4,14 +4,13 @@
  * @typedef {import('./list.stories.types.js').ListPlaySetupResponseType} ListPlaySetupResponseType
  */
 import ListStory from './list.stories.js';
-import { attrString, getInitials } from '@arpadroid/tools'; // @ts-ignore
+import { attrString, getInitials } from '@arpadroid/tools';
 import { within } from '@storybook/test';
 
 const html = String.raw;
 const ApiDrivenListStory = {
-    // @ts-ignore
-    title: 'Lists/Lists/Resource List',
-    ...ListStory
+    ...ListStory,
+    title: 'Lists/Lists/Resource List'
 };
 
 export const Default = {

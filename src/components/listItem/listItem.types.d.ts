@@ -2,7 +2,7 @@ import List from '../list/list';
 import ListItem from './listItem';
 import { ArpaElementConfigType, ImageConfigType } from '@arpadroid/ui';
 import { TagItemConfigType } from '../lists/tagList/tagItem/tagItem.types';
-import { NavList } from '@arpadroid/navigation';
+import { NavList, NavListConfigType } from '@arpadroid/navigation';
 
 export type ListItemImageTypes =
     | 'list_compact'
@@ -50,12 +50,12 @@ export type ListItemConfigType = ArpaElementConfigType & {
     imageSizes?: ListItemImageSizesType;
     subTitle?: string;
     tags?: TagItemConfigType[];
-    template?: HTMLTemplateElement;
+    template?: HTMLTemplateElement | undefined;
     title?: string;
     titleIcon?: string;
     titleLink?: string;
     imageConfig?: ImageConfigType;
     list?: List;
     renderMode?: 'minimal' | 'full';
-    nav?: NavList;
+    nav?: NavListConfigType;
 };

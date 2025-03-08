@@ -17,7 +17,7 @@ export const LIST_VIEW_LIST = 'list';
 export const LIST_VIEW_LIST_COMPACT = 'list-compact';
 const html = String.raw;
 class ListViews extends ArpaElement {
-    /** @type {ListViewsConfigType} */ // @ts-ignore
+    /** @type {ListViewsConfigType} */
     _config = this._config;
     // #region INITIALIZATION
     getDefaultConfig() {
@@ -171,9 +171,9 @@ class ListViews extends ArpaElement {
             item?.classList.add('listItem--' + view);
         });
         const prevSelected = this.navigation?.querySelectorAll('[aria-current]');
-
-        // @ts-ignore
-        prevSelected?.forEach((/** @type {HTMLElement} */ node) => node.removeAttribute('aria-current'));
+        prevSelected?.forEach((/** @type {import('@arpadroid/tools').ElementType} */ node) =>
+            node.removeAttribute('aria-current')
+        );
         const selected = this.navigation?.querySelector(`[data-value="${view}"]`);
         selected?.setAttribute('aria-current', 'location');
     }

@@ -15,9 +15,9 @@ import { getViewportWidth, getViewportHeight, defineCustomElement } from '@arpad
 
 const html = String.raw;
 class ListItem extends ArpaElement {
-    /** @type {ListItemConfigType} */ //@ts-ignore
+    /** @type {ListItemConfigType} */
     _config = this._config;
-    /** @type {boolean} */ //@ts-ignore
+    /** @type {boolean} */
     isGrid = this.isGrid || false;
     /////////////////////
     // #region INIT
@@ -387,8 +387,7 @@ class ListItem extends ArpaElement {
         /** @type {NavList | null} */
         this.navNode = /** @type {NavList | null} */ (this.querySelector('.listItem__nav'));
         await customElements.whenDefined('icon-menu');
-        // @ts-ignore
-        this.navNode?.setConfig(this._config.nav);
+        this._config.nav && this.navNode?.setConfig(this._config.nav);
     }
 
     //#region Render Title
@@ -428,7 +427,6 @@ class ListItem extends ArpaElement {
     renderTags() {
         const { tags = [] } = this._config;
         if (!tags?.length && !this.hasZone('tags')) return '';
-        // @ts-ignore
         const tagsHTML = tags?.map(tag => this.renderTag(tag)) || '';
         return html`<tag-list id="item-${this.getId()}-tagList" variant="compact" class="listItem__tags" zone="tags">
             ${tagsHTML}

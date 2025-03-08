@@ -7,14 +7,24 @@
  */ // @ts-ignore
 import addons from '@arpadroid/module/storybook/addons';
 import { attrString } from '@arpadroid/tools';
-import { Default as ListStory } from '../../list/stories/list.stories.js'; // @ts-ignore
+import { Default as ListStory } from '../../list/stories/list.stories.js';
 import { within, userEvent, waitFor, expect, fn } from '@storybook/test';
 const { action } = addons;
 const html = String.raw;
+
+/** @type {import('@storybook/web-components').Meta} */
 const Default = {
     ...ListStory,
     title: 'Lists/Lists/Tag List',
     parameters: {},
+    argTypes: {
+        id: { control: 'text' },
+        title: { control: 'text' },
+        controls: { control: 'text' },
+        hasInfo: { control: 'boolean' },
+        itemsPerPage: { control: 'number' },
+        onDelete: { action: 'delete_tag' }
+    },
     args: {
         ...ListStory.args,
         id: 'tag-list',
@@ -80,7 +90,7 @@ export const Test = {
 
         await step('Sets an event listener on delete and receives callback when delete tag is clicked.', async () => {
             const tag = canvas.getByText('Tag 1').closest('tag-item');
-            const deleteButton = within(tag).getByRole('button', { label: 'Delete' });
+            const deleteButton = within(tag).getByRole('button');
             expect(deleteButton).toBeInTheDocument();
             userEvent.click(deleteButton);
             await waitFor(() => {

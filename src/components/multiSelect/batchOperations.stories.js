@@ -1,12 +1,13 @@
 /**
  * @typedef {import('../list/list.js').default} List
  * @typedef {import('../listViews/listViews.stories.js').StepFunction} StepFunction
+ * @typedef {import('@arpadroid/forms').SelectCombo} SelectCombo
  */
 
 import { Default as ListStory } from '../list/stories/list.stories.js';
-// @ts-ignore
 import { within, waitFor, userEvent, expect, fireEvent } from '@storybook/test';
 import { attrString } from '@arpadroid/tools';
+
 const html = String.raw;
 const Default = {
     ...ListStory,
@@ -58,11 +59,12 @@ export const Test = {
         const setup = await ListStory.playSetup(canvasElement);
         await waitFor(() => expect(document.querySelector('.listMultiSelect__form')).toBeInTheDocument());
         const { canvas } = setup;
-        const formNode = document.querySelector('.listMultiSelect__form');
+        const formNode = /** @type {HTMLFormElement} */ (document.querySelector('.listMultiSelect__form'));
         const getForm = () => within(formNode);
         const form = getForm();
 
-        const getToggleAllCheckbox = () => /** @type {HTMLElement} */ (formNode?.querySelector('input[type="checkbox"][name="toggleAll"]'));
+        const getToggleAllCheckbox = () =>
+            /** @type {HTMLElement} */ (formNode?.querySelector('input[type="checkbox"][name="toggleAll"]'));
         const getItemCheckbox = () => document.querySelector('.listItem__checkbox');
 
         await step('Opens and renders Batch Operations panel.', async () => {
@@ -79,7 +81,8 @@ export const Test = {
         await step('Checks an item checkbox and verifies the selected item count.', async () => {
             await waitFor(() => expect(getItemCheckbox()).toBeInTheDocument());
             const checkbox = getItemCheckbox();
-            fireEvent.click(checkbox);
+            expect(checkbox).toBeInTheDocument();
+            checkbox && fireEvent.click(checkbox);
             await waitFor(() => expect(form.getAllByText('1 items selected')).toHaveLength(1));
         });
 
@@ -98,10 +101,13 @@ export const Test = {
 
         await step('Clicks on "Delete" and verifies the dialog.', async () => {
             await waitFor(() => {
-                const actionsField = selectActionButton.closest('select-combo');
-                const options = actionsField.optionsNode;
+                const actionsField = /** @type {SelectCombo} */ (selectActionButton.closest('select-combo'));
+                const options = actionsField?.optionsNode;
+                if (!options) {
+                    throw new Error('Options not found.');
+                }
                 const button = within(options).getAllByText('Delete')[0].closest('button');
-                button.click();
+                button?.click();
             });
         });
     }

@@ -1,8 +1,10 @@
 /**
  * @typedef {import('@arpadroid/forms').FormComponent} FormComponent
+ * @typedef {import('@arpadroid/forms').NumberField} NumberField
+ * @typedef {import('@arpadroid/forms').SelectCombo} SelectCombo
  * @typedef {import('@arpadroid/module').StepFunction} StepFunction
  */
-import { Default as ListStory } from '../list/stories/list.stories.js'; // @ts-ignore
+import { Default as ListStory } from '../list/stories/list.stories.js';
 import { within, userEvent, expect, waitFor, fireEvent } from '@storybook/test';
 
 const Default = {
@@ -63,8 +65,11 @@ export const Test = {
 
         await step('Changes the page, submits the form and verifies the page change', async () => {
             const pageInput = combo.getByLabelText('Page');
-            const pageField = pageInput.closest('number-field');
-            pageField.setValue(2);
+            const pageField = /** @type {NumberField} */ (pageInput.closest('number-field'));
+            pageField?.setValue(2);
+            if (!filtersForm) {
+                throw new Error('Filters form not found');
+            }
             fireEvent.submit(filtersForm);
             await waitFor(() => {
                 expect(setup.listResource?.getPage()).toEqual(2);
@@ -75,16 +80,22 @@ export const Test = {
 
         await step('Changes the per page, submits the form and verifies the per page change', async () => {
             const perPageInput = combo.getByLabelText(/Per page/i);
-            const perPageField = perPageInput.closest('select-combo');
+
+            const perPageField = /** @type {SelectCombo} */ (perPageInput.closest('select-combo'));
             perPageInput.click();
             await waitFor(() => {
-                expect(perPageField.optionsNode).toBeInTheDocument();
+                expect(perPageField?.optionsNode).toBeInTheDocument();
             });
+            if (!(perPageField.optionsNode instanceof HTMLElement)) {
+                throw new Error('Options node not found');
+            }
             const options = within(perPageField.optionsNode);
             expect(perPageField.getValue()).toEqual('10');
             expect(listNode?.getItemNodes()).toHaveLength(10);
             const option5 = options.getByText('5').closest('button');
-
+            if (!option5) {
+                throw new Error('Option 5 not found');
+            }
             await userEvent.click(option5);
             await waitFor(() => {
                 expect(setup.listResource?.getPerPage()).toEqual(5);
