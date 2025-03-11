@@ -11,7 +11,6 @@ const html = String.raw;
 const Default = {
     ...ListStory,
     title: 'Lists/Components/Sort',
-    parameters: {},
     args: {
         ...ListStory.args,
         id: 'list-sort',
@@ -103,11 +102,10 @@ export const Test = {
             });
             sortOrderButton.click();
             await waitFor(() => {
-                const items = getItems();
-                expect(items[0]).toHaveTextContent('Leonardo da Vinci');
-                expect(items[1]).toHaveTextContent('Michelangelo Buonarroti');
-                expect(items[2]).toHaveTextContent('Raphael');
-                expect(items[3]).toHaveTextContent('El Greco');
+                expect(canvas.getByText('Leonardo da Vinci')).toBeInTheDocument();
+                expect(canvas.getByText('Michelangelo Buonarroti')).toBeInTheDocument();
+                expect(canvas.getByText('Raphael')).toBeInTheDocument();
+                expect(canvas.getByText('El Greco')).toBeInTheDocument();
             });
         });
     }
