@@ -15,7 +15,7 @@ const ListStory = {
     title: 'Lists/List',
     tags: ['docs'],
     parameters: {
-        layout: 'padded'
+        layout: 'flexColumn'
     },
     args: {
         id: 'static-list',
@@ -198,7 +198,7 @@ export const Default = {
     name: 'Render',
     argTypes: ListStory.getArgTypes(),
     parameters: {
-        layout: 'padded'
+        layout: 'flexColumn'
     },
     args: {
         ...ListStory.args,

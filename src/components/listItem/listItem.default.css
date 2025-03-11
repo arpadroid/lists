@@ -72,7 +72,7 @@ button.listItem__main {
     white-space: nowrap;
     font-size: 1.2rem;
     color: var(--grey-600);
-
+    margin: 0;
     .icon {
         --icon-size: 1.3rem;
         font-weight: 600;

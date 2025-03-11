@@ -89,15 +89,6 @@ export const Default = {
      */
     render: args => {
         return html`
-            <style>
-                #storybook-root {
-                    height: 100%;
-                    width: 100%;
-                    display: flex;
-                    flex-direction: column;
-                }
-            </style>
-
             <arpa-list ${attrString(args)}>
                 <zone name="batch-operations">
                     <select-option value="delete" icon="delete">

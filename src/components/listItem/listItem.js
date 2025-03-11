@@ -60,6 +60,7 @@ class ListItem extends ArpaElement {
             listSelector: '.arpaList',
             lazyLoadImage: false,
             imageSize: undefined,
+            titleTag: 'span',
             imageSizes: {
                 list_compact: { width: 40, height: 40 },
                 list: { width: 80, height: 80 },
@@ -386,7 +387,7 @@ class ListItem extends ArpaElement {
     async initializeNav() {
         /** @type {NavList | null} */
         this.navNode = /** @type {NavList | null} */ (this.querySelector('.listItem__nav'));
-        await customElements.whenDefined('icon-menu');
+        await customElements.whenDefined('icon-menu'); // @ts-ignore
         this._config.nav && this.navNode?.setConfig(this._config.nav);
     }
 
@@ -401,9 +402,10 @@ class ListItem extends ArpaElement {
         if (!this.hasContent('title')) return '';
         const titleLink = this.getTitleLink();
         const titleClass = 'listItem__title';
+        const titleTag = this.getProperty('title-tag') || 'span';
         return titleLink
             ? html` <a href="${titleLink}" class="${titleClass}" zone="title">${this.renderTitleContent()}</a>`
-            : html`<span class="${titleClass}" zone="title">${this.renderTitleContent()}</span>`;
+            : html`<${titleTag} class="${titleClass}" zone="title">${this.renderTitleContent()}</${titleTag}>`;
     }
 
     renderTitleContent() {

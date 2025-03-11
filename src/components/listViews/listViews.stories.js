@@ -42,7 +42,7 @@ export const Test = {
 
         /** @type {IconMenu | null} */
         const iconMenu = canvasElement.querySelector('list-views icon-menu');
-        const viewsMenu = iconMenu?.navigation;
+        const viewsMenu = /** @type {HTMLElement | null} */ (iconMenu?.navigation);
         if (!viewsMenu) {
             throw new Error('Views menu not found');
         }
