@@ -284,7 +284,7 @@ class ListItem extends ArpaElement {
     /////////////////////////////
 
     /////////////////////////////
-    // #region RENDERING
+    // #region Rendering
     /////////////////////////////
 
     /**
@@ -299,19 +299,24 @@ class ListItem extends ArpaElement {
     getTemplateVars() {
         return {
             ...this.getPayload(),
-            icon: this.getIcon(),
-            iconRight: this.getIconRight(),
-            titleIcon: this.getProperty('title-icon'),
+            icon: this.renderIcon(),
+            iconRight: this.renderIconRight(),
+            titleIcon: this.renderTitleIcon(),
             title: this.getTitle(),
+            renderTitleIcon: this.renderTitleIcon(),
             subTitle: this.getSubTitle(),
-            image: this.renderImage()
+            image: this.renderImage(),
+            wrapperComponent: this.getWrapperComponent(),
+            wrapperAttributes: attrString(this.getWrapperAttrs()),
+            rhs: this.renderRhs(),
+            content: this.renderContentWrapper()
         };
     }
 
     async render() {
         this.classList.add('listItem');
         this.imageURL = this.getProperty('image');
-        const { role, action } = this._config;
+        const { role } = this._config;
         role && this.setAttribute('role', role);
         this.link = this.getLink();
         this.removeAttribute('link');
@@ -319,7 +324,6 @@ class ListItem extends ArpaElement {
         this.innerHTML = content;
         this.button = this.querySelector('button.listItem__main');
         this.setViewClass();
-        action && this.button?.addEventListener('click', event => action(event, this));
         /**
          * @todo Add support for nested list items.
          */
@@ -340,27 +344,42 @@ class ListItem extends ArpaElement {
      * @returns {string}
      */
     getTemplate(isGrid = this.isGrid) {
-        const wrapperComponent = this.getWrapperComponent();
-        const icon = this.getIcon();
-        const iconRight = this.getIconRight();
-        const innerContent = /** @type {string} */ (this.renderInnerContent(isGrid) || this.hasZone('content'));
-        const hasInnerContent = innerContent && innerContent?.trim()?.length;
         return html`
-            <${wrapperComponent} ${this.getWrapperAttrs()}>
-                ${icon ? html`<arpa-icon class="listItem__icon">${icon}</arpa-icon>` : ''}
-                ${!isGrid ? this.renderImage() : ''}
-                ${hasInnerContent ? html`<div class="listItem__contentWrapper">${innerContent}</div>` : ''}
-                ${iconRight ? html`<arpa-icon class="listItem__iconRight">${iconRight}</arpa-icon>` : ''}
-            </${wrapperComponent}>
-            ${this.renderRhs()}
+            <{wrapperComponent} {wrapperAttributes}>
+                {icon}
+                ${(!isGrid && '{image}') || ''}
+                {content}
+                {iconRight}
+            </{wrapperComponent}>
+            {rhs}
         `;
     }
 
+    renderContentWrapper(isGrid = this.isGrid) {
+        const innerContent = /** @type {string} */ (this.renderInnerContent(isGrid) || this.hasZone('content'));
+        const hasInnerContent = innerContent && innerContent?.trim()?.length;
+        return (hasInnerContent && html`<div class="listItem__contentWrapper">${innerContent}</div>`) || '';
+    }
+
+    /**
+     * Returns the attributes for the list item wrapper.
+     * @returns {Record<string, any>}
+     */
     getWrapperAttrs() {
-        return attrString({
+        return {
             href: this.link,
             class: classNames('listItem__main', { listItem__link: this.link })
-        });
+        };
+    }
+
+    renderIcon() {
+        const icon = this.getIcon();
+        return icon ? html`<arpa-icon class="listItem__icon">${icon}</arpa-icon>` : '';
+    }
+
+    renderIconRight() {
+        const icon = this.getIconRight();
+        return icon ? html`<arpa-icon class="listItem__iconRight">${icon}</arpa-icon>` : '';
     }
 
     renderInnerContent(isGrid = this.isGrid) {
@@ -404,12 +423,16 @@ class ListItem extends ArpaElement {
         const titleClass = 'listItem__title';
         const titleTag = this.getProperty('title-tag') || 'span';
         return titleLink
-            ? html` <a href="${titleLink}" class="${titleClass}" zone="title">${this.renderTitleContent()}</a>`
+            ? html`<a href="${titleLink}" class="${titleClass}" zone="title">${this.renderTitleContent()}</a>`
             : html`<${titleTag} class="${titleClass}" zone="title">${this.renderTitleContent()}</${titleTag}>`;
     }
 
     renderTitleContent() {
-        return html`<arpa-icon>{titleIcon}</arpa-icon>{title}`;
+        return html`{titleIcon}{title}`;
+    }
+    renderTitleIcon() {
+        const titleIcon = this.getProperty('title-icon');
+        return (titleIcon && html`<arpa-icon class="listItem__titleIcon">${titleIcon}</arpa-icon>`) || '';
     }
 
     renderSubTitle() {
@@ -673,11 +696,15 @@ class ListItem extends ArpaElement {
      */
     _onRenderComplete() {
         super._onRenderComplete();
-        if (this.isConnected) {
-            const payload = { id: this.getId(), ...this.getPayload() };
-            this.listResource?.registerItem(payload, this);
-        }
+        this.isConnected && this.register();
     }
+
+    register() {
+        this.grabList();
+        const payload = { id: this.getId(), ...this.getPayload() };
+        this.listResource?.registerItem(payload, this);
+    }
+
     /////////////////////////////
     // #endregion LIFECYCLE
     /////////////////////////////

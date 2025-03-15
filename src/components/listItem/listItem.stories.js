@@ -12,10 +12,9 @@ const Default = {
     ...ListStory,
     title: 'Lists/Components/List Item',
     args: {
-        ...ListStory.args,
         id: 'list-item',
         controls: ' ',
-        itemsPerPage: 1,
+        itemsPerPage: 8,
         title: 'List Item'
     },
     render: ListStory.renderSimple

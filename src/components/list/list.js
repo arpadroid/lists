@@ -98,6 +98,7 @@ class List extends ArpaElement {
                 sortDirParam: this.getParamName('sortDir'),
                 itemsPerPage: this.getProperty('items-per-page'),
                 mapItemId: this._config?.mapItemId,
+                itemIdMap: this.getProperty('item-id-map'),
                 listComponent: this,
                 url: this.getProperty('url'),
                 router: this.router
@@ -160,6 +161,7 @@ class List extends ArpaElement {
             items: [],
             itemsPerPage: 50,
             itemTag: 'list-item',
+            itemIdMap: 'id',
             lazyLoadImages: 'auto',
             noItemsContent: html`<i18n-text key="lists.list.txtNoItemsFound"></i18n-text>`,
             noItemsIcon: 'info',
@@ -335,7 +337,7 @@ class List extends ArpaElement {
 
     /**
      * Gets the list items that are initially added to the DOM.
-     * @returns {(ListItem | Node)[]}
+     * @returns {(ListItem | Node | HTMLElement)[]}
      */
     getInitialItems() {
         const itemTagName = this.getProperty('item-tag');
@@ -453,7 +455,7 @@ class List extends ArpaElement {
 
     /**
      * Adds an item to the list.
-     * @param {ListItem} item
+     * @param {ListItem | HTMLElement} item
      * @param {boolean} unshift
      * @param {HTMLElement} [container]
      */
@@ -553,10 +555,13 @@ class List extends ArpaElement {
      * @param {ListItemConfigType} config
      * @param {Record<string,unknown>} payload
      * @param {Record<string,unknown>} mapping
-     * @returns {ListItem}
+     * @returns {ListItem | HTMLElement}
      * @throws {Error} If the list item component is not defined.
      */
     createItem(config = {}, payload = this.getDefaultItemPayload(config.id || ''), mapping = {}) {
+        if (payload.node instanceof HTMLElement) {
+            return payload.node;
+        }
         const itemComponent = this._config?.itemComponent;
         if (!itemComponent) {
             throw new Error('List item component not defined.');
@@ -668,9 +673,7 @@ class List extends ArpaElement {
         this.listResource?.on('remove_items', this.onResourceRemoveItems);
         this.listResource?.on('remove_item', this.onResourceRemoveItem);
         this.listResource?.on('items_updated', this.onResourceItemsUpdated);
-        // this.listResource.on('set_items', this.onResourceSetItems);
         this.listResource?.on('items', this.onResourceSetItems);
-
         this.listResource?.on('update_item', (/** @type {ListResourceItemType} */ payload) =>
             payload?.node?.reRender()
         );
@@ -704,7 +707,6 @@ class List extends ArpaElement {
             this.itemsNode && (this.itemsNode.innerHTML = '');
             this.addItemsBatched(items);
         }
-
         this.resolveFetch?.(true);
     }
 
@@ -775,7 +777,33 @@ class List extends ArpaElement {
         this.itemsNode = (renderMode === 'minimal' ? this : this.querySelector('.arpaList__items')) || this;
         this.itemsNode && appendNodes(this.itemsNode, this._childNodes);
         this.renderItems();
-        this.itemsNode && appendNodes(this.itemsNode, this.getInitialItems());
+        const initialItems = this._initializeItems();
+        this.itemsNode && appendNodes(this.itemsNode, initialItems);
+    }
+
+    _initializeItems() {
+        /** @type {(ListItem | Node | HTMLElement)[]} */
+        this.initialItems = this.getInitialItems() || [];
+        const initialItems = this.initialItems;
+        const isStatic = this.listResource?.isStatic();
+        const resource = this.listResource;
+        const perPage = this?.listResource?.getPerPage();
+
+        if (isStatic && perPage && perPage < this.initialItems.length) {
+            /** @type {Record<string, unknown>[]} */
+            const payload = [];
+            this.initialItems.forEach((item, index) => {
+                item instanceof HTMLElement && item.remove();
+                payload.push({
+                    node: item, // @ts-ignore
+                    id: item?.id || 'item-' + index
+                });
+            });
+            resource?.setItems(payload);
+            return [];
+        }
+
+        return initialItems;
     }
 
     renderPreloader() {
@@ -792,6 +820,7 @@ class List extends ArpaElement {
             console.warn('No items container found.');
             return;
         }
+
         appendNodes(
             container,
             items.map(item => this.createItem(item))
@@ -889,6 +918,7 @@ class List extends ArpaElement {
     }
 
     renderAside() {
+        if (!this.hasContent('aside')) return '';
         return html`<div class="arpaList__aside" zone="aside"></div>`;
     }
 

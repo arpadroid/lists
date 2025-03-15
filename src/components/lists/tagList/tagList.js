@@ -33,6 +33,7 @@ class TagList extends List {
             className: 'tagList',
             renderMode: 'minimal',
             hasResource: false,
+            itemIdMap: 'value',
             itemComponent: TagItem,
             itemTag: 'tag-item',
             noItemsContent: html`<i18n-text key="components.tagList.txtNoTags"></i18n-text>`,

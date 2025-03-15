@@ -16,7 +16,7 @@
         "mediums": ["Marble", "Bronze"],
         "educationOrTraining": "Trained under the sculptor Ageladas",
         "movement": "Classical Greek",
-        "portraitURL": "https://medias.gazette-drouot.com/prod/medias/mediatheque/143264.jpg",
+        "portraitURL": "/assets/artists/phidias.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Phidias"
     },
     {
@@ -36,7 +36,7 @@
         "mediums": ["Oil painting", "Fresco", "Drawing"],
         "educationOrTraining": "Apprentice to Andrea del Verrocchio in Florence",
         "movement": "High Renaissance",
-        "portraitURL": "https://i.natgeofe.com/n/37c3c776-b8cb-4be1-988a-cf593c776b88/01-leonardo-da-vinci-book-talk.jpg",
+        "portraitURL": "/assets/artists/leonardo-da-vinci.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Leonardo_da_Vinci"
     },
     {
@@ -56,7 +56,7 @@
         "mediums": ["Marble", "Fresco", "Oil painting"],
         "educationOrTraining": "Apprentice to Domenico Ghirlandaio, studied at the Medici Gardens in Florence",
         "movement": "High Renaissance",
-        "portraitURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Michelangelo_Daniele_da_Volterra_%28dettaglio%29.jpg/320px-Michelangelo_Daniele_da_Volterra_%28dettaglio%29.jpg",
+        "portraitURL": "/assets/artists/michelangelo.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Michelangelo"
     },
     {
@@ -76,7 +76,7 @@
         "mediums": ["Oil painting", "Fresco"],
         "educationOrTraining": "Apprentice to Pietro Perugino, influenced by Leonardo and Michelangelo",
         "movement": "High Renaissance",
-        "portraitURL": "https://www.datocms-assets.com/103094/1688665870-1586973322312851-raffaello-autoritratto.jpg?auto=format%2Ccompress&cs=srgb&max-w=800",
+        "portraitURL": "/assets/artists/raphael.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Raphael"
     },
     {
@@ -96,7 +96,7 @@
         "mediums": ["Oil painting"],
         "educationOrTraining": "Apprentice to Giovanni Bellini, later worked alongside Giorgione",
         "movement": "Venetian Renaissance",
-        "portraitURL": "https://uploads5.wikiart.org/00380/images/titian/800px-self-portrait-of-titian.jpg!Portrait.jpg",
+        "portraitURL": "/assets/artists/titian.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Titian"
     },
     {
@@ -116,7 +116,7 @@
         "mediums": ["Oil painting"],
         "educationOrTraining": "Apprentice to Simone Peterzano in Milan",
         "movement": "Baroque",
-        "portraitURL": "https://upload.wikimedia.org/wikipedia/commons/7/79/Michelangelo_Merisi_known_as_Caravaggio_-_Portrait_of_a_gentleman_%28Scipione_Borghese%3F%29_-_Google_Art_Project.jpg",
+        "portraitURL": "/assets/artists/caravaggio.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Caravaggio"
     },
 
@@ -137,7 +137,7 @@
         "mediums": ["Oil painting"],
         "educationOrTraining": "Studied in Antwerp and Italy, worked under the influence of Italian Renaissance artists",
         "movement": "Baroque",
-        "portraitURL": "https://media.nga.gov.au/Krjh5NUlrzKL8K_76oUmCleiJAs=/1200x0///national-gallery-of-australia/media/dd/images/rubens_sp.jpg",
+        "portraitURL": "/assets/artists/rubens_sp.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Peter_Paul_Rubens"
     },
 
@@ -158,7 +158,7 @@
         "mediums": ["Oil painting"],
         "educationOrTraining": "Apprenticed to Francisco Pacheco in Seville",
         "movement": "Spanish Baroque",
-        "portraitURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Self-portrait_by_Diego_Vel%C3%A1zquez.jpg/488px-Self-portrait_by_Diego_Vel%C3%A1zquez.jpg",
+        "portraitURL": "/assets/artists/velazquez.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Diego_Vel%C3%A1zquez"
     },
 
@@ -179,7 +179,7 @@
         "mediums": ["Oil painting", "Etching"],
         "educationOrTraining": "Apprenticed to Pieter Lastman in Amsterdam",
         "movement": "Dutch Golden Age",
-        "portraitURL": "https://cdn.britannica.com/82/190482-050-33D2C4C5/Self-Portrait-canvas-Rembrandt-van-Rijn-Washington-DC.jpg?w=300",
+        "portraitURL": "/assets/artists/rembrandt.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Rembrandt"
     },
 
@@ -200,7 +200,7 @@
         "mediums": ["Oil painting"],
         "educationOrTraining": "Little is known, possibly trained by a local artist or in the workshop of Pieter de Hooch",
         "movement": "Dutch Golden Age",
-        "portraitURL": "https://www.johannesvermeer.org/assets/img/vermeer.jpg",
+        "portraitURL": "/assets/artists/vermeer.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Johannes_Vermeer"
     },
     {
@@ -220,7 +220,7 @@
         "mediums": ["Oil painting", "Etching", "Lithography"],
         "educationOrTraining": "Apprenticed to Francisco Bayeu in Zaragoza",
         "movement": "Romanticism",
-        "portraitURL": "https://arthur.io/img/art/jpg/00017344d7b234726/francisco-de-goya/self-portrait-in-the-studio/large/francisco-de-goya--self-portrait-in-the-studio.jpg",
+        "portraitURL": "/assets/artists/goya.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Francisco_Goya"
     },
 
@@ -262,7 +262,7 @@
         "mediums": ["Oil painting", "Watercolor"],
         "educationOrTraining": "Studied at the Royal Academy of Arts in London",
         "movement": "Romanticism",
-        "portraitURL": "https://hips.hearstapps.com/hmg-prod/images/gettyimages-463909553.jpg?crop=0.9960159362549801xw:1xh;center,top&resize=640:*",
+        "portraitURL": "/assets/artists/turner.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/J._M._W._Turner"
     },
 
@@ -283,7 +283,7 @@
         "mediums": ["Oil painting"],
         "educationOrTraining": "Studied at the Le Havre Art School and later at the Académie Suisse in Paris",
         "movement": "Impressionism",
-        "portraitURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Claude_Monet_1899_Nadar_crop.jpg/800px-Claude_Monet_1899_Nadar_crop.jpg",
+        "portraitURL": "/assets/artists/Claude_Monet.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Claude_Monet"
     },
 
@@ -304,7 +304,7 @@
         "mediums": ["Oil painting", "Pastels", "Sculpture"],
         "educationOrTraining": "Studied at the École des Beaux-Arts in Paris",
         "movement": "Impressionism",
-        "portraitURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Edgar_Degas_self_portrait_1855.jpeg/220px-Edgar_Degas_self_portrait_1855.jpeg",
+        "portraitURL": "/assets/artists/Degas.jpeg",
         "biographyURL": "https://en.wikipedia.org/wiki/Edgar_Degas"
     },
 
@@ -325,7 +325,7 @@
         "mediums": ["Oil painting"],
         "educationOrTraining": "Studied at the École des Beaux-Arts in Aix-en-Provence",
         "movement": "Post-Impressionism",
-        "portraitURL": "https://images.squarespace-cdn.com/content/v1/567e3de1bfe873f15c08108e/1555757881666-389PWXW2BH3T53ZM1IO5/Cezanne.jpg",
+        "portraitURL": "/assets/artists/Cezanne.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Paul_C%C3%A9zanne"
     },
 
@@ -346,7 +346,7 @@
         "mediums": ["Oil painting"],
         "educationOrTraining": "Studied at the Royal Academy of Fine Arts in Antwerp and various art schools",
         "movement": "Post-Impressionism",
-        "portraitURL": "https://upload.wikimedia.org/wikipedia/commons/9/9b/Vincent_van_Gogh_-_s0273V1962_-_Van_Gogh_Museum.jpg",
+        "portraitURL": "/assets/artists/Vincent_van_Gogh.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Vincent_van_Gogh"
     },
 
@@ -367,7 +367,7 @@
         "mediums": ["Oil painting", "Pastels"],
         "educationOrTraining": "Studied at the École des Beaux-Arts in Paris",
         "movement": "Pointillism",
-        "portraitURL": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQafXMB3yRKIZLSZyFsdiIclPg6FCiZrCjv5Q&s",
+        "portraitURL": "/assets/artists/Seurat.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Georges_Seurat"
     },
 
@@ -388,7 +388,7 @@
         "mediums": ["Oil painting", "Cut-outs", "Sculpture"],
         "educationOrTraining": "Studied at the École des Beaux-Arts in Paris",
         "movement": "Fauvism",
-        "portraitURL": "https://www.henrimatisse.org/assets/img/henri-matisse.jpg",
+        "portraitURL": "/assets/artists/henri-matisse.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Henri_Matisse"
     },
     {
@@ -408,7 +408,7 @@
         "mediums": ["Oil painting", "Sculpture", "Ceramics"],
         "educationOrTraining": "Studied at various art schools, including the Royal Academy of San Fernando in Madrid",
         "movement": "Cubism, Modern Art",
-        "portraitURL": "https://cdn.britannica.com/63/59963-050-C03F29B9/Pablo-Picasso.jpg",
+        "portraitURL": "/assets/artists/pablo-picasso.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Pablo_Picasso"
     },
     {
@@ -428,7 +428,7 @@
         "mediums": ["Oil painting", "Collage", "Sculpture"],
         "educationOrTraining": "Studied at the École des Beaux-Arts in Paris",
         "movement": "Cubism",
-        "portraitURL": "https://www.deodato.art/media/wysiwyg/Ritratti-artisti/Georges_Braque.jpg",
+        "portraitURL": "/assets/artists/Georges_Braque.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Georges_Braque"
     },
     {
@@ -448,7 +448,7 @@
         "mediums": ["Oil painting", "Watercolor", "Printmaking"],
         "educationOrTraining": "Studied at the University of Moscow, later at the Academy of Fine Arts in Munich",
         "movement": "Abstract art",
-        "portraitURL": "https://www.wassily-kandinsky.org/assets/img/wassily-kandinsky.jpg",
+        "portraitURL": "/assets/artists/wassily-kandinsky.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Wassily_Kandinsky"
     },
     {
@@ -468,7 +468,7 @@
         "mediums": ["Oil painting", "Watercolor", "Printmaking"],
         "educationOrTraining": "Studied at the Moscow School of Painting, Sculpture and Architecture",
         "movement": "Suprematism",
-        "portraitURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Casimir_Malevich_photo.jpg/220px-Casimir_Malevich_photo.jpg",
+        "portraitURL": "/assets/artists/kazimir-malevich.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Kazimir_Malevich"
     },
     {
@@ -488,7 +488,7 @@
         "mediums": ["Ready-made", "Painting", "Sculpture"],
         "educationOrTraining": "Studied at the Académie Julian in Paris",
         "movement": "Dada",
-        "portraitURL": "https://loops-expanded.com/wp-content/uploads/2020/04/marcel-duchamp.jpeg",
+        "portraitURL": "/assets/artists/marcel-duchamp.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Marcel_Duchamp"
     },
     {
