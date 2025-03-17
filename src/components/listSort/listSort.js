@@ -27,6 +27,10 @@ class ListSort extends ArpaElement {
     // #region INITIALIZATION
     /////////////////////////////
 
+    /**
+     * Returns the default configuration for the list sort component.
+     * @returns {ListSortConfigType} The default configuration object.
+     */
     getDefaultConfig() {
         this.bind('update', '_onRouteChange', '_onSortBySelected', '_isItemSelected');
         this.i18nKey = 'lists.listSort';

@@ -277,7 +277,7 @@ class List extends ArpaElement {
      * @returns {Router}
      */
     getRouter() {
-        return this._config?.router || getService('router');
+        return /** @type {Router} */ (this._config?.router || getService('router'));
     }
 
     getViewFilter() {
