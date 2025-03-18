@@ -144,7 +144,9 @@ class ListItem extends ArpaElement {
     }
 
     getImage() {
-        return this.getProperty('image');
+        const image = this.getProperty('image');
+        if (image === 'undefined') return '';
+        return image;
     }
 
     getImageAlt() {
