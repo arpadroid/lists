@@ -77,7 +77,7 @@ class MultiSelect extends ArpaElement {
             ${attrString(menuProps)}
         >
             <zone name="tooltip-content"> ${this.getTooltip()} </zone>
-            <form id="${formId}" class="listMultiSelect__form" is="arpa-form" variant="compact" has-submit="false">
+            <arpa-form id="${formId}" class="listMultiSelect__form" variant="compact" has-submit="false">
                 <zone name="form-title"> ${this.i18n('txtBatchOperations')} </zone>
                 <zone name="messages">
                     <info-message id="info-message" class="listMultiSelect__infoMessage">
@@ -96,7 +96,7 @@ class MultiSelect extends ArpaElement {
                     icon="layers"
                     option-component="batch-operation"
                 ></select-combo>
-            </form>
+            </arpa-form>
         </icon-menu>`;
     }
 

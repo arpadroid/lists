@@ -99,11 +99,10 @@ class ListFilters extends ArpaElement {
         const perPageOptions = Array.isArray(opt) ? opt : [];
         const page = pageFilter?.getValue();
         const perPage = perPageFilter?.getValue();
-        return html`<form
+        return html`<arpa-form
             variant="compact"
             id="${this.list?.getId()}-filters-form"
             has-submit="false"
-            is="arpa-form"
             class="listFilters__form"
         >
             <group-field
@@ -129,7 +128,7 @@ class ListFilters extends ArpaElement {
                     variant="small"
                 ></number-field>
             </group-field>
-        </form>`;
+        </arpa-form>`;
     }
 
     /**

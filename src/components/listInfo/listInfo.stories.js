@@ -63,7 +63,7 @@ export const Test = {
 
         await step('Searches for non-existing term and shows no results message.', async () => {
             const input = canvas.getByRole('searchbox');
-            const form = input.closest('form');
+            const form = input.closest('arpa-form');
             form?._config && (form._config.debounce = false);
             await customElements.whenDefined('field-input');
             input.value = 'Some search term';
@@ -76,7 +76,7 @@ export const Test = {
 
         await step('Searches for "Leon" and expects 1 result to be produced with appropriate message.', async () => {
             const input = canvas.getByRole('searchbox');
-            const form = input.closest('form');
+            const form = input.closest('arpa-form');
             form?._config && (form._config.debounce = false);
             await customElements.whenDefined('field-input');
             input.value = 'Leon';

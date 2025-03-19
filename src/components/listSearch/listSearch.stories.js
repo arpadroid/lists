@@ -40,7 +40,7 @@ export const Test = {
         const { canvas } = setup;
         const input = canvas.getByRole('searchbox');
         const field = input.closest('search-field');
-        const form = input.closest('form');
+        const form = input.closest('arpa-form');
         form?._config && (form._config.debounce = false);
         await customElements.whenDefined('field-input');
         input.value = '';

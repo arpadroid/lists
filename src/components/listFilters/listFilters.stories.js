@@ -39,7 +39,7 @@ export const Test = {
         const filtersCombo = filtersNode.navigation;
         const combo = within(filtersCombo);
         /** @type {FormComponent | null} */
-        const filtersForm = filtersCombo.querySelector('form');
+        const filtersForm = filtersCombo.querySelector('arpa-form');
         filtersForm?._config && (filtersForm._config.debounce = 0);
 
         await step('Renders the filters menu control', async () => {

@@ -57,7 +57,7 @@ class ListSearch extends ArpaElement {
 
     async _initializeNodes() {
         /** @type {FormComponent | null} */
-        this.form = /** @type {FormComponent | null} */ (this.querySelector('form'));
+        this.form = /** @type {FormComponent | null} */ (this.querySelector('arpa-form'));
         await customElements.whenDefined('arpa-form');
         this.form?.onSubmit(this._onSubmit);
         this.searchField = /** @type {SearchField | null} */ (this.form?.getField('search'));
@@ -105,9 +105,9 @@ class ListSearch extends ArpaElement {
             value: this.searchFilter?.getValue()
         });
         this.innerHTML = processTemplate(
-            html`<form id="{formId}" is="arpa-form" variant="mini">
+            html`<arpa-form id="{formId}" variant="mini">
                 <search-field id="search" ${searchAttr}></search-field>
-            </form>`,
+            </arpa-form>`,
             this.getTemplateVars()
         );
         this.listSort = this.querySelector('list-sort');
