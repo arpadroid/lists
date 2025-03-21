@@ -74,14 +74,13 @@ class TagItem extends ListItem {
     }
 
     renderDeleteButton() {
-        return html`<button
-            is="icon-button"
+        return html`<icon-button
             class="tag__delete iconButton--mini"
             label="Delete tag"
             aria-label="Delete tag"
             icon="delete"
             tooltip-position="left"
-        ></button>`;
+        ></icon-button>`;
     }
 
     initializeDeleteButton() {
