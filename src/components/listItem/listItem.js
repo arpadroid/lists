@@ -609,6 +609,7 @@ class ListItem extends ArpaElement {
             onError: this._onImageError
         });
         this._initializeItem();
+        return true;
     }
 
     /**

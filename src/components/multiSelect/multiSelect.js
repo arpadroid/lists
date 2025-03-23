@@ -67,10 +67,10 @@ class MultiSelect extends ArpaElement {
 
     // #region RENDERING
 
-    async render() {
+    _getTemplate() {
         const menuProps = this.getProperties('icon');
         const formId = this.list?.id + '-multiSelectForm';
-        this.innerHTML = html`<icon-menu
+        return html`<icon-menu
             class="listMultiSelect__nav"
             nav-class="listMultiSelect__combo"
             button-label="${this.i18nText('txtBatchOperations')}"
@@ -104,23 +104,17 @@ class MultiSelect extends ArpaElement {
 
     // #region LIFECYCLE
 
-    _initializeNodes() {
+    async _initializeNodes() {
+        await super._initializeNodes();
         /** @type {FormComponent | null} */
         this.form = this.querySelector('.listMultiSelect__form');
         this.messages = this.querySelector('arpa-messages');
         /** @type {IconMenu | null} */
         this.menu = this.querySelector('.listMultiSelect__nav');
-    }
-
-    /**
-     * Called when the component is connected to the DOM.
-     * @returns {Promise<any>}
-     */
-    async _onConnected() {
-        await customElements.whenDefined('arpa-form');
         this._initializeActions();
         this._initializeToggle();
         this._initializeSelectionFilter();
+        return true;
     }
 
     _initializeSelectionFilter() {
@@ -144,7 +138,7 @@ class MultiSelect extends ArpaElement {
     async _initializeActions(actionsField = /** @type {SelectCombo} */ (this.form?.getField('actions'))) {
         /** @type {SelectCombo | undefined} */
         this.actionsField = actionsField;
-        await actionsField?.onReady();
+        await actionsField?.promise;
         actionsField?.optionsNode?.setAttribute('zone', 'batch-operations');
         actionsField?.on(
             'change',

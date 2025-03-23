@@ -980,11 +980,12 @@ class List extends ArpaElement {
     // #region Lifecycle
     /////////////////////////
 
-    _initializeNodes() {
+    async _initializeNodes() {
         /** @type {ListControls | null} */
         this.controls = this.querySelector('list-controls');
         this.noItemsNode = this.querySelector('.arpaList__noItems');
         this.preloader = this.querySelector('.arpaList__preloader');
+        return true;
     }
 
     update() {

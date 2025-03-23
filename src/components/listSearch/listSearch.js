@@ -61,12 +61,14 @@ class ListSearch extends ArpaElement {
         await customElements.whenDefined('arpa-form');
         this.form?.onSubmit(this._onSubmit);
         this.searchField = /** @type {SearchField | null} */ (this.form?.getField('search'));
-        this.initializeSearch();
+        await this.searchField?.promise;
+        await this.initializeSearch();
+        return true;
     }
 
     async initializeSearch() {
         if (!this.searchFilter) {
-            return;
+            return true;
         }
         if (this.searchField?.input instanceof HTMLInputElement) {
             this.search = new SearchTool(this.searchField?.input, {
@@ -80,6 +82,7 @@ class ListSearch extends ArpaElement {
         }
         this.searchField?.setValue(this.searchFilter.getValue());
         this.searchFilter.on('value', value => this.searchField?.setValue(value));
+        return true;
     }
 
     // #endregion
