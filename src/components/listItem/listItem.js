@@ -213,6 +213,11 @@ class ListItem extends ArpaElement {
     }
 
     hasSelection() {
+        console.log('hasSelection', {
+            item: this,
+            hasControl: typeof this.list?.hasControl === 'function' && this.list?.hasControl('multiselect'),
+            'has-selection': this.getProperty('has-selection')
+        });
         return (
             (typeof this.list?.hasControl === 'function' && this.list?.hasControl('multiselect')) ??
             this.getProperty('has-selection')
