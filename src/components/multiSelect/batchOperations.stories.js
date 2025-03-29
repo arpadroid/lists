@@ -105,6 +105,7 @@ export const Test = {
             if (!options) {
                 throw new Error('Options not found.');
             }
+            await new Promise(resolve => setTimeout(resolve, 40));
             const button = within(options).getAllByText('Delete')[0].closest('button');
             button?.click();
 
