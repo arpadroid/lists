@@ -143,7 +143,9 @@ class MultiSelect extends ArpaElement {
         actionsField?.on(
             'change',
             async (/** @type {unknown} */ value, /** @type {Field} */ field, /** @type {Event} */ event) => {
+                
                 const option = actionsField.getSelectedOption();
+                await option?.promise;
                 const action = option?.getAction();
                 if (typeof action === 'function') {
                     action(this.resource?.getSelectedItems(), this.renderItemList());

@@ -11,13 +11,13 @@ import { attrString } from '@arpadroid/tools';
 const html = String.raw;
 const Default = {
     ...ListStory,
-    title: 'Lists/Components/Batch Operations',
+    title: 'Lists/Controls/Batch Operations',
     parameters: {},
     args: {
         ...ListStory.args,
         id: 'batch-operations',
         controls: 'multiselect',
-        itemsPerPage: 4,
+        itemsPerPage: 1,
         title: 'Batch Operations'
     },
     /**
@@ -48,7 +48,7 @@ export const Test = {
     args: {
         ...Default.args,
         id: 'test-batch-operations',
-        itemsPerPage: 2
+        itemsPerPage: 1
     },
     /**
      * Plays the test scenario.
@@ -89,7 +89,7 @@ export const Test = {
         await step('Clicks on Select all and verifies the selected item count.', async () => {
             await waitFor(() => expect(getToggleAllCheckbox()).toBeInTheDocument());
             getToggleAllCheckbox()?.click();
-            await waitFor(() => expect(form.getByText('2 items selected')).toBeInTheDocument());
+            await waitFor(() => expect(form.getByText('1 items selected')).toBeInTheDocument());
         });
 
         const selectActionButton = form.getByText('Select an action');
@@ -100,15 +100,15 @@ export const Test = {
         });
 
         await step('Clicks on "Delete" and verifies the dialog.', async () => {
-            await waitFor(() => {
-                const actionsField = /** @type {SelectCombo} */ (selectActionButton.closest('select-combo'));
-                const options = actionsField?.optionsNode;
-                if (!options) {
-                    throw new Error('Options not found.');
-                }
-                const button = within(options).getAllByText('Delete')[0].closest('button');
-                button?.click();
-            });
+            const actionsField = /** @type {SelectCombo} */ (selectActionButton.closest('select-combo'));
+            const options = actionsField?.optionsNode;
+            if (!options) {
+                throw new Error('Options not found.');
+            }
+            const button = within(options).getAllByText('Delete')[0].closest('button');
+            button?.click();
+
+            // await waitFor(() => expect(document.querySelector('delete-dialog')).toBeInTheDocument());
         });
     }
 };

@@ -175,6 +175,7 @@ class List extends ArpaElement {
             sortByParam: 'sortBy',
             sortDefault: undefined,
             sortDirParam: 'sortDir',
+            tagName: 'arpa-list',
             mapItemId: undefined,
             sortOptions: [],
             // template: List.template,

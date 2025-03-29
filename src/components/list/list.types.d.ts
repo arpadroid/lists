@@ -24,6 +24,7 @@ export type ListConfigType = ArpaElementConfigType & {
     items?: ListItemConfigType[];
     itemsPerPage?: number;
     itemTag?: string;
+    tagName?: string;
     listResource?: ListResource;
     listSelector?: string;
     mapItemId?: (item: ListResourceItemType) => string;

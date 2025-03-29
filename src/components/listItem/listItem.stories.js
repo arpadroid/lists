@@ -10,7 +10,7 @@ const html = String.raw;
 
 const Default = {
     ...ListStory,
-    title: 'Lists/Components/List Item',
+    title: 'Lists/Controls/List Item',
     args: {
         id: 'list-item',
         controls: ' ',

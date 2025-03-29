@@ -7,7 +7,7 @@ import { expect, waitFor, fireEvent } from '@storybook/test';
 
 const Default = {
     ...ListStory,
-    title: 'Lists/Components/Search',
+    title: 'Lists/Controls/Search',
     parameters: {},
     args: {
         ...ListStory.args,

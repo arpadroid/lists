@@ -9,7 +9,7 @@ import { userEvent, fireEvent, waitFor, expect } from '@storybook/test';
 
 const Default = {
     ...ListStory,
-    title: 'Lists/Components/List Info',
+    title: 'Lists/Controls/List Info',
     args: {
         ...ListStory.args,
         id: 'list-info',
