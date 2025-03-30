@@ -308,7 +308,7 @@ class List extends ArpaElement {
     }
 
     getItemCount() {
-        return this.getItems()?.length;
+        return Number(this.getItems()?.length) || this.getItemNodes()?.length || 0;
     }
 
     /**

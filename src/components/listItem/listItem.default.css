@@ -73,6 +73,9 @@ button.listItem__main {
     font-size: 1.2rem;
     color: var(--grey-600);
     margin: 0;
+
+    display: inline-block;
+
     .icon {
         --icon-size: 1.3rem;
         font-weight: 600;
@@ -81,12 +84,17 @@ button.listItem__main {
         margin-right: 0.5rem;
         position: relative;
         top: 0.2rem;
+        display: inline;
     }
 }
 
 .listItem__content {
     font-size: 1rem;
     line-height: 1.45rem;
+    .truncateText__readMoreButton {
+        margin-left: 0;
+        align-self: flex-start;
+    }
     p {
         margin: 0;
     }

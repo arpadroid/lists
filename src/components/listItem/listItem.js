@@ -697,8 +697,8 @@ class ListItem extends ArpaElement {
     /**
      * Once the item is rendered, it registers itself with the list resource.
      */
-    _onRenderComplete() {
-        super._onRenderComplete();
+    async _onRenderComplete() {
+        await super._onRenderComplete();
         this.isConnected && this.register();
     }
 

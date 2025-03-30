@@ -17,7 +17,20 @@ const Default = {
         itemsPerPage: 8,
         title: 'List Item'
     },
-    render: ListStory.renderSimple
+    render: (/** @type {Record<string, any>} */ args) => {
+        return html`<arpa-list ${attrString(args)}>
+            <list-item title-link="#test-link" title-icon="auto_awesome">
+                <zone name="title">Morning Motivation</zone>
+                <zone name="subtitle"> Start your day with a burst of energy! </zone>
+                Morning motivation is key to setting a positive tone for the day. Starting your morning with an
+                energizing mindset can enhance focus, boost productivity, and improve overall well-being. When you take
+                time in the morning to set goals or engage in uplifting activities, it strengthens mental resilience and
+                prepares you to handle challenges. This initial boost also impacts mood, helping maintain a positive
+                outlook. Consistently practicing morning motivation can gradually lead to more fulfilling days and a
+                healthier lifestyle.
+            </list-item></arpa-list
+        >`;
+    }
 };
 
 export const SingleItem = Default;
@@ -28,12 +41,7 @@ export const HTMLItems = {
         id: 'list-item-test',
         title: 'HTML Items'
     },
-    /**
-     * Renders the list component.
-     * @param {Record<string, unknown>} args
-     * @returns {string}
-     */
-    render: args => {
+    render: (/** @type {Record<string, any>} */ args) => {
         return html`<arpa-list ${attrString(args)}>
             <template template-id="list-item-template" truncate-content="70"></template>
             <list-item title-link="#test-link" title-icon="auto_awesome">
