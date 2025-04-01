@@ -518,7 +518,8 @@ class ListItem extends ArpaElement {
             'lazy-load': lazyLoad || isAuto,
             'has-native-lazy': this.getProperty('has-native-lazy') || isAuto,
             'preview-controls': this.getProperty('preview-controls'),
-            'has-preview': this.getProperty('image-preview')
+            'has-preview': this.getProperty('image-preview'),
+            'preview-title': this.getProperty('image-preview-title'),
         };
 
         const isAdaptive = this.getProperty('image-size') === 'adaptive';

@@ -525,7 +525,6 @@ class List extends ArpaElement {
         /** @type {HTMLElement | null} */
         this.oldWrapper = container;
         this.oldWrapper.classList.add('arpaList__items--out');
-
         const newItems = items.map(item => this.createItem(item));
         appendNodes(newWrapper, newItems);
         container.after(newWrapper);
@@ -821,10 +820,12 @@ class List extends ArpaElement {
             console.warn('No items container found.');
             return;
         }
-
+        const $items = items.filter((/** @type {ListResourceItemType} */ item) => {
+            return !(item?.node?.isConnected);
+        });
         appendNodes(
             container,
-            items.map(item => this.createItem(item))
+            $items.map(item => this.createItem(item))
         );
     }
 
