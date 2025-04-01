@@ -1,33 +1,57 @@
 /**
  * @typedef {import('../list/list.js').default} List
  * @typedef {import('@arpadroid/module').StepFunction} StepFunction
+ * @typedef {import('@arpadroid/resources').ListResource} ListResource
  */
-import { Default as ListStory } from '../list/stories/list.stories.js';
+
 import { attrString } from '@arpadroid/tools';
-import { expect } from '@storybook/test';
+import { expect, within } from '@storybook/test';
 
 const html = String.raw;
 
 const Default = {
-    ...ListStory,
-    title: 'Lists/Controls/List Item',
+    title: 'Lists/List Item',
     args: {
         id: 'list-item',
         controls: ' ',
         itemsPerPage: 8,
         title: 'List Item'
     },
+    parameters: {
+        layout: 'padded'
+    },
+    /**
+     * Sets up the test scenario.
+     * @param {HTMLElement} canvasElement
+     * @returns {Promise<{ canvas: any, listNode: HTMLElement | null, listResource: ListResource | undefined }>}
+     */
+    playSetup: async (/** @type {HTMLElement} */ canvasElement) => {
+        await customElements.whenDefined('arpa-list');
+        await customElements.whenDefined('list-item');
+        const canvas = within(canvasElement);
+        /** @type {List | null} */
+        const listNode = canvasElement.querySelector('arpa-list');
+        /** @type {ListResource | undefined} */
+        const listResource = listNode?.listResource;
+        return {
+            canvas,
+            listNode,
+            listResource
+        };
+    },
     render: (/** @type {Record<string, any>} */ args) => {
         return html`<arpa-list ${attrString(args)}>
             <list-item title-link="#test-link" title-icon="auto_awesome">
                 <zone name="title">Morning Motivation</zone>
                 <zone name="subtitle"> Start your day with a burst of energy! </zone>
-                Morning motivation is key to setting a positive tone for the day. Starting your morning with an
-                energizing mindset can enhance focus, boost productivity, and improve overall well-being. When you take
-                time in the morning to set goals or engage in uplifting activities, it strengthens mental resilience and
-                prepares you to handle challenges. This initial boost also impacts mood, helping maintain a positive
-                outlook. Consistently practicing morning motivation can gradually lead to more fulfilling days and a
-                healthier lifestyle.
+                <truncate-text max-length="170" has-button>
+                    Morning motivation is key to setting a positive tone for the day. Starting your morning with an
+                    energizing mindset can enhance focus, boost productivity, and improve overall well-being. When you
+                    take time in the morning to set goals or engage in uplifting activities, it strengthens mental
+                    resilience and prepares you to handle challenges. This initial boost also impacts mood, helping
+                    maintain a positive outlook. Consistently practicing morning motivation can gradually lead to more
+                    fulfilling days and a healthier lifestyle.
+                </truncate-text>
             </list-item></arpa-list
         >`;
     }
@@ -35,11 +59,13 @@ const Default = {
 
 export const SingleItem = Default;
 
-export const HTMLItems = {
+export const StaticList = {
     args: {
-        ...Default.args,
-        id: 'list-item-test',
-        title: 'HTML Items'
+        id: 'static-list-test',
+        title: 'Static List'
+    },
+    parameters: {
+        layout: 'centered'
     },
     render: (/** @type {Record<string, any>} */ args) => {
         return html`<arpa-list ${attrString(args)}>
@@ -131,7 +157,7 @@ export const HTMLItems = {
      * @returns {Promise<void>}
      */
     play: async ({ canvasElement, step }) => {
-        const { canvas } = await Default.playSetup(canvasElement, false);
+        const { canvas } = await Default.playSetup(canvasElement);
         step('Renders the items', async () => {
             const items = canvas.getAllByRole('listitem');
             expect(items).toHaveLength(8);

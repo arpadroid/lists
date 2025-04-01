@@ -10,7 +10,7 @@ import { within } from '@storybook/test';
 const html = String.raw;
 const ApiDrivenListStory = {
     ...ListStory,
-    title: 'Lists/Lists/Resource List'
+    title: 'Lists/Lists/Resource list'
 };
 
 export const Default = {

@@ -7,6 +7,7 @@ import { NavListConfigType } from '@arpadroid/navigation';
 export type ListItemImageTypes =
     | 'list_compact'
     | 'list'
+    | 'small'
     | 'grid'
     | 'grid_compact'
     | 'grid_large'
@@ -25,9 +26,7 @@ export type ListItemImageSizesType = Record<
 >;
 
 export type ListItemConfigType = ArpaElementConfigType & {
-    // defaultImage?: string;
     // dialogContext?: DialogContext;
-    // nav?: IconMenuInterface;
     action?: (event: Event, item: ListItem) => void;
     content?: string;
     hasSelection?: boolean;
@@ -37,7 +36,9 @@ export type ListItemConfigType = ArpaElementConfigType & {
     imageAlt?: string;
     imageConfig?: ImageConfigType;
     imageSize?: string | ListItemImageSizesType;
+    defaultImageSize?: ListItemImageTypes | 'string';
     imageSizes?: ListItemImageSizesType;
+    imagePreview?: boolean,
     lazyLoad?: boolean;
     lazyLoadImage?: boolean;
     link?: string;
@@ -46,6 +47,7 @@ export type ListItemConfigType = ArpaElementConfigType & {
     nav?: NavListConfigType;
     onImageError?: (event: Event, item: ListItem) => void;
     onImageLoaded?: (event: Event, item: ListItem) => void;
+    previewControls?: string[];
     renderMode?: 'minimal' | 'full';
     rhsContent?: string;
     role?: string;

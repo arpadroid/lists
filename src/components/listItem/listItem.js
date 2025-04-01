@@ -61,7 +61,9 @@ class ListItem extends ArpaElement {
             lazyLoadImage: false,
             imageSize: undefined,
             titleTag: 'span',
+            defaultImageSize: 'list',
             imageSizes: {
+                small: { width: 50, height: 50 },
                 list_compact: { width: 40, height: 40 },
                 list: { width: 80, height: 80 },
                 grid_compact: { width: 180, height: 180 },
@@ -322,7 +324,7 @@ class ListItem extends ArpaElement {
         role && this.setAttribute('role', role);
         this.link = this.getLink();
         this.removeAttribute('link');
-        const content = this.renderTemplate(this.getTemplate());
+        const content = this.renderTemplate(this._getTemplate());
         this.innerHTML = content;
         this.button = this.querySelector('button.listItem__main');
         this.setViewClass();
@@ -345,7 +347,7 @@ class ListItem extends ArpaElement {
      * @param {boolean} isGrid - Indicates whether the list item is in grid view.
      * @returns {string}
      */
-    getTemplate(isGrid = this.isGrid) {
+    _getTemplate(isGrid = this.isGrid) {
         return html`
             <{wrapperComponent} {wrapperAttributes}>
                 {icon}
@@ -474,7 +476,9 @@ class ListItem extends ArpaElement {
     renderRhs(content = this._config.rhsContent) {
         const nav = this.renderNav();
         const checkbox = this.renderCheckbox();
-        return nav || checkbox || content ? html`<div class="listItem__rhs">${checkbox}${nav}${content}</div>` : '';
+        return this.hasZone('rhs') || nav || checkbox || content
+            ? html`<div class="listItem__rhs" zone="rhs">${checkbox}${nav}${content}</div>`
+            : '';
     }
 
     renderCheckbox() {
@@ -499,9 +503,9 @@ class ListItem extends ArpaElement {
         if (!image) return '';
         return html`<arpa-image
             ${attrString(this.getImageAttributes())}
+            alt="${alt}"
             class="listItem__image"
             src="${image}"
-            alt="${alt}"
         ></arpa-image>`;
     }
 
@@ -512,7 +516,9 @@ class ListItem extends ArpaElement {
         /** @type {Record<string, unknown>} */
         const attr = {
             'lazy-load': lazyLoad || isAuto,
-            'has-native-lazy': this.getProperty('has-native-lazy') || isAuto
+            'has-native-lazy': this.getProperty('has-native-lazy') || isAuto,
+            'preview-controls': this.getProperty('preview-controls'),
+            'has-preview': this.getProperty('image-preview')
         };
 
         const isAdaptive = this.getProperty('image-size') === 'adaptive';
@@ -561,9 +567,11 @@ class ListItem extends ArpaElement {
         }
         const width = this.getProperty('image-width') || size;
         const height = this.getProperty('image-height');
+
         if (width || height) return { width, height };
         const sizeName = /** @type {string} */ (this.view?.replace(/-/g, '_'));
-        let rv = imageSizes[sizeName] || imageSizes.list;
+        const defaultSize = this.getProperty('default-image-size');
+        let rv = imageSizes[sizeName] || imageSizes[defaultSize];
         if (typeof rv === 'function') rv = rv();
         return rv;
     }
