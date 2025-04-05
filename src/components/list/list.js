@@ -222,6 +222,15 @@ class List extends ArpaElement {
     }
 
     /**
+     * Returns the control element given its name.
+     * @param {string} control
+     * @returns {HTMLElement | undefined | null}
+     */
+    getControl(control) {
+        return this.controls?.getControl(control);
+    }
+
+    /**
      * True if the list has any footer content.
      * @returns {boolean}
      */
@@ -777,6 +786,9 @@ class List extends ArpaElement {
         this.itemsNode = (renderMode === 'minimal' ? this : this.querySelector('.arpaList__items')) || this;
         this.itemsNode && appendNodes(this.itemsNode, this._childNodes);
         this.renderItems();
+        if (this.itemsNode.innerHTML.trim() === '') {
+            this.itemsNode.innerHTML = '';
+        }
         const initialItems = this._initializeItems();
         this.itemsNode && appendNodes(this.itemsNode, initialItems);
     }
@@ -821,7 +833,7 @@ class List extends ArpaElement {
             return;
         }
         const $items = items.filter((/** @type {ListResourceItemType} */ item) => {
-            return !(item?.node?.isConnected);
+            return !item?.node?.isConnected;
         });
         appendNodes(
             container,
@@ -894,7 +906,11 @@ class List extends ArpaElement {
 
     renderTitle(title = this.getTitle()) {
         if (!title && !this.hasZone('title')) return '';
-        return html`<h2 class="arpaList__title" zone="title">${title}</h2>`;
+        const icon = this.getProperty('title-icon');
+        return html`<h2 class="arpaList__title">
+            ${(icon && html`<arpa-icon className="arpaList__titleIcon">${icon}</arpa-icon>`) || ''}
+            <span class="arpaList__titleText" zone="title">${title}</span>
+        </h2>`;
     }
 
     renderHeading() {

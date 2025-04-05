@@ -33,6 +33,10 @@ class ListItem extends ArpaElement {
         this.isGrid = this.isGrid || false;
         this.payload = payload;
         this.map = map;
+        if (this.hasAttribute('title')) {
+            this._config.title = this.getAttribute('title') || '';
+            this.removeAttribute('title');
+        }
     }
 
     /**

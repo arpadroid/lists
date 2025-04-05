@@ -60,6 +60,15 @@ class ListControls extends ArpaElement {
         return /** @type {string[]} */ (this.getArrayProperty('controls') || []);
     }
 
+    /**
+     * Returns the control element given its name.
+     * @param {string} control
+     * @returns {HTMLElement | null}
+     */
+    getControl(control) {
+        return this.querySelector(`gallery-${camelToDashed(control)}`);
+    }
+
     render() {
         const controls = this.getControls();
         let content = '';
@@ -67,7 +76,8 @@ class ListControls extends ArpaElement {
             const fnName = /** @type {keyof ListControls} */ (`render${ucFirst(control)}`);
             if (this.hasControl(control)) {
                 const fn = this[fnName];
-                if (typeof fn === 'function') { // @ts-ignore
+                if (typeof fn === 'function') {
+                    // @ts-ignore
                     content += fn.call(this);
                 } else {
                     const tagName = `gallery-${camelToDashed(control)}`;

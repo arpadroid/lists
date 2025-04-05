@@ -48,6 +48,7 @@ export type ListConfigType = ArpaElementConfigType & {
     stickyControls?: boolean;
     template?: string;
     title?: string | null;
+    titleIcon?: string;
     viewOptions?: NavLinkConfigType[];
     views?: string[];
 };
