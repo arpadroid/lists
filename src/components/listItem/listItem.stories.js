@@ -44,7 +44,7 @@ const Default = {
             <list-item title-link="#test-link" title-icon="auto_awesome">
                 <zone name="title">Morning Motivation</zone>
                 <zone name="subtitle"> Start your day with a burst of energy! </zone>
-                <truncate-text max-length="170" has-button>
+                <truncate-text max-length="170" has-read-more-button>
                     Morning motivation is key to setting a positive tone for the day. Starting your morning with an
                     energizing mindset can enhance focus, boost productivity, and improve overall well-being. When you
                     take time in the morning to set goals or engage in uplifting activities, it strengthens mental

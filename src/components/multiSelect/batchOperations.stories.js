@@ -12,7 +12,6 @@ const html = String.raw;
 const Default = {
     ...ListStory,
     title: 'Lists/Controls/Batch Operations',
-    parameters: {},
     args: {
         ...ListStory.args,
         id: 'batch-operations',

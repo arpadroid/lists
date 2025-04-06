@@ -10,7 +10,7 @@
  */
 
 import { ArpaElement } from '@arpadroid/ui';
-import { render, classNames, attrString } from '@arpadroid/tools';
+import { render, classNames, attrString, listen } from '@arpadroid/tools';
 import { getViewportWidth, getViewportHeight, defineCustomElement } from '@arpadroid/tools';
 
 const html = String.raw;
@@ -593,7 +593,7 @@ class ListItem extends ArpaElement {
     renderContent(truncate = this.getProperty('truncate-content'), content = this.getContent()?.trim() || '') {
         if (!this.hasZone('content') && !content) return '';
         if (!truncate) return html`<div class="listItem__content" zone="content">${content}</div>`;
-        return html`<truncate-text has-button max-length="${truncate}" class="listItem__content" zone="content">
+        return html`<truncate-text max-length="${truncate}" class="listItem__content" zone="content">
             ${content}
         </truncate-text>`;
     }
@@ -606,6 +606,7 @@ class ListItem extends ArpaElement {
     /////////////////////////////
 
     async _initializeNodes() {
+        /** @type {HTMLElement | null} */
         this.mainNode = this.querySelector('.listItem__main');
         this.checkbox = /** @type {HTMLInputElement} */ (this.querySelector('.listItem__checkbox'));
         this.checkboxContainer = this.querySelector('.listItem__checkboxContainer');
@@ -631,15 +632,21 @@ class ListItem extends ArpaElement {
     async _initializeItem() {
         if (this.itemInitialized) return;
         if (this.checkbox) {
-            this.checkbox.removeEventListener('change', this.setSelected);
-            this.checkbox.addEventListener('change', this.setSelected);
+            listen(this.checkbox, 'change', this.setSelected);
             this.setSelected();
         }
-        if (this.mainNode && typeof this._config?.action === 'function') {
-            this.mainNode.removeEventListener('click', this._doAction);
-            this.mainNode.addEventListener('click', this._doAction);
-        }
+        
         this.itemInitialized = true;
+    }
+
+    _onComplete() {
+        this._attachOnClick();
+    }
+
+    _attachOnClick() {
+        if (this.mainNode && typeof this._config?.action === 'function') {
+            listen(this.mainNode, 'click', this._doAction);
+        }
     }
 
     /**

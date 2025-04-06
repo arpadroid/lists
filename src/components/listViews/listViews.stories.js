@@ -10,7 +10,6 @@ import { userEvent, within, waitFor, expect } from '@storybook/test';
 const Default = {
     ...ListStory,
     title: 'Lists/Controls/Views',
-    parameters: {},
     args: {
         ...ListStory.args,
         controls: 'views',
