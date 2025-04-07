@@ -5,6 +5,7 @@ import { TagItemConfigType } from '../lists/tagList/tagItem/tagItem.types';
 import { NavListConfigType } from '@arpadroid/navigation';
 
 export type ListItemImageTypes =
+    | 'adaptive'
     | 'list_compact'
     | 'list'
     | 'small'
