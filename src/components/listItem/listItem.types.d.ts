@@ -61,5 +61,6 @@ export type ListItemConfigType = ArpaElementConfigType & {
     titleLink?: string;
     titleTag?: string;
     truncateContent?: number;
+    truncateButton?: boolean | string;
     wrapperComponent?: string;
 };

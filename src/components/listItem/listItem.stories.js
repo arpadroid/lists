@@ -59,6 +59,21 @@ const Default = {
 
 export const SingleItem = Default;
 
+export const ItemWithTemplate = {
+    ...Default,
+    render: (/** @type {Record<string, any>} */ args) => {
+        return html`<arpa-list ${attrString(args)}>
+            <list-item title="Item with template" image="/assets/artists/phidias.jpg">
+                <template type="replace">
+                    {image}
+                    {title}
+                    {subTitle}
+                </template>
+            </list-item>
+        </arpa-list>`;
+    }
+};
+
 export const StaticList = {
     args: {
         id: 'static-list-test',
@@ -69,9 +84,9 @@ export const StaticList = {
     },
     render: (/** @type {Record<string, any>} */ args) => {
         return html`<arpa-list ${attrString(args)}>
-            <template template-id="list-item-template" truncate-content="70"></template>
-            <list-item title-link="#test-link" title-icon="auto_awesome">
-                <zone name="title">Morning Motivation</zone>
+            <template type="list-item" element-truncate-content="70" element-truncate-button></template>
+            <list-item title-link="#test-link" title-icon="auto_awesome" title="Morning Motivation">
+                <zone name="title"></zone>
                 <zone name="subtitle"> Start your day with a burst of energy! </zone>
                 Morning motivation is key to setting a positive tone for the day. Starting your morning with an
                 energizing mindset can enhance focus, boost productivity, and improve overall well-being. When you take

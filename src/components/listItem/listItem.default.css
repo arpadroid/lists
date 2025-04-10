@@ -76,15 +76,16 @@ button.listItem__main {
 
     display: inline-block;
 
-    .icon {
+    arpa-icon {
         --icon-size: 1.3rem;
         font-weight: 600;
         color: var(--color-primary);
         font-size: 1.3rem;
+        max-width: 1.3rem;
         margin-right: 0.5rem;
         position: relative;
         top: 0.2rem;
-        display: inline;
+        display: inline-block;
     }
 }
 
@@ -129,6 +130,8 @@ button.listItem__main {
     flex: 1 1 auto;
     flex-wrap: wrap;
     align-items: center;
+    min-width: 100%;
+    align-self: flex-start;
     .tagList {
         flex: 0 1 auto;
     }

@@ -19,7 +19,7 @@ class TagItem extends ListItem {
     getDefaultConfig() {
         this._onDelete = this._onDelete.bind(this);
         return {
-            className: 'tagItem',
+            classNames: ['tagItem', 'tag'],
             listSelector: 'tag-list',
             tooltip: '',
             tooltipPosition: 'top',

@@ -44,15 +44,8 @@ class ListItem extends ArpaElement {
      * @returns {ListItemConfigType}
      */
     getDefaultConfig() {
-        this.bind(
-            '_onImageLoaded',
-            '_onImageError',
-            'setSelected',
-            '_onViewChange',
-            '_onSelected',
-            '_onDeselected',
-            '_doAction'
-        );
+        this.bind('_onImageLoaded', '_onImageError', 'setSelected');
+        this.bind('_onViewChange', '_onSelected', '_onDeselected', '_doAction');
         /** @type {ListItemConfigType} */
         const conf = {
             lazyLoad: false,
@@ -60,8 +53,9 @@ class ListItem extends ArpaElement {
             truncateContent: 0,
             wrapperComponent: 'div',
             rhsContent: '',
+            className: 'listItem',
             role: 'listitem',
-            listSelector: '.arpaList',
+            listSelector: 'arpa-list',
             lazyLoadImage: false,
             imageSize: undefined,
             titleTag: 'span',
@@ -83,11 +77,6 @@ class ListItem extends ArpaElement {
             }
         };
         return super.getDefaultConfig(conf);
-    }
-
-    _initializeTemplate() {
-        this.grabList();
-        super._initializeTemplate(this.getTemplateNode());
     }
 
     initializeProperties() {
@@ -165,10 +154,6 @@ class ListItem extends ArpaElement {
 
     getLabelText(label = this.getProperty('label')) {
         return label || this.getLabelNode()?.textContent?.trim();
-    }
-
-    getTemplateContent(template = this._config.template) {
-        return super.getTemplateContent(template, this.getPayload());
     }
 
     getTagName() {
@@ -295,55 +280,42 @@ class ListItem extends ArpaElement {
     // #region Rendering
     /////////////////////////////
 
-    /**
-     * Returns the template node for the list item.
-     * The template attributes and content are applied to the list item when it is rendered.
-     * @returns {HTMLTemplateElement | undefined}
-     */
-    getTemplateNode() {
-        return /** @type {HTMLTemplateElement} */ (this.list?.itemTemplate?.cloneNode(true));
+    async _initializeTemplates() {
+        const list = this.grabList();
+        if (typeof list?.getItemTemplate !== 'function') return;
+        const itemTemplate = list?.getItemTemplate();
+        if (itemTemplate instanceof HTMLTemplateElement) {
+            this.applyTemplate(itemTemplate, {
+                contentMode: 'add',
+                applyAttributes: true
+            });
+        }
+        super._initializeTemplates();
     }
 
     getTemplateVars() {
         return {
             ...this.getPayload(),
+            content: this.renderContentWrapper(),
             icon: this.renderIcon(),
             iconRight: this.renderIconRight(),
-            titleIcon: this.renderTitleIcon(),
-            title: this.getTitle(),
-            renderTitleIcon: this.renderTitleIcon(),
-            subTitle: this.getSubTitle(),
             image: this.renderImage(),
-            wrapperComponent: this.getWrapperComponent(),
-            wrapperAttributes: attrString(this.getWrapperAttrs()),
             rhs: this.renderRhs(),
-            content: this.renderContentWrapper()
+            subTitle: this.renderSubTitle(),
+            title: this.renderTitle(),
+            titleContent: this.renderTitleContent(),
+            headingIcon: this.renderTitleIcon(),
+            wrapperAttributes: attrString(this.getWrapperAttrs()),
+            wrapperComponent: this.getWrapperComponent()
         };
     }
 
-    async render() {
-        this.classList.add('listItem');
+    _preRender() {
         this.imageURL = this.getProperty('image');
         const { role } = this._config;
         role && this.setAttribute('role', role);
         this.link = this.getLink();
         this.removeAttribute('link');
-        const content = this.renderTemplate(this._getTemplate());
-        this.innerHTML = content;
-        this.button = this.querySelector('button.listItem__main');
-        this.setViewClass();
-        /**
-         * @todo Add support for nested list items.
-         */
-        // if (this.hasChildren()) {
-        // this.childrenNode.classList.add('listItem__children');
-        // this.itemWrapperNode = document.createElement('div');
-        // this.itemWrapperNode.classList.add('listItem__itemWrapper');
-        // this.itemWrapperNode.append(...this.node.childNodes);
-        // this.node.appendChild(this.itemWrapperNode);
-        // this.appendChildrenNode();
-        // this.node.classList.add('listItem--hasChildren');
-        // }
     }
 
     /**
@@ -422,7 +394,7 @@ class ListItem extends ArpaElement {
 
     renderTitleContainer(subTitle = this.getSubTitle()) {
         if (!this.hasContent('title') && !subTitle) return '';
-        return html`<div class="listItem__titleWrapper">${this.renderTitle()} ${this.renderSubTitle()}</div>`;
+        return html`<div class="listItem__titleWrapper">{title}{subTitle}</div>`;
     }
 
     renderTitle() {
@@ -430,14 +402,16 @@ class ListItem extends ArpaElement {
         const titleLink = this.getTitleLink();
         const titleClass = 'listItem__title';
         const titleTag = this.getProperty('title-tag') || 'span';
+        const content = this.renderTitleContent();
         return titleLink
-            ? html`<a href="${titleLink}" class="${titleClass}" zone="title">${this.renderTitleContent()}</a>`
-            : html`<${titleTag} class="${titleClass}" zone="title">${this.renderTitleContent()}</${titleTag}>`;
+            ? html`<a href="${titleLink}" class="${titleClass}" zone="title">${content}</a>`
+            : html`<${titleTag} class="${titleClass}" zone="title">${content}</${titleTag}>`;
     }
 
     renderTitleContent() {
-        return html`{titleIcon}{title}`;
+        return html`${this.renderTitleIcon()}${this.getTitle() || ''}`;
     }
+
     renderTitleIcon() {
         const titleIcon = this.getProperty('title-icon');
         return (titleIcon && html`<arpa-icon class="listItem__titleIcon">${titleIcon}</arpa-icon>`) || '';
@@ -523,7 +497,7 @@ class ListItem extends ArpaElement {
             'has-native-lazy': this.getProperty('has-native-lazy') || isAuto,
             'preview-controls': this.getProperty('preview-controls'),
             'has-preview': this.getProperty('image-preview'),
-            'preview-title': this.getProperty('image-preview-title'),
+            'preview-title': this.getProperty('image-preview-title')
         };
 
         const isAdaptive = this.getProperty('image-size') === 'adaptive';
@@ -592,10 +566,19 @@ class ListItem extends ArpaElement {
 
     renderContent(truncate = this.getProperty('truncate-content'), content = this.getContent()?.trim() || '') {
         if (!this.hasZone('content') && !content) return '';
-        if (!truncate) return html`<div class="listItem__content" zone="content">${content}</div>`;
-        return html`<truncate-text max-length="${truncate}" class="listItem__content" zone="content">
-            ${content}
-        </truncate-text>`;
+        if (truncate) {
+            return html`<truncate-text
+                ${attrString({
+                    maxLength: truncate,
+                    hasReadMoreButton: this.hasProperty('truncate-button'),
+                    zone: 'content',
+                    class: 'listItem__content'
+                })}
+            >
+                ${content}
+            </truncate-text>`;
+        }
+        return html`<div class="listItem__content" zone="content">${content}</div>`;
     }
     /////////////////////////////
     //#endregion RENDERING
@@ -606,6 +589,8 @@ class ListItem extends ArpaElement {
     /////////////////////////////
 
     async _initializeNodes() {
+        /** @type {HTMLElement | null} */
+        this.button = this.querySelector('button.listItem__main');
         /** @type {HTMLElement | null} */
         this.mainNode = this.querySelector('.listItem__main');
         this.checkbox = /** @type {HTMLInputElement} */ (this.querySelector('.listItem__checkbox'));
@@ -635,11 +620,12 @@ class ListItem extends ArpaElement {
             listen(this.checkbox, 'change', this.setSelected);
             this.setSelected();
         }
-        
+
         this.itemInitialized = true;
     }
 
     _onComplete() {
+        this.setViewClass();
         this._attachOnClick();
     }
 

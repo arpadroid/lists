@@ -67,7 +67,7 @@ class ListViews extends ArpaElement {
     initializeProperties() {
         super.initializeProperties();
         /** @type {List | null} */
-        this.list = this.closest('.arpaList, .gallery');
+        this.list = this.closest('arpa-list, arpa-gallery');
         /** @type {Router} */
         this.router = this.list?.getRouter();
         /** @type {ListResource} */
