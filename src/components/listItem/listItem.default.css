@@ -131,6 +131,7 @@ button.listItem__main {
     flex-wrap: wrap;
     align-items: center;
     min-width: 100%;
+    max-width: 100%;
     align-self: flex-start;
     .tagList {
         flex: 0 1 auto;

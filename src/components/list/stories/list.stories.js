@@ -4,6 +4,7 @@
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
  * @typedef {import('./list.stories.types').ListPlaySetupPayloadType} ListPlaySetupPayloadType
  * @typedef {import('./list.stories.types').ListPlaySetupResponseType} ListPlaySetupResponseType
+ * @typedef {import('@arpadroid/module').StepFunction} StepFunction
  */
 
 import artists from '../../../mockData/artists.json';

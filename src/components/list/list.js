@@ -169,8 +169,7 @@ class List extends ArpaElement {
             mapItemId: undefined,
             sortOptions: [],
             // template: List.template,
-            title: '',
-            templateTypes: ['list-item', 'generic', 'append', 'prepend', 'content']
+            title: ''
         };
         return mergeObjects(super.getDefaultConfig(conf), config);
     }

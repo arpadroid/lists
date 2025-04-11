@@ -18,7 +18,7 @@ class ListItem extends ArpaElement {
     /** @type {ListItemConfigType} */
     _config = this._config;
     /////////////////////
-    // #region INIT
+    // #region Setup
     /////////////////////
 
     /**
@@ -115,11 +115,11 @@ class ListItem extends ArpaElement {
         this.classList.remove(this.getSelectedClass());
     }
     /////////////////////////////
-    // #endregion INIT
+    // #endregion Setup
     /////////////////////////////
 
     /////////////////////////////
-    // #region ACCESSORS
+    // #region Get
     /////////////////////////////
 
     getContent() {
@@ -199,6 +199,27 @@ class ListItem extends ArpaElement {
         return this.payload ?? this._config;
     }
 
+    /**
+     * Returns the wrapper tag for the list item.
+     * @returns {string}
+     */
+    getWrapperComponent() {
+        const { action } = this._config;
+        if (this.link) {
+            return 'a';
+        }
+        if (typeof action === 'function') {
+            return 'button';
+        }
+        return this.getProperty('wrapper-component');
+    }
+
+    // #endregion Get
+
+    /////////////////////////////
+    // #region Has
+    /////////////////////////////
+
     hasNav() {
         return Boolean(this._config.nav);
     }
@@ -209,6 +230,12 @@ class ListItem extends ArpaElement {
             this.getProperty('has-selection')
         );
     }
+
+    // #endregion Has
+
+    /////////////////////////////
+    // #region Set
+    /////////////////////////////
 
     /**
      * Sets the content of the list item.
@@ -258,23 +285,7 @@ class ListItem extends ArpaElement {
         }
     }
 
-    /**
-     * Returns the wrapper tag for the list item.
-     * @returns {string}
-     */
-    getWrapperComponent() {
-        const { action } = this._config;
-        if (this.link) {
-            return 'a';
-        }
-        if (typeof action === 'function') {
-            return 'button';
-        }
-        return this.getProperty('wrapper-component');
-    }
-    /////////////////////////////
-    // #endregion
-    /////////////////////////////
+    // #endregion Set
 
     /////////////////////////////
     // #region Rendering
@@ -282,13 +293,14 @@ class ListItem extends ArpaElement {
 
     async _initializeTemplates() {
         const list = this.grabList();
-        if (typeof list?.getItemTemplate !== 'function') return;
-        const itemTemplate = list?.getItemTemplate();
-        if (itemTemplate instanceof HTMLTemplateElement) {
-            this.applyTemplate(itemTemplate, {
-                contentMode: 'add',
-                applyAttributes: true
-            });
+        if (typeof list?.getItemTemplate === 'function') {
+            const itemTemplate = list?.getItemTemplate();
+            if (itemTemplate instanceof HTMLTemplateElement) {
+                this.applyTemplate(itemTemplate, {
+                    contentMode: 'add',
+                    applyAttributes: true
+                });
+            }
         }
         super._initializeTemplates();
     }
@@ -296,7 +308,8 @@ class ListItem extends ArpaElement {
     getTemplateVars() {
         return {
             ...this.getPayload(),
-            content: this.renderContentWrapper(),
+            contentWrapper: this.renderContentWrapper(),
+            children: this.renderContent(),
             icon: this.renderIcon(),
             iconRight: this.renderIconRight(),
             image: this.renderImage(),
@@ -328,7 +341,7 @@ class ListItem extends ArpaElement {
             <{wrapperComponent} {wrapperAttributes}>
                 {icon}
                 ${(!isGrid && '{image}') || ''}
-                {content}
+                {contentWrapper}
                 {iconRight}
             </{wrapperComponent}>
             {rhs}
@@ -370,7 +383,7 @@ class ListItem extends ArpaElement {
             image || titleContainer || tags
                 ? html`<div class="listItem__contentHeader">${titleContainer}${image}${tags}</div>`
                 : '';
-        return html`${contentHeader}${this.renderContent()}`;
+        return html`${contentHeader}{children}`;
     }
 
     /**
@@ -425,8 +438,9 @@ class ListItem extends ArpaElement {
 
     //#endregion Render Title
 
-    //#region Render Tags
-
+    /////////////////////////////
+    // #region Render Tags
+    ////////////////////////////
     /**
      * Renders the tags for the list item.
      * @returns {string} - The rendered tags as a string.
@@ -451,6 +465,8 @@ class ListItem extends ArpaElement {
 
     // #endregion Render Tags
 
+    //#region Render Rhs
+
     renderRhs(content = this._config.rhsContent) {
         const nav = this.renderNav();
         const checkbox = this.renderCheckbox();
@@ -458,6 +474,10 @@ class ListItem extends ArpaElement {
             ? html`<div class="listItem__rhs" zone="rhs">${checkbox}${nav}${content}</div>`
             : '';
     }
+
+    // #endregion Render Rhs
+
+    //#region Render Checkbox
 
     renderCheckbox() {
         if (!this.hasSelection()) return '';
@@ -470,6 +490,8 @@ class ListItem extends ArpaElement {
             <input class="listItem__checkbox arpaCheckbox" type="checkbox" id="${htmlId}" ${checked} />
         </label>`;
     }
+
+    //#endregion Render Checkbox
 
     /**
      * Renders the image for the list item.
@@ -719,7 +741,7 @@ class ListItem extends ArpaElement {
     /////////////////////////////
 
     /////////////////////////////
-    // #region EVENTS
+    // #region Events
     /////////////////////////////
 
     /**
@@ -740,11 +762,11 @@ class ListItem extends ArpaElement {
         typeof onImageError === 'function' && onImageError(event, this);
     }
     /////////////////////////////
-    // #endregion EVENTS
+    // #endregion Events
     /////////////////////////////
 
     /////////////////////////////
-    // #region ACTIONS
+    // #region Actions
     /////////////////////////////
 
     /**
@@ -755,7 +777,7 @@ class ListItem extends ArpaElement {
         return this.listResource ? this.listResource.removeItem({ id: this.getId() }) : this.remove();
     }
     /////////////////////////////
-    // #endregion ACTIONS
+    // #endregion Actions
     /////////////////////////////
 }
 
