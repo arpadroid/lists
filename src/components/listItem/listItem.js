@@ -233,6 +233,7 @@ class ListItem extends ArpaElement {
 
     // #endregion Has
 
+
     /////////////////////////////
     // #region Set
     /////////////////////////////
@@ -286,6 +287,8 @@ class ListItem extends ArpaElement {
     }
 
     // #endregion Set
+
+
 
     /////////////////////////////
     // #region Rendering
@@ -568,9 +571,9 @@ class ListItem extends ArpaElement {
         }
         const width = this.getProperty('image-width') || size;
         const height = this.getProperty('image-height');
-
+        const view = this.list?.getView() || this.view || 'list';
         if (width || height) return { width, height };
-        const sizeName = /** @type {string} */ (this.view?.replace(/-/g, '_'));
+        const sizeName = view?.replace(/-/g, '_');
         const defaultSize = this.getProperty('default-image-size');
         let rv = imageSizes[sizeName] || imageSizes[defaultSize];
         if (typeof rv === 'function') rv = rv();

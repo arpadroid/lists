@@ -286,6 +286,10 @@ class List extends ArpaElement {
         });
     }
 
+    getView() {
+        return this.getViewFilter()?.getValue() || this.getDefaultView();
+    }
+
     /**
      * Returns the list item template.
      * @returns {ArpaElementTemplateType | null}

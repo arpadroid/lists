@@ -22,7 +22,7 @@ export const Default = {
         url: 'api/gallery/item/get-items',
         paramNamespace: 'galleryList-',
         hasSelection: true,
-        itemsPerPage: 10
+        itemsPerPage: 10,
     },
     /**
      * Initializes the list.
