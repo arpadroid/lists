@@ -260,7 +260,7 @@ export const Default = {
         await Default.playSetup(canvasElement);
     },
     renderItemTemplate: () => {
-        return html`<template type="list-item" element-image="{portraitURL}" element-truncate-content="50">
+        return html`<template type="list-item" element-image="{portraitURL}" element-truncate-content="50" element-truncate-button>
             <zone name="tags">
                 <tag-item label="{date}" icon="calendar_month"></tag-item>
                 <tag-item label="{movement}" icon="palette"></tag-item>

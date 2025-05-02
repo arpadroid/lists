@@ -56,6 +56,29 @@ class List extends ArpaElement {
         }
     }
 
+    _initializeTemplates() {
+        super._initializeTemplates();
+        this.viewTemplates = this._selectViewTemplates();
+        this.viewTemplates.forEach(template => template.remove());
+    }
+
+    /**
+     * Returns the view template for a given view.
+     * @param {string} view
+     * @returns {HTMLTemplateElement | undefined}
+     */
+    getViewTemplate(view) {
+        return this.viewTemplates?.find(template => template.getAttribute('id') === view);
+    }
+
+    /**
+     * Selects the view templates for the element.
+     * @returns {HTMLTemplateElement[]} The selected view templates.
+     */
+    _selectViewTemplates() {
+        return Array.from(this.querySelectorAll(':scope > template[type="view"]'));
+    }
+
     /**
      * Returns the list resource.
      * @returns {ListResource | undefined}
@@ -140,7 +163,7 @@ class List extends ArpaElement {
             hasControls: undefined,
             hasInfo: false,
             hasMiniSearch: true,
-            hasPager: false,
+            hasPager: true,
             hasResource: false,
             hasPreloader: true,
             hasItemsTransition: false,
@@ -242,7 +265,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasPager() {
-        return Boolean(this.hasResource() || this.hasProperty('has-pager'));
+        return Boolean(this.hasResource() && this.hasProperty('has-pager'));
     }
 
     /**
@@ -494,11 +517,15 @@ class List extends ArpaElement {
 
     /**
      * Adds item nodes to the list.
-     * @param {HTMLElement[]} items
+     * @param {ListItem[]} items
+     * @param {boolean} preProcess
      */
-    async addItemNodes(items) {
-        const container = this.itemsNode || this;
-        appendNodes(container, items);
+    async addItemNodes(items, preProcess = true) {
+        this.onRenderReady(() => {
+            preProcess && items.forEach(item => this?.preProcessNode(item));
+            const container = this.itemsNode || this;
+            appendNodes(container, items);
+        });
     }
 
     /**
@@ -511,7 +538,7 @@ class List extends ArpaElement {
         let currentIndex = 0;
         const processBatch = () => {
             const batch = items.slice(currentIndex, currentIndex + batchSize);
-            const itemNodes = batch.map(config => this.createItem(config));
+            const itemNodes = /** @type {ListItem[]} */ (batch.map(config => this.createItem(config)));
             this.addItemNodes(itemNodes);
             currentIndex += batchSize;
             currentIndex < totalItems && setTimeout(processBatch);
@@ -1002,6 +1029,7 @@ class List extends ArpaElement {
         this.pagerNode?.onChange((/** @type {import('@arpadroid/ui').PagerCallbackPayloadType} */ payload) => {
             const { page } = payload;
             const newURL = editURL(window.location.href, { [this.getParamName('page')]: String(page) });
+            this.scrollIntoView({ behavior: 'smooth', block: 'start' });
             this.router?.go(newURL);
         });
     }

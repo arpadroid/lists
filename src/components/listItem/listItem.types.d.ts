@@ -64,3 +64,14 @@ export type ListItemConfigType = ArpaElementConfigType & {
     truncateButton?: boolean | string;
     wrapperComponent?: string;
 };
+
+
+export type ListItemViewConfigType = {
+    id: string;
+    label?: string;
+    icon?: string;
+    template?: string;
+    show?: boolean;
+    className?: string;
+    onSelect?: (event: Event, item: ListItem) => void;
+};

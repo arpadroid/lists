@@ -1,7 +1,7 @@
 .tagItem {
     align-items: center;
     background-color: var(--primary-hilight);
-    border-radius: .5rem;
+    border-radius: 0.5rem;
     color: var(--grey-600);
     display: flex;
     flex-direction: row;
@@ -11,8 +11,6 @@
     height: 32px;
     max-width: 100%;
     overflow: visible;
-    padding-left: .5rem;
-    padding-right: .5rem;
     position: relative;
     transition: none;
 
@@ -20,7 +18,6 @@
         font-size: 1.3rem;
         font-weight: 500;
         color: var(--grey-600);
-        
     }
 }
 
@@ -32,8 +29,8 @@
     text-align: center;
     font-weight: 700;
     color: var(--grey-600);
-    padding-left: .5rem;
-    padding-right: .5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
 }
 
 .tagItem,

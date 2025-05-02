@@ -94,7 +94,9 @@ button.listItem__main {
     line-height: 1.45rem;
     .truncateText__readMoreButton {
         margin-left: 0;
+        padding-left: .25rem;
         align-self: flex-start;
+        font-size: .8rem;
     }
     p {
         margin: 0;

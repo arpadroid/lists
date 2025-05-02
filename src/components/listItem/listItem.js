@@ -10,8 +10,9 @@
  */
 
 import { ArpaElement } from '@arpadroid/ui';
-import { render, classNames, attrString, listen } from '@arpadroid/tools';
+import { render, classNames, attrString, listen, dashedToCamel } from '@arpadroid/tools';
 import { getViewportWidth, getViewportHeight, defineCustomElement } from '@arpadroid/tools';
+import ListItemViews from './listItem.views.js';
 
 const html = String.raw;
 class ListItem extends ArpaElement {
@@ -60,12 +61,13 @@ class ListItem extends ArpaElement {
             imageSize: undefined,
             titleTag: 'span',
             defaultImageSize: 'list',
+            zoneResolverSelector: '[zone="{zoneName}"]:not(nav-list [zone="{zoneName}"])',
             imageSizes: {
                 small: { width: 50, height: 50 },
                 list_compact: { width: 40, height: 40 },
-                list: { width: 80, height: 80 },
+                list: { width: 110, height: 110 },
                 grid_compact: { width: 180, height: 180 },
-                grid: { width: 350, height: 350 },
+                grid: { width: 320, height: 320 },
                 grid_large: { width: 480, height: 480 },
                 thumbnail: { height: 110, width: 'auto' },
                 thumbnail_vertical: { height: 'auto', width: 110 },
@@ -87,11 +89,11 @@ class ListItem extends ArpaElement {
             this.listResource?.on(`item_selected_${id}`, this._onSelected, this._unsubscribes);
             this.listResource?.on(`item_deselected_${id}`, this._onDeselected, this._unsubscribes);
         }
-        !this.listResource && typeof this.list?.preProcessNode === 'function' && this.list?.preProcessNode(this);
+        // !this.listResource && typeof this.list?.preProcessNode === 'function' && this.list?.preProcessNode(this);
 
         /** @type {ListFilter} */
         this.viewsFilter = this.listResource?.filters?.views;
-        this.viewsFilter && this._initializeView();
+
         return true;
     }
 
@@ -233,7 +235,6 @@ class ListItem extends ArpaElement {
 
     // #endregion Has
 
-
     /////////////////////////////
     // #region Set
     /////////////////////////////
@@ -288,41 +289,48 @@ class ListItem extends ArpaElement {
 
     // #endregion Set
 
-
-
     /////////////////////////////
     // #region Rendering
     /////////////////////////////
 
     async _initializeTemplates() {
-        const list = this.grabList();
-        if (typeof list?.getItemTemplate === 'function') {
-            const itemTemplate = list?.getItemTemplate();
-            if (itemTemplate instanceof HTMLTemplateElement) {
-                this.applyTemplate(itemTemplate, {
-                    contentMode: 'add',
-                    applyAttributes: true
-                });
-            }
-        }
+        this._initializeListTemplate();
         super._initializeTemplates();
+    }
+
+    async _initializeListTemplate() {
+        const list = this.grabList();
+        if (typeof list?.getItemTemplate !== 'function') return;
+        const itemTemplate = list?.getItemTemplate();
+        if (!(itemTemplate instanceof HTMLTemplateElement)) return;
+        this.applyTemplate(itemTemplate, {
+            contentMode: 'add',
+            applyAttributes: true
+        });
     }
 
     getTemplateVars() {
         return {
             ...this.getPayload(),
-            contentWrapper: this.renderContentWrapper(),
+            checkbox: this.renderCheckbox(),
             children: this.renderContent(),
+            content: this.renderContent(),
+            contentWrapper: this.renderContentWrapper(),
+            headingIcon: this.renderTitleIcon(),
             icon: this.renderIcon(),
             iconRight: this.renderIconRight(),
             image: this.renderImage(),
+            nav: this.renderNav(),
             rhs: this.renderRhs(),
             subTitle: this.renderSubTitle(),
+            tags: this.renderTags(),
             title: this.renderTitle(),
+            titleContainer: this.renderTitleContainer(),
             titleContent: this.renderTitleContent(),
-            headingIcon: this.renderTitleIcon(),
             wrapperAttributes: attrString(this.getWrapperAttrs()),
-            wrapperComponent: this.getWrapperComponent()
+            wrapperComponent: this.getWrapperComponent(),
+            wrapper: '<{wrapperComponent} {wrapperAttributes}>',
+            '/wrapper': '</{wrapperComponent}>'
         };
     }
 
@@ -334,25 +342,40 @@ class ListItem extends ArpaElement {
         this.removeAttribute('link');
     }
 
-    /**
-     * Returns the template for the list item.
-     * @param {boolean} isGrid - Indicates whether the list item is in grid view.
-     * @returns {string}
-     */
-    _getTemplate(isGrid = this.isGrid) {
-        return html`
-            <{wrapperComponent} {wrapperAttributes}>
-                {icon}
-                ${(!isGrid && '{image}') || ''}
-                {contentWrapper}
-                {iconRight}
-            </{wrapperComponent}>
-            {rhs}
-        `;
+    _onConnected() {
+        super._onConnected();
+        this.viewsFilter && this._initializeView();
     }
 
-    renderContentWrapper(isGrid = this.isGrid) {
-        const innerContent = /** @type {string} */ (this.renderInnerContent(isGrid) || this.hasZone('content'));
+    /**
+     * Returns the template for the list item.
+     * @returns {string}
+     */
+    _getTemplate() {
+        return this.getViewTemplate();
+    }
+
+    /**
+     * Returns the view configuration for the list item.
+     * @param {string} viewId
+     * @returns {import('./listItem.types').ListItemViewConfigType}
+     */
+    getViewConfig(viewId = this.getView()) {
+        const viewKey = dashedToCamel(viewId);
+        const viewConfig = ListItemViews[viewKey] || ListItemViews[viewId];
+        return viewConfig;
+    }
+
+    getView() {
+        return (typeof this.list?.getView === 'function' && this.list?.getView()) || this.view || 'list';
+    }
+
+    getViewTemplate(viewId = this.getView()) {
+        return this.getViewConfig(viewId)?.template || this.list?.getViewTemplate(viewId)?.innerHTML || '';
+    }
+
+    renderContentWrapper() {
+        const innerContent = /** @type {string} */ (this.renderInnerContent() || this.hasZone('content'));
         const hasInnerContent = innerContent && innerContent?.trim()?.length;
         return (hasInnerContent && html`<div class="listItem__contentWrapper">${innerContent}</div>`) || '';
     }
@@ -378,14 +401,11 @@ class ListItem extends ArpaElement {
         return icon ? html`<arpa-icon class="listItem__iconRight">${icon}</arpa-icon>` : '';
     }
 
-    renderInnerContent(isGrid = this.isGrid) {
-        const image = isGrid ? this.renderImage() : '';
+    renderInnerContent() {
         const titleContainer = this.renderTitleContainer();
         const tags = this.renderTags();
         const contentHeader =
-            image || titleContainer || tags
-                ? html`<div class="listItem__contentHeader">${titleContainer}${image}${tags}</div>`
-                : '';
+            titleContainer || tags ? html`<div class="listItem__contentHeader">${titleContainer}${tags}</div>` : '';
         return html`${contentHeader}{children}`;
     }
 
@@ -499,17 +519,11 @@ class ListItem extends ArpaElement {
     /**
      * Renders the image for the list item.
      * @param {string} image - The image URL.
-     * @param {string} alt
      * @returns {string} - The rendered image as a string.
      */
-    renderImage(image = this.getImage(), alt = this.getImageAlt()) {
+    renderImage(image = this.getImage()) {
         if (!image) return '';
-        return html`<arpa-image
-            ${attrString(this.getImageAttributes())}
-            alt="${alt}"
-            class="listItem__image"
-            src="${image}"
-        ></arpa-image>`;
+        return html`<arpa-image ${attrString(this.getImageAttributes())}></arpa-image>`;
     }
 
     getImageAttributes() {
@@ -522,11 +536,14 @@ class ListItem extends ArpaElement {
             'has-native-lazy': this.getProperty('has-native-lazy') || isAuto,
             'preview-controls': this.getProperty('preview-controls'),
             'has-preview': this.getProperty('image-preview'),
-            'preview-title': this.getProperty('image-preview-title')
+            'preview-title': this.getProperty('image-preview-title'),
+            alt: this.getImageAlt(),
+            class: 'listItem__image',
+            src: this.getImage()
         };
 
         const isAdaptive = this.getProperty('image-size') === 'adaptive';
-        const dimensions = this.getImageDimensions(true);
+        const dimensions = this.getImageDimensions(false);
         const width = isAdaptive ? 'adaptive' : dimensions?.width;
         const height = dimensions?.height;
         width && width !== 'auto' && (!height || height === width) && (attr.size = width);
@@ -573,9 +590,9 @@ class ListItem extends ArpaElement {
         const height = this.getProperty('image-height');
         const view = this.list?.getView() || this.view || 'list';
         if (width || height) return { width, height };
-        const sizeName = view?.replace(/-/g, '_');
+        const sizeName = this.list?.hasControl('views') && view?.replace(/-/g, '_');
         const defaultSize = this.getProperty('default-image-size');
-        let rv = imageSizes[sizeName] || imageSizes[defaultSize];
+        let rv = (sizeName && imageSizes[sizeName]) || imageSizes[defaultSize];
         if (typeof rv === 'function') rv = rv();
         return rv;
     }
@@ -675,14 +692,10 @@ class ListItem extends ArpaElement {
      * An item can have a view filter that changes the view of the list: grid, list, compact etc...
      */
     _initializeView() {
+        const val = String(this.viewsFilter?.getValue() || 'list');
         /** @type {string} */
-        this.view = /** @type {string} */ (this.viewsFilter?.getValue() || 'list');
-        this.isGrid = this._isGrid();
-        this.viewsFilter?.on('value', this._onViewChange, this._unsubscribes);
-    }
-
-    _isGrid() {
-        return this.view?.indexOf('grid') === 0;
+        this.view = val;
+        this.viewsFilter?.on('value', this._onViewChange);
     }
 
     /**
@@ -692,31 +705,7 @@ class ListItem extends ArpaElement {
     _onViewChange(view) {
         if (this.view !== view) {
             this.view = view;
-            this.isGrid = this._isGrid();
-            this?.isConnected && this._update();
-        }
-    }
-
-    _update() {
-        this.checkboxContainer && this.updateCheckbox();
-        this._hasRendered && this.updateImage();
-        this.image && this.updateImageSize();
-    }
-
-    updateCheckbox(container = this.checkboxContainer) {
-        if (!container) return;
-        this.view === 'list-compact'
-            ? container.parentNode !== this.mainNode && this.mainNode?.prepend(container)
-            : container.parentNode !== this.rhs && this.rhs?.prepend(container);
-    }
-
-    updateImage() {
-        if (!this.image) return;
-        const targetParentNode = this.isGrid ? this.titleNode || this.contentWrapperNode : this.mainNode;
-        if (this.image.parentNode !== targetParentNode) {
-            this.isGrid && this.titleNode
-                ? this.titleNode?.parentNode instanceof HTMLElement && this.titleNode?.parentNode?.after(this.image)
-                : targetParentNode?.prepend(this.image);
+            this?.isConnected && this.reRender();
         }
     }
 

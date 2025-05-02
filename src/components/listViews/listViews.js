@@ -103,6 +103,13 @@ class ListViews extends ArpaElement {
     getOptions() {
         const { options, defaultOptions } = this._config;
         const opt = Array.from(options ?? defaultOptions ?? []);
+        this.list?.viewTemplates?.forEach(viewTemplate => {
+            opt.push({
+                title: viewTemplate.getAttribute('label') || '',
+                iconRight: viewTemplate.getAttribute('icon') || '',
+                value: viewTemplate.getAttribute('id') || ''
+            });
+        });
         return opt?.filter(link => link.value && this.getViewsConfig()?.includes(link.value));
     }
 
