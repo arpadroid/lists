@@ -92,49 +92,91 @@ export const Test = {
     }
 };
 
-export const CustomViews = {
+export const CustomView = {
     args: {
         ...Default.args,
-        id: 'custom-views',
-        title: 'Custom Views',
+        id: 'custom-view',
+        title: 'Custom View',
+        titleIcon: 'dashboard',
         defaultView: 'custom-view',
-        views: 'list,custom-view'
+        views: 'list,custom-view',
+        truncateContent: 0
     },
-    /**
-     * Plays the test scenario.
-     * @param {{ canvasElement: HTMLElement, step: StepFunction }} options
-     * @returns {Promise<void>}
-     */
-    // play: async ({ canvasElement, step }) => {
-    //     const setup = await Default.playSetup(canvasElement);
-    //     const { canvas, listNode } = setup;
-    //     listNode?.setView('list');
-    //     /** @type {IconMenu | null} */
-    //     const iconMenu = canvasElement.querySelector('list-views icon-menu');
-    //     // const viewsMenu = /** @type {HTMLElement} */ (iconMenu?.navigation);
-    //     // await step('Renders the menu with the expected views', async () => {
-    //     //     expect(viewsMenu).toBeInTheDocument();
-    //     //     const listView = within(viewsMenu).getByText('List');
-    //     //     // const gridView = within(viewsMenu).getByText('Grid');
-    //     //     expect(listView).toBeInTheDocument();
-    //     //     // expect(gridView).toBeInTheDocument();
-    //     //     // expect(viewsMenu?.querySelectorAll('nav-link')).toHaveLength(2);
-    //     // });
-    // },
     /**
      * Renders the list component.
      * @param {Record<string, unknown>} args
      * @returns {string}
      */
     render(args) {
-        return html`<arpa-list ${attrString(args)}>
-            ${ListStory.renderItemTemplate()}
-            <template type="view" id="custom-view" label="Custom View" icon="dashboard">
-                {icon} {nav}
-                {contentWrapper}
-                {iconRight} {image}
-            </template>
-        </arpa-list>`;
+        return html`
+            <arpa-list ${attrString(args)}>
+                ${ListStory.renderItemTemplate({ elementTruncateContent: 180, elementTitleIcon: 'dashboard' })}
+
+                <!-- Custom View Template -->
+
+                <template
+                    type="view"
+                    id="custom-view"
+                    label="Custom View"
+                    icon="dashboard"
+                    element-title-icon="dashboard"
+                >
+                    <div class="listItem__main">
+                        {image}
+                        <div class="listItem__customView__content">
+                            <div class="listItem__customView__header">{titleContainer} {nav}</div>
+                            {children} {tags}
+                        </div>
+                    </div>
+                </template>
+            </arpa-list>
+
+            <!-- Custom View Styles -->
+
+            <style>
+                #custom-view {
+                    max-width: 600px;
+                    margin: 0 auto;
+                }
+
+                .listItem--custom-view {
+                    overflow: visible;
+                    margin: 1rem 0;
+
+                    .listItem__content {
+                        display: block;
+                    }
+                    .listItem__image {
+                        float: right;
+                        margin: 0 0 1rem 1rem;
+                    }
+                    .listItem__main {
+                        flex: none;
+                        display: block;
+                        overflow: visible;
+                        margin-top: 10px;
+                        max-width: 100%;
+                    }
+                    .listItem__customView__header {
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 0.5rem;
+                        gap: 1rem;
+                    }
+                    .listItem__nav {
+                        align-self: flex-start;
+                        margin-left: 0;
+                        margin-right: 0.5rem;
+                        .iconButton {
+                            --icon-button-size: 1.5rem;
+                        }
+                    }
+                    .listItem__customView__content {
+                        width: 100%;
+                    }
+                }
+            </style>
+        `;
     }
 };
 

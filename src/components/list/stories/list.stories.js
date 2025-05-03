@@ -8,7 +8,7 @@
  */
 
 import artists from '../../../mockData/artists.json';
-import { attrString, formatDate } from '@arpadroid/tools';
+import { attrString, formatDate, mergeObjects } from '@arpadroid/tools';
 import { within } from '@storybook/test';
 
 const html = String.raw;
@@ -259,18 +259,30 @@ export const Default = {
     play: async ({ canvasElement }) => {
         await Default.playSetup(canvasElement);
     },
-    renderItemTemplate: () => {
-        return html`<template type="list-item" element-image="{portraitURL}" element-truncate-content="50" element-truncate-button>
-            <zone name="tags">
-                <tag-item label="{date}" icon="calendar_month"></tag-item>
-                <tag-item label="{movement}" icon="palette"></tag-item>
-            </zone>
-            <zone name="item-nav">
-                <nav-link link="javascript:void(0)" icon-right="visibility">View</nav-link>
-                <nav-link link="javascript:void(0)" icon-right="edit">Edit</nav-link>
-            </zone>
-            <zone name="content">{legacy}</zone>
-        </template>`;
+    renderItemTemplate: (_attr = {}) => {
+        const attr = mergeObjects(
+            {
+                elementTruncateContent: 50,
+                type: 'list-item',
+                elementImage: '{portraitURL}',
+                elementTruncateButton: true
+            },
+            _attr
+        );
+        return html`
+            <!-- List Item Template -->
+            
+            <template type="list-item" ${attrString(attr)}>
+                <zone name="tags">
+                    <tag-item label="{date}" icon="calendar_month"></tag-item>
+                    <tag-item label="{movement}" icon="palette"></tag-item>
+                </zone>
+                <zone name="item-nav">
+                    <nav-link link="javascript:void(0)" icon-right="visibility">View</nav-link>
+                    <nav-link link="javascript:void(0)" icon-right="edit">Edit</nav-link>
+                </zone>
+                <zone name="content">{legacy}</zone>
+            </template>`;
     },
     /**
      * Renders the list component.
