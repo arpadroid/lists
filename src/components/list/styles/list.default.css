@@ -32,6 +32,12 @@
  */
 
 .arpaList__header {
+    gap: .5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.arpaList__headerTop {
     display: flex;
     align-items: center;
     flex-direction: row;

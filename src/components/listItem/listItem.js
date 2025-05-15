@@ -314,9 +314,7 @@ class ListItem extends ArpaElement {
             ...this.getPayload(),
             checkbox: this.renderCheckbox(),
             children: this.renderContent(),
-            content: this.renderContent(),
             contentWrapper: this.renderContentWrapper(),
-            headingIcon: this.renderTitleIcon(),
             icon: this.renderIcon(),
             iconRight: this.renderIconRight(),
             image: this.renderImage(),
@@ -330,7 +328,7 @@ class ListItem extends ArpaElement {
             wrapperAttributes: attrString(this.getWrapperAttrs()),
             wrapperComponent: this.getWrapperComponent(),
             wrapper: '<{wrapperComponent} {wrapperAttributes}>',
-            '/wrapper': '</{wrapperComponent}>'
+            '/wrapper': '</{wrapperComponent}>',
         };
     }
 
@@ -375,9 +373,7 @@ class ListItem extends ArpaElement {
     }
 
     renderContentWrapper() {
-        const innerContent = /** @type {string} */ (this.renderInnerContent() || this.hasZone('content'));
-        const hasInnerContent = innerContent && innerContent?.trim()?.length;
-        return (hasInnerContent && html`<div class="listItem__contentWrapper">${innerContent}</div>`) || '';
+        return html`<div class="listItem__contentWrapper">{innerContent}</div>`;
     }
 
     /**
@@ -401,12 +397,10 @@ class ListItem extends ArpaElement {
         return icon ? html`<arpa-icon class="listItem__iconRight">${icon}</arpa-icon>` : '';
     }
 
-    renderInnerContent() {
+    renderContentHeader() {
         const titleContainer = this.renderTitleContainer();
         const tags = this.renderTags();
-        const contentHeader =
-            titleContainer || tags ? html`<div class="listItem__contentHeader">${titleContainer}${tags}</div>` : '';
-        return html`${contentHeader}{children}`;
+        return titleContainer || tags ? html`<div class="listItem__contentHeader">{titleContainer}{tags}</div>` : '';
     }
 
     /**
@@ -537,6 +531,7 @@ class ListItem extends ArpaElement {
             'preview-controls': this.getProperty('preview-controls'),
             'has-preview': this.getProperty('image-preview'),
             'preview-title': this.getProperty('image-preview-title'),
+            'image-position': this.getProperty('image-position'),
             alt: this.getImageAlt(),
             class: 'listItem__image',
             src: this.getImage()

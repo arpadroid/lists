@@ -27,6 +27,7 @@ export type ListConfigType = ArpaElementConfigType & {
     tagName?: string;
     listResource?: ListResource;
     listSelector?: string;
+    maxPagerNodes?: number | string;
     mapItemId?: (item: ListResourceItemType) => string;
     noItemsContent?: string;
     noItemsIcon?: string;

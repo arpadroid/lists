@@ -11,9 +11,7 @@ export const ListView = {
     template: html`<{wrapperComponent} {wrapperAttributes}>
         {icon} {image}
         <div class="listItem__contentWrapper">
-            <div class="listItem__contentHeader">
-                {titleContainer}
-            </div>
+            <div class="listItem__contentHeader">{titleContainer}</div>
             {children}
             {tags}
         </div>
@@ -29,9 +27,7 @@ export const ListCompactView = {
     template: html`<{wrapperComponent} {wrapperAttributes}>
         {checkbox}{icon}{image}
         <div class="listItem__contentWrapper">
-            <div class="listItem__contentHeader">
-                {titleContainer}
-            </div>
+            <div class="listItem__contentHeader">{titleContainer}</div>
             {children}
         </div>
         {iconRight}
@@ -49,11 +45,7 @@ export const GridView = {
     template: html`<{wrapperComponent} {wrapperAttributes}>
         {icon} 
         <div class="listItem__contentWrapper">
-            <div class="listItem__contentHeader">
-                {titleContainer}
-                {image}
-                {tags}
-            </div>
+            <div class="listItem__contentHeader">{titleContainer}{image}{tags}</div>
             {children}
         </div>
         {iconRight}
@@ -67,11 +59,7 @@ export const GridCompactView = {
     className: 'listItem--grid-compact',
     template: html`<{wrapperComponent} {wrapperAttributes}>
         {icon} 
-        <div class="listItem__contentHeader">
-            {titleContainer}
-            {image}
-            {tags}
-        </div>
+        <div class="listItem__contentHeader">{titleContainer}{image}{tags}</div>
         {iconRight}
     </{wrapperComponent}>
     {rhs}`

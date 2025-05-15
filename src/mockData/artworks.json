@@ -28,7 +28,8 @@
         "inscriptions": null,
         "license": "Public Domain",
         "materialCondition": "Destroyed",
-        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fd/Statue_of_Zeus_at_Olympia.jpg",
+        "imageUrl": "https://www.worldhistory.org/uploads/images/5417.jpg?v=1733934548-1689230728",
+        "imagePosition": "top",
         "relatedWorks": [],
         "biographyUrl": "https://en.wikipedia.org/wiki/Statue_of_Zeus_at_Olympia"
     },
@@ -61,7 +62,8 @@
         "inscriptions": null,
         "license": "Public Domain",
         "materialCondition": "Lost",
-        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ed/Athena_Parthenos.jpg",
+        "imagePosition": "top",
+        "imageUrl": "https://cdn.britannica.com/94/5994-050-7E0C77B1/aegis-Varakion-Athena-statue-gold-Roman-Athens.jpg",
         "relatedWorks": [],
         "biographyUrl": "https://en.wikipedia.org/wiki/Athena_Parthenos"
     },
@@ -94,7 +96,7 @@
         "inscriptions": null,
         "license": "Public Domain",
         "materialCondition": "Preserved",
-        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e5/East_Pediment_Sculptures_of_the_Parthenon.jpg",
+        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/55/East_pediment_KLM_Parthenon_BM.jpg",
         "relatedWorks": [],
         "biographyUrl": "https://en.wikipedia.org/wiki/Parthenon_sculptures"
     },
@@ -104,6 +106,7 @@
         "artistId": 1,
         "dateCreated": "c. 447-442 BCE",
         "medium": ["Marble"],
+        "imagePosition": "top",
         "dimensions": {
             "heightCm": null,
             "widthCm": null,
@@ -127,7 +130,7 @@
         "inscriptions": null,
         "license": "Public Domain",
         "materialCondition": "Preserved",
-        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Parthenon_Metop.jpg",
+        "imageUrl": "https://ancient-greece.org/wp-content/uploads/British-Museum-Parthenon-Metopes-1b.jpg",
         "relatedWorks": [],
         "biographyUrl": "https://en.wikipedia.org/wiki/Parthenon_sculptures"
     },
@@ -160,7 +163,7 @@
         "inscriptions": null,
         "license": "Public Domain",
         "materialCondition": "Preserved",
-        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/dc/Parthenon_Frieze.jpg",
+        "imageUrl": "https://www.britishmuseum.org/sites/default/files/styles/uncropped_huge/public/2022-06/Parthenon-frieze-in-situ.jpg?itok=TJ14JM2i",
         "relatedWorks": [],
         "biographyUrl": "https://en.wikipedia.org/wiki/Parthenon_sculptures"
     },
@@ -193,7 +196,7 @@
         "inscriptions": null,
         "license": "Public Domain",
         "materialCondition": "Preserved",
-        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Parthenon_West_Pediment.jpg",
+        "imageUrl": "https://www.worldhistory.org/uploads/images/3302.jpg",
         "relatedWorks": [],
         "biographyUrl": "https://en.wikipedia.org/wiki/Parthenon_sculptures"
     },
@@ -259,7 +262,7 @@
         "inscriptions": null,
         "license": "Public Domain",
         "materialCondition": "Lost",
-        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d8/Shield_of_Athena.jpg",
+        "imageUrl": "https://www.worldhistory.org/uploads/images/423.jpg",
         "relatedWorks": [],
         "biographyUrl": "https://en.wikipedia.org/wiki/Athena_Parthenos"
     },
@@ -292,7 +295,7 @@
         "inscriptions": null,
         "license": "Public Domain",
         "materialCondition": "Preserved",
-        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Zeus_and_Nike_Relief.jpg",
+        "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoslA0de-mJB44gmzXP20p-4UREcbEbHCjZA&s",
         "relatedWorks": [],
         "biographyUrl": "https://en.wikipedia.org/wiki/Temple_of_Zeus,_Olympia"
     },
@@ -325,7 +328,7 @@
         "inscriptions": null,
         "license": "Public Domain",
         "materialCondition": "Lost",
-        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ed/Athena_Promachos.jpg",
+        "imageUrl": "https://static.wikia.nocookie.net/assassinscreed/images/0/04/ACOd-Attika-AkropolisStatueofAthena.jpg/revision/latest?cb=20200806104810",
         "relatedWorks": [],
         "biographyUrl": "https://en.wikipedia.org/wiki/Athena_Promachos"
     },
@@ -373,6 +376,7 @@
         "artistId": 2,
         "dateCreated": "1503-1506",
         "medium": ["Oil on poplar"],
+        "imagePosition": "top",
         "dimensions": {
             "heightCm": 77,
             "widthCm": 53,
@@ -396,7 +400,7 @@
         "inscriptions": null,
         "license": "Public Domain",
         "materialCondition": "Excellent",
-        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
+        "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/960px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
         "relatedWorks": [],
         "biographyUrl": "https://en.wikipedia.org/wiki/Mona_Lisa"
     },

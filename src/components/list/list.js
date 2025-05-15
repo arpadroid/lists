@@ -176,6 +176,7 @@ class List extends ArpaElement {
             itemTag: 'list-item',
             itemIdMap: 'id',
             lazyLoadImages: 'auto',
+            maxPagerNodes: 7,
             noItemsContent: html`<i18n-text key="lists.list.txtNoItemsFound"></i18n-text>`,
             noItemsIcon: 'info',
             pageParam: 'page',
@@ -797,8 +798,17 @@ class List extends ArpaElement {
             noItemsIcon: this.getProperty('no-items-icon'),
             pager: this.renderPager(),
             title: this.renderTitle(),
-            preloader: this.renderPreloader()
+            preloader: this.renderPreloader(),
+            messages: this.renderMessages()
         };
+    }
+
+    hasMessages() {
+        return this.hasProperty('has-messages') || this.hasZone('messages');
+    }
+
+    renderMessages() {
+        return (this.hasMessages() && html`<arpa-messages id="{id}-messages" zone="messages"></arpa-messages>`) || '';
     }
 
     _preRender() {
@@ -889,9 +899,12 @@ class List extends ArpaElement {
      */
     renderFull() {
         return html`
-            <div class="arpaList__header">{title}{headerControls}</div>
+            <div class="arpaList__header" zone="header">
+                <div class="arpaList__headerTop">{title}{headerControls}</div>
+                {messages}
+            </div>
             {controls} {info}
-            <div class="arpaList__body">
+            <div class="arpaList__body" zone="body">
                 <div class="arpaList__bodyMain">{heading}{items}{preloader}</div>
                 {aside}
             </div>
@@ -1007,6 +1020,7 @@ class List extends ArpaElement {
         return html`<arpa-pager
             id="${this.id}-listPager"
             class="arpaList__pager"
+            max-nodes="${this.getProperty('max-pager-nodes')}"
             total-pages="${this.listResource?.getTotalPages()}"
             current-page="${this.listResource?.getCurrentPage()}"
             url-param="${this.getParamName('page')}"

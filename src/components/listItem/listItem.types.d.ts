@@ -38,6 +38,7 @@ export type ListItemConfigType = ArpaElementConfigType & {
     imageConfig?: ImageConfigType;
     imageSize?: string | ListItemImageSizesType;
     defaultImageSize?: ListItemImageTypes | 'string';
+    imagePosition?: string;
     imageSizes?: ListItemImageSizesType;
     imagePreview?: boolean,
     lazyLoad?: boolean;

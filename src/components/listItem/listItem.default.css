@@ -138,6 +138,9 @@ button.listItem__main {
     .tagList {
         flex: 0 1 auto;
     }
+    &:empty {
+        display: none;
+    }
 }
 
 .listItem__image {

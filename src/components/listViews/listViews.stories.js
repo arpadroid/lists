@@ -103,6 +103,19 @@ export const CustomView = {
         truncateContent: 0
     },
     /**
+     * Plays the test scenario.
+     * @param {{ canvasElement: HTMLElement, step: StepFunction }} options
+     * @returns {Promise<void>}
+     */
+    play: async ({ canvasElement, step }) => {
+        const setup = await Default.playSetup(canvasElement);
+        const { listNode } = setup;
+        await step('Sets list to custom view', async () => {
+            await listNode?.setView('custom-view');
+            expect(listNode).toHaveClass('listView--custom-view');
+        });
+    },
+    /**
      * Renders the list component.
      * @param {Record<string, unknown>} args
      * @returns {string}
@@ -110,7 +123,14 @@ export const CustomView = {
     render(args) {
         return html`
             <arpa-list ${attrString(args)}>
-                ${ListStory.renderItemTemplate({ elementTruncateContent: 180, elementTitleIcon: 'dashboard' })}
+                <zone name="messages">
+                    <info-message>
+                        This example demonstrates how to create a custom view for the list component. The custom view is
+                        defined as a template with the type "view" and an id of our choice e.g. "custom-view". The
+                        template can be styled using CSS and can include any HTML elements or components.
+                        <br />
+                    </info-message>
+                </zone>
 
                 <!-- Custom View Template -->
 
@@ -129,12 +149,14 @@ export const CustomView = {
                         </div>
                     </div>
                 </template>
+
+                ${ListStory.renderItemTemplate({ elementTruncateContent: 180, elementTitleIcon: 'dashboard' })}
             </arpa-list>
 
             <!-- Custom View Styles -->
 
             <style>
-                #custom-view {
+                #storybook-root {
                     max-width: 600px;
                     margin: 0 auto;
                 }
@@ -146,10 +168,13 @@ export const CustomView = {
                     .listItem__content {
                         display: block;
                     }
+
                     .listItem__image {
                         float: right;
-                        margin: 0 0 1rem 1rem;
+                        margin: 1rem;
+                        width: 150px;
                     }
+
                     .listItem__main {
                         flex: none;
                         display: block;
@@ -157,20 +182,24 @@ export const CustomView = {
                         margin-top: 10px;
                         max-width: 100%;
                     }
+
                     .listItem__customView__header {
                         display: flex;
                         align-items: center;
                         margin-bottom: 0.5rem;
                         gap: 1rem;
                     }
+
                     .listItem__nav {
                         align-self: flex-start;
                         margin-left: 0;
                         margin-right: 0.5rem;
+
                         .iconButton {
                             --icon-button-size: 1.5rem;
                         }
                     }
+
                     .listItem__customView__content {
                         width: 100%;
                     }
