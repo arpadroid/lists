@@ -144,8 +144,8 @@ export const CustomView = {
                     <div class="listItem__main">
                         {image}
                         <div class="listItem__customView__content">
-                            <div class="listItem__customView__header">{titleContainer} {nav}</div>
-                            {children} {tags}
+                            <div class="listItem__customView__header">{titleContainer}{nav}</div>
+                            {children}{tags}
                         </div>
                     </div>
                 </template>
@@ -171,14 +171,14 @@ export const CustomView = {
 
                     .listItem__image {
                         float: right;
-                        margin: 1rem;
-                        width: 150px;
+                        margin: 0rem 0 1.5rem 1.5rem;
+                        width: 100px;
                     }
 
                     .listItem__main {
                         flex: none;
                         display: block;
-                        overflow: visible;
+                        
                         margin-top: 10px;
                         max-width: 100%;
                     }
@@ -200,9 +200,7 @@ export const CustomView = {
                         }
                     }
 
-                    .listItem__customView__content {
-                        width: 100%;
-                    }
+                    
                 }
             </style>
         `;

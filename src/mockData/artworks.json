@@ -73,6 +73,7 @@
         "artistId": 1,
         "dateCreated": "c. 447-432 BCE",
         "medium": ["Marble"],
+        "contentPosition": "bottom",
         "dimensions": {
             "heightCm": null,
             "widthCm": null,
@@ -107,6 +108,7 @@
         "dateCreated": "c. 447-442 BCE",
         "medium": ["Marble"],
         "imagePosition": "top",
+        "contentPosition": "bottom",
         "dimensions": {
             "heightCm": null,
             "widthCm": null,
