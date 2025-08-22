@@ -58,6 +58,7 @@ class ListItem extends ArpaElement {
             role: 'listitem',
             listSelector: 'arpa-list',
             lazyLoadImage: false,
+            hasImageThumbnail: false,
             imageSize: undefined,
             titleTag: 'span',
             defaultImageSize: 'list',
@@ -287,6 +288,33 @@ class ListItem extends ArpaElement {
         }
     }
 
+    /**
+     * Sets the title for the list item.
+     * @param {string | HTMLElement} title - The title to set.
+     */
+    setTitle(title) {
+        this.payload && (this.payload.title = title);
+        if (this.titleNode) {
+            if (title instanceof HTMLElement) {
+                this.titleNode.innerHTML = '';
+                this.titleNode.appendChild(title);
+            } else if (typeof title === 'string') {
+                this.titleNode.textContent = title;
+            }
+        }
+    }
+
+    /**
+     * Sets the image for the list item.
+     * @param {string} src - The image source URL.
+     */
+    setImage(src) {
+        this.imageURL = src;
+        if (this.image) {
+            this.image.setSource(src);
+        }
+    }
+
     // #endregion Set
 
     /////////////////////////////
@@ -328,7 +356,7 @@ class ListItem extends ArpaElement {
             wrapperAttributes: attrString(this.getWrapperAttrs()),
             wrapperComponent: this.getWrapperComponent(),
             wrapper: '<{wrapperComponent} {wrapperAttributes}>',
-            '/wrapper': '</{wrapperComponent}>',
+            '/wrapper': '</{wrapperComponent}>'
         };
     }
 
@@ -438,13 +466,12 @@ class ListItem extends ArpaElement {
             : html`<${titleTag} class="${titleClass}" zone="title">${content}</${titleTag}>`;
     }
 
-    renderTitleContent() {
-        return html`${this.renderTitleIcon()}${this.getTitle() || ''}`;
+    renderTitleContent(content = this.getTitle(), icon = this.renderTitleIcon()) {
+        return html`${icon}${content || ''}`;
     }
 
-    renderTitleIcon() {
-        const titleIcon = this.getProperty('title-icon');
-        return (titleIcon && html`<arpa-icon class="listItem__titleIcon">${titleIcon}</arpa-icon>`) || '';
+    renderTitleIcon(icon = this.getProperty('title-icon')) {
+        return (icon && html`<arpa-icon class="listItem__titleIcon">${icon}</arpa-icon>`) || '';
     }
 
     renderSubTitle() {
@@ -526,6 +553,7 @@ class ListItem extends ArpaElement {
         const isAuto = lazyLoad === 'auto' && (totalItems || 0) > 100;
         /** @type {Record<string, unknown>} */
         const attr = {
+            'has-thumbnail': this.getProperty('has-image-thumbnail'),
             'lazy-load': lazyLoad || isAuto,
             'has-native-lazy': this.getProperty('has-native-lazy') || isAuto,
             'preview-controls': this.getProperty('preview-controls'),

@@ -1,14 +1,15 @@
 .listControls {
-    display: flex;
     align-items: center;
+    background-color: var(--overlay);
+    box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+    display: flex;
     gap: var(--list-control-gap);
-    z-index: 4;
+    max-width: 100%;
+    padding: 0.5rem 0;
     position: sticky;
     top: 0;
-    background-color: var(--overlay);
     transition: var(--theme-transition);
-    padding: 0.5rem 0;
-    box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+    z-index: 4;
 
     .comboBox.comboBox {
         background-color: var(--color-background);

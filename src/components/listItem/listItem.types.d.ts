@@ -31,6 +31,7 @@ export type ListItemConfigType = ArpaElementConfigType & {
     action?: (event: Event, item: ListItem) => void;
     content?: string;
     hasSelection?: boolean;
+    hasImageThumbnail?: boolean;
     icon?: string;
     id?: string;
     image?: string;
