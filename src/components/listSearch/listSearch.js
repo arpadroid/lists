@@ -11,8 +11,8 @@
  * @typedef {import('@arpadroid/services').Router} Router
  */
 
-import { editURL, attrString, SearchTool, processTemplate, defineCustomElement } from '@arpadroid/tools';
-import { ArpaElement } from '@arpadroid/ui';
+import { editURL, attrString, SearchTool, defineCustomElement } from '@arpadroid/tools';
+import { ArpaElement, processTemplate } from '@arpadroid/ui';
 
 const html = String.raw;
 class ListSearch extends ArpaElement {
@@ -111,7 +111,8 @@ class ListSearch extends ArpaElement {
             html`<arpa-form id="{formId}" variant="mini">
                 <search-field id="search" ${searchAttr}></search-field>
             </arpa-form>`,
-            this.getTemplateVars()
+            this.getTemplateVars(),
+            this
         );
         this.listSort = this.querySelector('list-sort');
     }

@@ -3,7 +3,8 @@
  * @typedef {import('../tagList.js').default} TagList
  */
 
-import { render, renderNode, appendNodes, processTemplate, defineCustomElement } from '@arpadroid/tools';
+import { render, renderNode, appendNodes, defineCustomElement } from '@arpadroid/tools';
+import { processTemplate } from '@arpadroid/ui';
 import ListItem from '../../../listItem/listItem.js';
 
 const html = String.raw;
@@ -62,7 +63,7 @@ class TagItem extends ListItem {
             <div class="tag__text">${text}</div>
             ${render(tooltip, html`<arpa-tooltip position="${tooltipPosition}">${tooltip}</arpa-tooltip>`)}
         `;
-        const content = processTemplate(template, this.getTemplateVars());
+        const content = processTemplate(template, this.getTemplateVars(), this);
         this.innerHTML = content;
         this.initializeDeleteButton();
         this.textNode = this.querySelector('.tag__text');

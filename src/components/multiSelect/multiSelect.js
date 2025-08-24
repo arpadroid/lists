@@ -73,10 +73,9 @@ class MultiSelect extends ArpaElement {
         return html`<icon-menu
             class="listMultiSelect__nav"
             nav-class="listMultiSelect__combo"
-            button-label="${this.i18nText('txtBatchOperations')}"
+            tooltip="${this.i18nText('txtBatchOperations')}"
             ${attrString(menuProps)}
         >
-            <zone name="tooltip-content"> ${this.getTooltip()} </zone>
             <arpa-form id="${formId}" class="listMultiSelect__form" variant="compact" has-submit="false">
                 <zone name="form-title"> ${this.i18n('txtBatchOperations')} </zone>
                 <zone name="messages">

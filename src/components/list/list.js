@@ -13,8 +13,9 @@
 import { ArpaElement } from '@arpadroid/ui';
 import { ListResource, getResource } from '@arpadroid/resources';
 import ListControls from '../listControls/listControls.js';
-import { mergeObjects, appendNodes, processTemplate, editURL, defineCustomElement } from '@arpadroid/tools';
+import { mergeObjects, appendNodes, editURL, defineCustomElement } from '@arpadroid/tools';
 import { renderNode, renderAttr, attrString, bind, ucFirst } from '@arpadroid/tools';
+import { processTemplate } from '@arpadroid/ui';
 import ListItem from '../listItem/listItem.js';
 import { getService } from '@arpadroid/context';
 
@@ -837,6 +838,12 @@ class List extends ArpaElement {
     }
 
     async _initializeNodes() {
+        this._childNodes?.forEach(item => {
+            if (item instanceof HTMLElement && item?.tagName?.toLowerCase() === this._config?.itemTag) {
+                this.preProcessNode(/** @type {ListItem} */ (item));
+            }
+        });
+
         /** @type {ListControls | null} */
         this.controls = this.querySelector('list-controls');
         this.noItemsNode = this.querySelector('.arpaList__noItems');
@@ -976,7 +983,7 @@ class List extends ArpaElement {
 
     renderItemsWrapper() {
         if (this.getRenderMode() === 'minimal') return '';
-        const ariaLabel = processTemplate(this.getProperty('heading'), {});
+        const ariaLabel = processTemplate(this.getProperty('heading'), {}, this);
         return html`<div class="arpaList__items" role="list" ${renderAttr('aria-label', ariaLabel)}></div>`;
     }
 
