@@ -475,8 +475,9 @@ class ListItem extends ArpaElement {
     }
 
     renderSubTitle() {
-        return this.hasContent('subtitle')
-            ? html`<span class="listItem__subTitle" zone="subtitle">${this.getSubTitle() || ''}</span>`
+        const subTitle = this.getSubTitle() || '';
+        return this.hasContent('sub-title') && subTitle
+            ? html`<span class="listItem__subTitle" zone="subtitle">${subTitle}</span>`
             : '';
     }
 

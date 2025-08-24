@@ -51,7 +51,6 @@ export const ItemWithTemplate = {
     render: (/** @type {Record<string, any>} */ args) => {
         return html`<arpa-list id="item-with-template-list" controls=" ">
             <list-item ${attrString(args)}>
-                template content
                 <template type="content"> {image} {title} {subTitle} {children}</template>
             </list-item>
         </arpa-list>`;
