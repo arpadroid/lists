@@ -9,7 +9,7 @@
  * @typedef {import('../lists/tagList/tagItem/tagItem.types').TagItemConfigType} TagItemConfigType
  */
 
-import { ArpaElement } from '@arpadroid/ui';
+import { ArpaElement, applyTemplate } from '@arpadroid/ui';
 import { render, classNames, attrString, listen, dashedToCamel } from '@arpadroid/tools';
 import { getViewportWidth, getViewportHeight, defineCustomElement } from '@arpadroid/tools';
 import ListItemViews from './listItem.views.js';
@@ -331,7 +331,7 @@ class ListItem extends ArpaElement {
         if (typeof list?.getItemTemplate !== 'function') return;
         const itemTemplate = list?.getItemTemplate();
         if (!(itemTemplate instanceof HTMLTemplateElement)) return;
-        this.applyTemplate(itemTemplate, {
+        applyTemplate(this, itemTemplate, {
             contentMode: 'add',
             applyAttributes: true
         });
