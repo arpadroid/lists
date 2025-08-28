@@ -142,7 +142,6 @@ class MultiSelect extends ArpaElement {
         actionsField?.on(
             'change',
             async (/** @type {unknown} */ value, /** @type {Field} */ field, /** @type {Event} */ event) => {
-                
                 const option = actionsField.getSelectedOption();
                 await option?.promise;
                 const action = option?.getAction();
@@ -185,7 +184,9 @@ class MultiSelect extends ArpaElement {
 
     updateMessage() {
         const msg = this.form?.messages?.resource?.getById('info-message');
-        msg?.node?.setContent(this.getTooltip());
+        if (typeof msg?.node?.setContent === 'function') {
+            msg.node.setContent(this.getTooltip());
+        }
     }
 
     // #endregion

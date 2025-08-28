@@ -87,9 +87,9 @@ class TagItem extends ListItem {
     initializeDeleteButton() {
         if (this.hasOnDelete()) {
             this.deleteButton = renderNode(this.renderDeleteButton());
-            this.appendChild(this.deleteButton);
-            this.deleteButton.removeEventListener('click', this._onDelete);
-            this.deleteButton.addEventListener('click', this._onDelete);
+            this.deleteButton && this.appendChild(this.deleteButton);
+            this.deleteButton?.removeEventListener('click', this._onDelete);
+            this.deleteButton?.addEventListener('click', this._onDelete);
         }
     }
 

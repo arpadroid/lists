@@ -464,7 +464,7 @@ class List extends ArpaElement {
      * @param {ListConfigType['preProcessNode']} callback
      */
     setPreProcessNode(callback) {
-        if (this.listResource) {
+        if (this.listResource) { // @ts-ignore
             callback && this.listResource?.setPreProcessNode(callback);
         } else {
             this._config.preProcessNode = callback;
@@ -712,9 +712,11 @@ class List extends ArpaElement {
         this.listResource?.on('remove_item', this.onResourceRemoveItem);
         this.listResource?.on('items_updated', this.onResourceItemsUpdated);
         this.listResource?.on('items', this.onResourceSetItems);
-        this.listResource?.on('update_item', (/** @type {ListResourceItemType} */ payload) =>
-            payload?.node?.reRender()
-        );
+        this.listResource?.on('update_item', (/** @type {ListResourceItemType} */ payload) => {
+            if (payload?.node?.reRender) {
+                payload.node.reRender();
+            }
+        });
         this.listResource?.on('fetch', this.onResourceFetch);
     }
 
