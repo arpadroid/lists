@@ -185,7 +185,7 @@
      */
 
     .listItem__nav {
-        .iconButton {
+        .iconButton__button {
             transition: opacity 0.2s ease-in-out;
             opacity: 0;
             border-radius: 4px;

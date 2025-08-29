@@ -67,7 +67,7 @@
 
 /* icon */
 
-.tagItem.tagItem .iconButton.iconButton {
+.tagItem.tagItem .iconButton__button.iconButton__button {
     margin-left: 4px;
     top: -1px;
 }
