@@ -18,7 +18,7 @@ const Default = {
         controls: 'views',
         id: 'list-views',
         title: 'List Views',
-        itemsPerPage: 10,
+        itemsPerPage: 40,
         hasInfo: false
     },
     render: ListStory.renderSimple

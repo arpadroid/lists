@@ -16,7 +16,9 @@ const Default = {
         id: 'list-sort',
         controls: 'sort',
         title: 'List Sort',
-        currentPage: 1
+        hasInfo: false,
+        currentPage: 1,
+        itemsPerPage: 10,
     },
     /**
      * Renders the list component.

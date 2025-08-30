@@ -112,19 +112,21 @@ class ListSort extends ArpaElement {
 
     render() {
         const sortDir = this.listResource?.getSortDirection() === 'asc' ? 'desc' : 'asc';
+        // @ts-ignore
+        const links = mapHTML(this.list?.getSortOptions() || [], payload => {
+            const { value = '', icon = '', label = '' } = payload;
+            return html`<nav-link link="${value}" icon-left="${icon}" label="${label}"></nav-link>`;
+        });
         this.innerHTML = html`<icon-menu
                 class="sortMenu"
                 icon="sort_by_alpha"
                 tooltip="${this.i18nText('lblSortBy')}"
                 zone="sort-options"
             >
-                ${mapHTML(this.list?.getSortOptions() || [], (/** @type {FieldOptionConfigType} */ payload) => {
-                    const { value = '', icon = '', label = '' } = payload;
-                    return html`<nav-link link="${value}" icon-left="${icon}" label="${label}"></nav-link>`;
-                })}
+                ${links}
             </icon-menu>
             <nav-link
-                class="sortDirButton iconButton"
+                class="sortDirButton iconButton__button"
                 param-name="${this.list?.getParamName('sortDir')}"
                 param-value="${sortDir}"
                 param-clear="${this.list?.getParamName('page')}"

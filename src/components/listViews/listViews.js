@@ -178,9 +178,7 @@ class ListViews extends ArpaElement {
             item?.classList.add('listItem--' + view);
         });
         const prevSelected = this.navigation?.querySelectorAll('[aria-current]');
-        prevSelected?.forEach(node =>
-            (node instanceof HTMLElement) && node.removeAttribute('aria-current')
-        );
+        prevSelected?.forEach(node => node.removeAttribute('aria-current'));
         const selected = this.navigation?.querySelector(`[data-value="${view}"]`);
         selected?.setAttribute('aria-current', 'location');
     }
