@@ -33,6 +33,7 @@ export type ListItemConfigType = ArpaElementConfigType & {
     hasSelection?: boolean;
     hasImageThumbnail?: boolean;
     icon?: string;
+    iconRight?: string;
     id?: string;
     image?: string;
     imageAlt?: string;
