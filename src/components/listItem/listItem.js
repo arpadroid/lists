@@ -325,19 +325,13 @@ class ListItem extends ArpaElement {
     /////////////////////////////
 
     async _initializeTemplates() {
-        this._initializeListTemplate();
         super._initializeTemplates();
+        this._initializeListTemplate();
     }
 
     async _initializeListTemplate() {
-        const list = this.grabList();
-        if (typeof list?.getItemTemplate !== 'function') return;
-        const itemTemplate = list?.getItemTemplate();
-        if (!(itemTemplate instanceof HTMLTemplateElement)) return;
-        applyTemplate(this, itemTemplate, {
-            contentMode: 'add',
-            applyAttributes: true
-        });
+        const itemTemplate = this._getItemTemplate();
+        itemTemplate && applyTemplate(this, itemTemplate, this.getPayload());
     }
 
     getTemplateVars() {
@@ -381,6 +375,11 @@ class ListItem extends ArpaElement {
      */
     _getTemplate() {
         return this.getViewTemplate();
+    }
+
+    _getItemTemplate() {
+        const list = this.grabList();
+        return typeof list?.getItemTemplate === 'function' && list?.getItemTemplate();
     }
 
     /**

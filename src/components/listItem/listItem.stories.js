@@ -28,7 +28,7 @@ const Default = {
         return { canvas, listItem };
     },
     parameters: {
-        layout: 'padded'
+        layout: 'centered'
     }
 };
 
@@ -116,7 +116,7 @@ export const WithZones = {
 
 export const WithTemplate = {
     args: {
-        subtitle: 'Test sub   title',
+        subtitle: 'Test sub title',
         title: 'Item with template',
         image: '/assets/artists/phidias.jpg'
     },
@@ -132,6 +132,22 @@ export const WithTemplate = {
             </template>
             <list-item ${attrString(args)}> </list-item>
         </arpa-list>`;
+    },
+    /**
+     * Plays the test scenario.
+     * @param {{ canvasElement: HTMLElement, step: StepFunction, args: Record<string, any> }} options
+     * @returns {Promise<void>}
+     */
+    play: async ({ canvasElement, step }) => {
+        const { canvas, listItem } = await Default.playSetup(canvasElement);
+        await step('Renders the list item with the expected template', async () => {
+            expect(canvas.getByText('Item with template')).toBeInTheDocument();
+            expect(canvas.getByText('Test sub title')).toBeInTheDocument();
+            expect(listItem?.querySelector('.customContent')).toBeInTheDocument();
+            await waitFor(() => {
+                expect(listItem?.querySelector('img')).toHaveAttribute('src', '/assets/artists/phidias.jpg');
+            });
+        });
     }
 };
 

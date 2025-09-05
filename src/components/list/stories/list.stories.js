@@ -16,7 +16,7 @@ const ListStory = {
     title: 'Lists/List',
     tags: ['docs'],
     parameters: {
-        layout: 'flexColumn'
+        layout: 'padded'
     },
     args: {
         id: 'static-list',
@@ -274,7 +274,7 @@ export const Default = {
             _attr
         );
         return html` <!-- List Item Template -->
-            <template type="list-item" ${attrString(attr)}>
+            <template type="list-item" content-mode="append" ${attrString(attr)}>
                 <zone name="tags">
                     <tag-item label="{date}" icon="calendar_month"></tag-item>
                     <tag-item label="{movement}" icon="palette"></tag-item>
@@ -341,7 +341,7 @@ export const EmptyList = {
         controls: ' '
     },
     parameters: {
-        layout: 'centered'
+        layout: 'padded'
     },
     render: (/** @type {Record<string, any>} */ args) => {
         return html`<arpa-list ${attrString(args)}></arpa-list>`;
