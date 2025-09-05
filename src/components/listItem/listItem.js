@@ -77,6 +77,13 @@ class ListItem extends ArpaElement {
             },
             imageConfig: {
                 showPreloader: true
+            },
+            templateChildren: {
+                // icon: { tag: 'arpa-icon' },
+                // iconRight: { tag: 'arpa-icon' },
+                // titleIcon: { tag: 'arpa-icon' },
+                // contentWrapper: { content: '{innerContent}' }
+                subtitle: { tag: 'span', canRender: true }
             }
         };
         return super.getDefaultConfig(conf);
@@ -165,10 +172,6 @@ class ListItem extends ArpaElement {
 
     getSelectedClass() {
         return this.getProperty('selected-class');
-    }
-
-    getSubTitle() {
-        return this.getProperty('sub-title');
     }
 
     getTitleLink() {
@@ -348,7 +351,6 @@ class ListItem extends ArpaElement {
             image: this.renderImage(),
             nav: this.renderNav(),
             rhs: this.renderRhs(),
-            subTitle: this.renderSubTitle(),
             tags: this.renderTags(),
             title: this.renderTitle(),
             titleContainer: this.renderTitleContainer(),
@@ -450,9 +452,9 @@ class ListItem extends ArpaElement {
 
     //#region Render Title
 
-    renderTitleContainer(subTitle = this.getSubTitle()) {
-        if (!this.hasContent('title') && !subTitle) return '';
-        return html`<div class="listItem__titleWrapper">{title}{subTitle}</div>`;
+    renderTitleContainer() {
+        if (!this.hasContent('title')) return '';
+        return html`<div class="listItem__titleWrapper">{title}{subtitle}</div>`;
     }
 
     renderTitle() {
@@ -472,13 +474,6 @@ class ListItem extends ArpaElement {
 
     renderTitleIcon(icon = this.getProperty('title-icon')) {
         return (icon && html`<arpa-icon class="listItem__titleIcon">${icon}</arpa-icon>`) || '';
-    }
-
-    renderSubTitle() {
-        const subTitle = this.getSubTitle() || '';
-        return this.hasContent('sub-title') && subTitle
-            ? html`<span class="listItem__subTitle" zone="subtitle">${subTitle}</span>`
-            : '';
     }
 
     //#endregion Render Title

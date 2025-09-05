@@ -1,6 +1,6 @@
 import type { ListResource } from '@arpadroid/resources';
 import type ListItem from '../listItem/listItem.js';
-import type { ListItemConfigType } from '../listItem/listItem.types';
+import type { ListItemConfigType, ListItemImageTypes } from '../listItem/listItem.types';
 import type { ArpaElementConfigType } from '@arpadroid/ui';
 import type { ListResourceItemType, Router } from './list.js';
 import { FieldOptionConfigType } from '@arpadroid/forms';
@@ -16,12 +16,17 @@ export type ListConfigType = ArpaElementConfigType & {
     hasItemsTransition?: boolean;
     hasMiniSearch?: boolean;
     hasPager?: boolean;
+    hasMessages?: boolean;
+    hasPreloader?: boolean;
     hasResource?: boolean;
     heading?: string;
+    imageSize?: ListItemImageTypes;
     id?: string;
+    itemIdMap?: string;
     isCollapsed?: boolean;
     itemComponent?: typeof ListItem;
     items?: ListItemConfigType[];
+    lazyLoadImages?: boolean | 'auto';
     itemsPerPage?: number;
     itemTag?: string;
     tagName?: string;

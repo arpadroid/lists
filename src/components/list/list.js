@@ -7,6 +7,7 @@
  * @typedef {import('@arpadroid/services').Router} Router
  * @typedef {import('../listItem/listItem.types').ListItemImageSizeType} ListItemImageSizeType
  * @typedef {import('../listSort/listSort.js').default} ListSort
+ * @typedef {import('@arpadroid/messages').Messages} Messages
  * @typedef {import('@arpadroid/forms').FieldOptionConfigType} FieldOptionConfigType
  */
 
@@ -25,14 +26,15 @@ class List extends ArpaElement {
     /** @type {ListConfigType} */
     _config = this._config;
     isSearchInitialized = false;
+    /** @type {ListItemImageSizeType} */
+    itemImageDimensions;
+    // isLoading = false;
 
     /////////////////////////
     // #region Initialization
     //////////////////////////
 
     _preInitialize() {
-        /** @type {ListItemImageSizeType} */
-        this.itemImageDimensions = this.itemImageDimensions;
         bind(this, 'onResourceAddItem', 'onResourceRemoveItem', 'onResourceRemoveItems', '_initializeList');
         bind(this, 'onResourceItemsUpdated', 'onResourceSetItems', 'onResourceAddItems', 'onResourceFetch');
         bind(this, 'onTransitionOut');
@@ -40,20 +42,20 @@ class List extends ArpaElement {
 
     _initialize() {
         this._initializeListResource();
+        this.isLoading = false;
     }
 
     _initializeListResource() {
         /** @type {ListResource} */
         this.listResource = this.getResource();
-        if (this.listResource) {
-            this.listResource.on('payload', this._initializeList);
-            this._handleItems();
-            this._handlePreloading();
-            const url = this.getProperty('url');
-            if (url) {
-                this.listResource.setUrl(url);
-                this.removeAttribute('url');
-            }
+        if (!this.listResource) return;
+        this.listResource.on('payload', this._initializeList);
+        this._handleItems();
+        this._handlePreloading();
+        const url = this.getProperty('url');
+        if (url) {
+            this.listResource.setUrl(url);
+            this.removeAttribute('url');
         }
     }
 
@@ -121,7 +123,6 @@ class List extends ArpaElement {
     }
 
     _initializeList() {
-        this.resetScroll();
         this._initializePager();
     }
 
@@ -156,45 +157,69 @@ class List extends ArpaElement {
      * @returns {ListConfigType}
      */
     getDefaultConfig(config = {}) {
+        /** @type {ListConfigType} */
         const conf = {
+            // template: List.template,
             canCollapse: false,
             className: 'arpaList',
+            controls: ['search', 'sort', 'views', 'multiselect', 'filters'],
             defaultView: 'list',
-            paramNamespace: '',
             hasControls: undefined,
             hasInfo: false,
+            hasItemsTransition: false,
             hasMiniSearch: true,
             hasPager: true,
-            hasResource: false,
             hasPreloader: true,
-            hasItemsTransition: false,
-            controls: ['search', 'sort', 'views', 'multiselect', 'filters'],
+            hasResource: false,
+            hasMessages: false,
             imageSize: 'list',
             isCollapsed: false,
             itemComponent: ListItem,
+            itemIdMap: 'id',
             items: [],
             itemsPerPage: 50,
             itemTag: 'list-item',
-            itemIdMap: 'id',
             lazyLoadImages: 'auto',
+            mapItemId: undefined,
             maxPagerNodes: 7,
             noItemsContent: html`<i18n-text key="lists.list.txtNoItemsFound"></i18n-text>`,
             noItemsIcon: 'info',
             pageParam: 'page',
+            paramNamespace: '',
             perPageParam: 'perPage',
             renderMode: 'full',
-            resetScrollOnLoad: false,
+            resetScrollOnLoad: true,
             router: undefined,
             searchParam: 'search',
             showResultsText: true,
             sortByParam: 'sortBy',
             sortDefault: undefined,
             sortDirParam: 'sortDir',
-            tagName: 'arpa-list',
-            mapItemId: undefined,
             sortOptions: [],
-            // template: List.template,
-            title: ''
+            tagName: 'arpa-list',
+            title: '',
+            templateChildren: {
+                messages: { canRender: 'has-messages', tag: 'arpa-messages', id: '{id}-messages' },
+                info: { tag: 'list-info', canRender: 'has-info' },
+                heading: {},
+                titleWrapper: { tag: 'h2', hasZone: false, content: '{titleIcon}{title}' },
+                title: { tag: 'span' },
+                titleIcon: { tag: 'arpa-icon' },
+                aside: {},
+                footer: { content: '{pager}' },
+                preloader: { tag: 'circular-preloader', canRender: 'has-preloader' },
+                noItems: { content: '{noItemsIcon}{noItemsText}' },
+                noItemsIcon: { tag: 'arpa-icon' },
+                noItemsText: {
+                    content: () => this.getNoItemsContent()
+                },
+                controls: {
+                    tag: 'list-controls',
+                    content: ' ',
+                    canRender: () => this.hasControls(),
+                    attr: { controls: () => this.getArrayProperty('controls')?.toString() || '' }
+                }
+            }
         };
         return mergeObjects(super.getDefaultConfig(conf), config);
     }
@@ -211,10 +236,6 @@ class List extends ArpaElement {
      */
     hasControls() {
         return this._config.hasControls !== false && (this.hasZone('controls') || !this.hasHeaderControls());
-    }
-
-    hasPreloader() {
-        return this.hasProperty('has-preloader');
     }
 
     /**
@@ -246,23 +267,6 @@ class List extends ArpaElement {
     }
 
     /**
-     * True if the list has any footer content.
-     * @returns {boolean}
-     */
-    hasFooter() {
-        return Boolean(this.hasProperty('has-footer') || this.hasZone('footer') || this.hasPager());
-    }
-
-    /**
-     * Returns true if the list has an info component which displays information about the list and item range.
-     * It also contains additional list controls.
-     * @returns {boolean}
-     */
-    hasInfo() {
-        return Boolean(this.hasProperty('has-info'));
-    }
-
-    /**
      * Returns true if the list has a pager component.
      * @returns {boolean}
      */
@@ -277,18 +281,6 @@ class List extends ArpaElement {
      */
     hasResource() {
         return Boolean(this.hasProperty('url') || this.hasProperty('has-resource'));
-    }
-
-    /**
-     * Returns true if the list has sticky controls and pagination.
-     * @returns {boolean}
-     */
-    hasStickyControls() {
-        return Boolean(this.hasProperty('sticky-controls'));
-    }
-
-    hasNoItemsContent() {
-        return Boolean(this.getNoItemsContent() || this.hasZone('no-items'));
     }
 
     // #endregion
@@ -431,8 +423,7 @@ class List extends ArpaElement {
      * Scrolls list to the top.
      */
     resetScroll() {
-        const { resetScrollOnLoad } = this._config;
-        resetScrollOnLoad && this?.scrollIntoView({});
+        this.hasProperty('resetScrollOnLoad') && this.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     /////////////////////////
@@ -464,7 +455,8 @@ class List extends ArpaElement {
      * @param {ListConfigType['preProcessNode']} callback
      */
     setPreProcessNode(callback) {
-        if (this.listResource) { // @ts-ignore
+        if (this.listResource) {
+            // @ts-ignore
             callback && this.listResource?.setPreProcessNode(callback);
         } else {
             this._config.preProcessNode = callback;
@@ -789,29 +781,11 @@ class List extends ArpaElement {
 
     getTemplateVars() {
         return {
-            aside: this.renderAside(),
-            controls: this.renderControls(),
             headerControls: this.renderHeaderControls(),
-            footer: this.renderFooter(),
-            heading: this.renderHeading(),
             id: this.getId(),
-            info: this.renderInfo(),
             items: this.renderItemsWrapper(),
-            noItemsContent: this.getNoItemsContent(),
-            noItemsIcon: this.getProperty('no-items-icon'),
-            pager: this.renderPager(),
-            title: this.renderTitle(),
-            preloader: this.renderPreloader(),
-            messages: this.renderMessages()
+            pager: this.renderPager()
         };
-    }
-
-    hasMessages() {
-        return this.hasProperty('has-messages') || this.hasZone('messages');
-    }
-
-    renderMessages() {
-        return (this.hasMessages() && html`<arpa-messages id="{id}-messages" zone="messages"></arpa-messages>`) || '';
     }
 
     _preRender() {
@@ -850,8 +824,23 @@ class List extends ArpaElement {
         this.controls = this.querySelector('list-controls');
         this.noItemsNode = this.querySelector('.arpaList__noItems');
         this.preloader = this.querySelector('.arpaList__preloader');
-
+        this.messages = /** @type {Messages | null} */ (this.querySelector('arpa-messages'));
+        this._handleNoItems();
         return true;
+    }
+
+    async _handleNoItems() {
+        if (this.listResource?.promise) {
+            await this.listResource.promise;
+        }
+        requestAnimationFrame(() => {
+            if (!this.getItemCount() && !this.isLoading) {
+                this.noItemsNode = this.noItemsNode || renderNode(this.renderChild('noItems'));
+                this.bodyMainNode?.appendChild(this.noItemsNode);
+            } else if (this.noItemsNode?.isConnected) {
+                this.noItemsNode?.remove();
+            }
+        });
     }
 
     _initializeItems() {
@@ -877,10 +866,6 @@ class List extends ArpaElement {
         }
 
         return initialItems.filter(item => item.parentNode !== this.itemsNode);
-    }
-
-    renderPreloader() {
-        return this.hasPreloader() ? html`<circular-preloader class="arpaList__preloader"></circular-preloader>` : '';
     }
 
     /**
@@ -909,7 +894,7 @@ class List extends ArpaElement {
     renderFull() {
         return html`
             <div class="arpaList__header" zone="header">
-                <div class="arpaList__headerTop">{title}{headerControls}</div>
+                <div class="arpaList__headerTop">{titleWrapper}{headerControls}</div>
                 {messages}
             </div>
             {controls} {info}
@@ -929,18 +914,6 @@ class List extends ArpaElement {
         return html`{items}`;
     }
 
-    renderInfo() {
-        if (!this.hasInfo()) return '';
-        return html`<list-info
-            zone="list-info"
-            ${attrString({
-                'txt-all-results': this.getProperty('txt-all-results'),
-                'txt-search-results': this.getProperty('txt-search-results'),
-                'txt-no-results': this.getProperty('txt-no-results')
-            })}
-        ></list-info>`;
-    }
-
     hasHeaderControls() {
         return this.getControls()?.length === 1;
     }
@@ -957,32 +930,6 @@ class List extends ArpaElement {
         return '';
     }
 
-    renderControls(config = {}) {
-        /** @type {Record<string, unknown>} */
-        const {
-            tagName = 'list-controls',
-            controls = this.getArrayProperty('controls'),
-            className = 'arpaList__controls'
-        } = config;
-        if (!this.hasControls()) return '';
-        return html`<${tagName} zone="controls" class="${className}" controls="${controls?.toString()}"></${tagName}>`;
-    }
-
-    renderTitle(title = this.getTitle()) {
-        if (!title && !this.hasZone('title')) return '';
-        const icon = this.getProperty('title-icon');
-        return html`<h2 class="arpaList__title">
-            ${(icon && html`<arpa-icon className="arpaList__titleIcon">${icon}</arpa-icon>`) || ''}
-            <span class="arpaList__titleText" zone="title">${title}</span>
-        </h2>`;
-    }
-
-    renderHeading() {
-        const headingText = this.getProperty('heading');
-        if (!headingText) return '';
-        return html`<div class="arpaList__heading">${headingText}</div>`;
-    }
-
     renderItemsWrapper() {
         if (this.getRenderMode() === 'minimal') return '';
         const ariaLabel = processTemplate(this.getProperty('heading'), {}, this);
@@ -997,23 +944,6 @@ class List extends ArpaElement {
     renderItem(config) {
         const component = this.getProperty('item-tag');
         return html`<${component} ${attrString(config)}></${component}>`;
-    }
-
-    renderAside() {
-        if (!this.hasContent('aside')) return '';
-        return html`<div class="arpaList__aside" zone="aside"></div>`;
-    }
-
-    renderFooter() {
-        return this.hasFooter() ? html`<div class="arpaList__footer">${this.renderPager()}</div>` : '';
-    }
-
-    renderNoItemsContent(items = this.getItems()) {
-        if (!this.hasNoItemsContent() || !items?.length) return '';
-        return html`<div class="arpaList__noItems">
-            <arpa-icon>${this.getProperty('no-items-icon')}</arpa-icon>
-            <div class="arpaList__noItemsText">${this.getNoItemsContent()}</div>
-        </div>`;
     }
 
     //////////////////////////////
@@ -1052,7 +982,7 @@ class List extends ArpaElement {
         this.pagerNode?.onChange((/** @type {import('@arpadroid/ui').PagerCallbackPayloadType} */ payload) => {
             const { page } = payload;
             const newURL = editURL(window.location.href, { [this.getParamName('page')]: String(page) });
-            this.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            this.resetScroll();
             this.router?.go(newURL);
         });
     }
@@ -1063,17 +993,6 @@ class List extends ArpaElement {
     /////////////////////////
     // #region Lifecycle
     /////////////////////////
-
-    update() {
-        this.onRenderReady(() => {
-            if (!this.getItems()?.length && !this.isLoading) {
-                this.noItemsNode = this.noItemsNode || renderNode(this.renderNoItemsContent());
-                this.noItemsNode && this.bodyMainNode?.appendChild(this.noItemsNode);
-            } else if (this.noItemsNode?.isConnected) {
-                this.noItemsNode?.remove();
-            }
-        });
-    }
 
     _handlePreloading() {
         this.listResource?.on('fetch', async () => {

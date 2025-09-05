@@ -14,6 +14,7 @@ const Default = {
     args: {
         id: 'static-list-test',
         title: 'HTML List',
+        titleIcon: 'list',
         controls: ' '
     },
     parameters: {
@@ -21,6 +22,8 @@ const Default = {
     },
     render: (/** @type {Record<string, any>} */ args) => {
         return html`<arpa-list ${attrString(args)}>
+            <zone name="heading">List heading</zone>
+            <zone name="aside"> List aside</zone>
             <template type="list-item" element-truncate-content="70" element-truncate-button></template>
             <list-item title-link="#test-link" title-icon="auto_awesome" title="Morning Motivation">
                 <zone name="title"></zone>
@@ -132,17 +135,18 @@ const Default = {
         step('Renders the items', async () => {
             const items = canvas.getAllByRole('listitem');
             expect(items).toHaveLength(8);
-            expect(items[0]).toHaveTextContent('Morning Motivation');
-            expect(items[1]).toHaveTextContent('Mindful Moments');
-            expect(items[2]).toHaveTextContent('Track Your Progress');
-            expect(items[3]).toHaveTextContent('Explore New Ideas');
-            expect(items[4]).toHaveTextContent('Embrace Gratitude');
-            expect(items[5]).toHaveTextContent('Physical Well-Being');
-            expect(items[6]).toHaveTextContent('Reflect and Grow');
-            expect(items[7]).toHaveTextContent('Creative Expression');
+            expect(canvas.getByText('List aside')).toBeInTheDocument();
+            expect(canvas.getByText('List heading')).toBeInTheDocument();
+            expect(canvas.getAllByRole('button', { name: /Read more/i })).toHaveLength(8);
+
+            const textContent = items[0].querySelector('.truncateText__content');
+            expect(textContent.textContent).toHaveLength(73);
+            
+
         });
     }
 };
+
 
 export const HTMLList = Default;
 

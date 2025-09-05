@@ -10,7 +10,7 @@
     flex: 1 1 auto;
 }
 
-.arpaList__title {
+.arpaList__titleWrapper {
     display: flex;
     flex-direction: row;
     align-items: center;

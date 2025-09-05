@@ -106,7 +106,7 @@
         color: var(--grey-800);
     }
 
-    .listItem__subTitle.listItem__subTitle {
+    .listItem__subtitle.listItem__subtitle {
         padding: 0;
         margin-top: 2px;
         display: flex;

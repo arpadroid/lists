@@ -38,7 +38,6 @@ class ListControls extends ArpaElement {
     getDefaultConfig() {
         return {
             className: 'listControls',
-            hasStickyControls: this.list?.hasStickyControls(),
             controls: this.list?.getControls()
         };
     }

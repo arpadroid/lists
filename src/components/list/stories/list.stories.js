@@ -9,7 +9,7 @@
 
 import artists from '../../../mockData/artists.json';
 import { attrString, formatDate, mergeObjects } from '@arpadroid/tools';
-import { within } from '@storybook/test';
+import { within, expect, waitFor } from '@storybook/test';
 
 const html = String.raw;
 const ListStory = {
@@ -21,6 +21,7 @@ const ListStory = {
     args: {
         id: 'static-list',
         title: '',
+        hasMessages: true,
         hasItemsTransition: true,
         hasInfo: true,
         hasResource: true,
@@ -247,6 +248,9 @@ export const Default = {
         const listResource = listNode?.listResource;
         typeof preRenderCallback === 'function' && preRenderCallback({ listResource, listNode, listItem });
         await listNode?.promise;
+        listNode?.messages?.addMessage({
+            text: 'This is a demo message'
+        });
         listNode?.id && initializeList && (await Default.initializeList(listNode?.id));
         await new Promise(resolve => setTimeout(resolve, 50));
         return { canvas, listNode, listItem, listResource };
@@ -269,9 +273,7 @@ export const Default = {
             },
             _attr
         );
-        return html`
-            <!-- List Item Template -->
-            
+        return html` <!-- List Item Template -->
             <template type="list-item" ${attrString(attr)}>
                 <zone name="tags">
                     <tag-item label="{date}" icon="calendar_month"></tag-item>
@@ -328,6 +330,49 @@ export const Test200 = {
         ...Default.args,
         id: 'test-200',
         itemsPerPage: 200
+    }
+};
+
+export const EmptyList = {
+    title: 'Lists/Empty List',
+    args: {
+        id: 'static-list-test',
+        title: 'Empty List',
+        controls: ' '
+    },
+    parameters: {
+        layout: 'centered'
+    },
+    render: (/** @type {Record<string, any>} */ args) => {
+        return html`<arpa-list ${attrString(args)}></arpa-list>`;
+    },
+    /**
+     * Sets up the test scenario.
+     * @param {HTMLElement} canvasElement
+     * @returns {Promise<{ canvas: any, listNode: HTMLElement | null }>}
+     */
+    playSetup: async (/** @type {HTMLElement} */ canvasElement) => {
+        await customElements.whenDefined('arpa-list');
+        await customElements.whenDefined('list-item');
+        const canvas = within(canvasElement);
+        /** @type {List | null} */
+        const listNode = canvasElement.querySelector('arpa-list');
+        /** @type {ListResource | undefined} */
+
+        return { canvas, listNode };
+    },
+    /**
+     * Plays the test scenario.
+     * @param {{ canvasElement: HTMLElement, step: StepFunction }} options
+     * @returns {Promise<void>}
+     */
+    play: async ({ canvasElement, step }) => {
+        const { canvas } = await EmptyList.playSetup(canvasElement);
+        step('Renders an empty list', async () => {
+            await waitFor(() => {
+                expect(canvas.getByText('No items found.')).toBeInTheDocument();
+            });
+        });
     }
 };
 

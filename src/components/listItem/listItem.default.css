@@ -104,7 +104,7 @@ button.listItem__main {
     }
 }
 
-.listItem__subTitle {
+.listItem__subtitle {
     font-size: 1rem;
     font-weight: 600;
     color: var(--grey-700);
