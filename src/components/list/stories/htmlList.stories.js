@@ -138,11 +138,8 @@ const Default = {
             expect(canvas.getByText('List aside')).toBeInTheDocument();
             expect(canvas.getByText('List heading')).toBeInTheDocument();
             expect(canvas.getAllByRole('button', { name: /Read more/i })).toHaveLength(8);
-
             const textContent = items[0].querySelector('.truncateText__content');
             expect(textContent.textContent).toHaveLength(73);
-            
-
         });
     }
 };
