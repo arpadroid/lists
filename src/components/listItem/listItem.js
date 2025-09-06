@@ -79,11 +79,12 @@ class ListItem extends ArpaElement {
                 showPreloader: true
             },
             templateChildren: {
-                // icon: { tag: 'arpa-icon' },
-                // iconRight: { tag: 'arpa-icon' },
-                // titleIcon: { tag: 'arpa-icon' },
-                // contentWrapper: { content: '{innerContent}' }
-                subtitle: { tag: 'span', canRender: true }
+                icon: { tag: 'arpa-icon', canRender: true },
+                iconRight: { tag: 'arpa-icon' },
+                titleIcon: { tag: 'arpa-icon' }, // @ts-ignore
+                image: { tag: 'arpa-image', attr: this.getImageAttributes.bind(this) },
+                subtitle: { tag: 'span', canRender: true },
+                nav: { tag: 'icon-menu', id: this.getId() + '-nav' }
             }
         };
         return super.getDefaultConfig(conf);
@@ -138,14 +139,6 @@ class ListItem extends ArpaElement {
 
     getId() {
         return this.payload?.id || this.getProperty('id');
-    }
-
-    getIcon() {
-        return this.getProperty('icon');
-    }
-
-    getIconRight() {
-        return this.getProperty('icon-right');
     }
 
     getImage() {
@@ -336,14 +329,9 @@ class ListItem extends ArpaElement {
 
     getTemplateVars() {
         return {
-            ...this.getPayload(),
             checkbox: this.renderCheckbox(),
             children: this.renderContent(),
             contentWrapper: this.renderContentWrapper(),
-            icon: this.renderIcon(),
-            iconRight: this.renderIconRight(),
-            image: this.renderImage(),
-            nav: this.renderNav(),
             rhs: this.renderRhs(),
             tags: this.renderTags(),
             title: this.renderTitle(),
@@ -416,16 +404,6 @@ class ListItem extends ArpaElement {
         };
     }
 
-    renderIcon() {
-        const icon = this.getIcon();
-        return icon ? html`<arpa-icon class="listItem__icon">${icon}</arpa-icon>` : '';
-    }
-
-    renderIconRight() {
-        const icon = this.getIconRight();
-        return icon ? html`<arpa-icon class="listItem__iconRight">${icon}</arpa-icon>` : '';
-    }
-
     renderContentHeader() {
         const titleContainer = this.renderTitleContainer();
         const tags = this.renderTags();
@@ -446,7 +424,8 @@ class ListItem extends ArpaElement {
         /** @type {NavList | null} */
         this.navNode = /** @type {NavList | null} */ (this.querySelector('.listItem__nav'));
         await customElements.whenDefined('icon-menu');
-        this._config.nav && this.navNode?.setConfig(this._config.nav);
+        if (!this.navNode || !this._config.nav) return;
+        this.navNode?.setConfig(this._config.nav);
     }
 
     //#region Render Title
@@ -467,12 +446,8 @@ class ListItem extends ArpaElement {
             : html`<${titleTag} class="${titleClass}" zone="title">${content}</${titleTag}>`;
     }
 
-    renderTitleContent(content = this.getTitle(), icon = this.renderTitleIcon()) {
-        return html`${icon}${content || ''}`;
-    }
-
-    renderTitleIcon(icon = this.getProperty('title-icon')) {
-        return (icon && html`<arpa-icon class="listItem__titleIcon">${icon}</arpa-icon>`) || '';
+    renderTitleContent(content = this.getTitle()) {
+        return html`{titleIcon}${content || ''}`;
     }
 
     //#endregion Render Title
@@ -507,10 +482,9 @@ class ListItem extends ArpaElement {
     //#region Render Rhs
 
     renderRhs(content = this._config.rhsContent) {
-        const nav = this.renderNav();
         const checkbox = this.renderCheckbox();
-        return this.hasZone('rhs') || nav || checkbox || content
-            ? html`<div class="listItem__rhs" zone="rhs">${checkbox}${nav}${content}</div>`
+        return this.hasZone('rhs') || checkbox || content
+            ? html`<div class="listItem__rhs" zone="rhs">${checkbox}{nav}${content}</div>`
             : '';
     }
 
@@ -532,18 +506,9 @@ class ListItem extends ArpaElement {
 
     //#endregion Render Checkbox
 
-    /**
-     * Renders the image for the list item.
-     * @param {string} image - The image URL.
-     * @returns {string} - The rendered image as a string.
-     */
-    renderImage(image = this.getImage()) {
-        if (!image) return '';
-        return html`<arpa-image ${attrString(this.getImageAttributes())}></arpa-image>`;
-    }
-
     getImageAttributes() {
-        const totalItems = this.list?.getItemCount();
+        this.grabList();
+        const totalItems = typeof this.list?.getItemCount === 'function' ? this.list?.getItemCount() : 0;
         const lazyLoad = this.getLazyLoad();
         const isAuto = lazyLoad === 'auto' && (totalItems || 0) > 100;
         /** @type {Record<string, unknown>} */
@@ -576,7 +541,9 @@ class ListItem extends ArpaElement {
     }
 
     getLazyLoad() {
-        return this.list?.getLazyLoadImages() ?? this.getProperty('lazy-load-image');
+        return typeof this.list?.getLazyLoadImages === 'function'
+            ? this.list?.getLazyLoadImages()
+            : this.getProperty('lazy-load-image');
     }
 
     /**
@@ -606,7 +573,7 @@ class ListItem extends ArpaElement {
         }
         const width = this.getProperty('image-width') || size;
         const height = this.getProperty('image-height');
-        const view = this.list?.getView() || this.view || 'list';
+        const view = this.getView();
         if (width || height) return { width, height };
         const sizeName = this.list?.hasControl('views') && view?.replace(/-/g, '_');
         const defaultSize = this.getProperty('default-image-size');
@@ -614,15 +581,6 @@ class ListItem extends ArpaElement {
         if (typeof rv === 'function') rv = rv();
         return rv;
     }
-
-    // #region Render Nav
-
-    renderNav() {
-        if (!this.hasNav() && !this.hasZone('item-nav')) return '';
-        return html`<icon-menu id="${this.getId()}" class="listItem__nav" zone="item-nav"></icon-menu>`;
-    }
-
-    // #endregion Render Nav
 
     renderContent(truncate = this.getProperty('truncate-content'), content = this.getContent()?.trim() || '') {
         if (!this.hasZone('content') && !content) return '';
@@ -662,7 +620,7 @@ class ListItem extends ArpaElement {
         this.contentNode = this.querySelector('.listItem__content');
         this.titleNode = this.querySelector('.listItem__title');
         this.contentWrapperNode = this.querySelector('.listItem__contentWrapper');
-        this.hasNav() && this.initializeNav();
+        this.initializeNav();
         this.image?.addConfig({
             onLoad: this._onImageLoaded,
             onError: this._onImageError

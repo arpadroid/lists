@@ -68,6 +68,7 @@ export const Default = {
     renderItemTemplate: () => {
         return html`<template
             type="list-item"
+            content-mode="append"
             element-id="{id}"
             element-image="/api/image/convert?width=[width]&height=[height]&quality=[quality]&source={image_url}"
         >
@@ -76,7 +77,7 @@ export const Default = {
                 <tag-item label="{date}" icon="calendar_month"></tag-item>
             </zone>
 
-            <zone name="item-nav">
+            <zone name="nav">
                 <nav-link link="/gallery/{id}" icon-right="visibility">View</nav-link>
                 <nav-link link="/gallery/{id}/edit" icon-right="edit">Edit</nav-link>
             </zone>

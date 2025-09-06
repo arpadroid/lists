@@ -208,11 +208,9 @@ class List extends ArpaElement {
                 aside: {},
                 footer: { content: '{pager}' },
                 preloader: { tag: 'circular-preloader', canRender: 'has-preloader' },
-                noItems: { content: '{noItemsIcon}{noItemsText}' },
+                noItems: { content: '{noItemsIcon}{noItemsText}', canRender: true },
                 noItemsIcon: { tag: 'arpa-icon' },
-                noItemsText: {
-                    content: () => this.getNoItemsContent()
-                },
+                noItemsText: { content: () => this.getNoItemsContent() },
                 controls: {
                     tag: 'list-controls',
                     content: ' ',
@@ -899,7 +897,7 @@ class List extends ArpaElement {
             </div>
             {controls} {info}
             <div class="arpaList__body" zone="body">
-                <div class="arpaList__bodyMain">{heading}{items}{preloader}</div>
+                <div class="arpaList__bodyMain">{heading}{items}</div>
                 {aside}
             </div>
             {footer}
@@ -995,12 +993,18 @@ class List extends ArpaElement {
     /////////////////////////
 
     _handlePreloading() {
+        const hasPreloader = this.hasProperty('has-preloader');
+        if (!hasPreloader) return;
         this.listResource?.on('fetch', async () => {
             this.isLoading = true;
+            this.preloader = this.preloader || renderNode(this.renderChild('preloader'));
             this.classList.add('arpaList--loading');
+            if (this.preloader?.isConnected) return;
+            this.preloader && this.bodyMainNode?.appendChild(this.preloader);
         });
 
         this.listResource?.on('ready', () => {
+            this.preloader?.isConnected && this.preloader.remove();
             this.classList.remove('arpaList--loading');
             this.isLoading = false;
         });

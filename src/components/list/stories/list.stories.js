@@ -279,7 +279,7 @@ export const Default = {
                     <tag-item label="{date}" icon="calendar_month"></tag-item>
                     <tag-item label="{movement}" icon="palette"></tag-item>
                 </zone>
-                <zone name="item-nav">
+                <zone name="nav">
                     <nav-link link="javascript:void(0)" icon-right="visibility">View</nav-link>
                     <nav-link link="javascript:void(0)" icon-right="edit">Edit</nav-link>
                 </zone>

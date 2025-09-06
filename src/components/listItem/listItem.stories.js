@@ -37,7 +37,8 @@ export const Render = {
         icon: 'list',
         iconRight: 'chevron_right',
         title: 'List item',
-        subtitle: 'Test subtitle'
+        subtitle: 'Test subtitle',
+        image: '/assets/artists/phidias.jpg'
     },
     /**
      * Plays the test scenario.
@@ -74,6 +75,9 @@ export const WithZones = {
         titleLink: '#test-link',
         truncateContent: 100,
         truncateButton: true
+    },
+    params: {
+        layout: 'padded'
     },
     render: (/** @type {Record<string, any>} */ args) => {
         return html`<arpa-list id="list-item-list" title="List Item" controls=" ">
