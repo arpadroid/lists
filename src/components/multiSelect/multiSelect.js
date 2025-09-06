@@ -183,7 +183,9 @@ class MultiSelect extends ArpaElement {
     }
 
     updateMessage() {
-        const msg = this.form?.messages?.resource?.getById('info-message');
+        /** @type {ListResource | undefined} */
+        const resource = this.form?.messages?.listResource;
+        const msg = resource?.getItem('info-message');
         if (typeof msg?.node?.setContent === 'function') {
             msg.node.setContent(this.getTooltip());
         }
