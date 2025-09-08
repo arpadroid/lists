@@ -205,7 +205,7 @@ export const Default = {
     args: {
         ...ListStory.args,
         id: 'static-list',
-        title: 'List',
+        title: 'List Component',
         itemsPerPage: 10,
         hasResource: true
     },
@@ -249,7 +249,7 @@ export const Default = {
         typeof preRenderCallback === 'function' && preRenderCallback({ listResource, listNode, listItem });
         await listNode?.promise;
         listNode?.messages?.addMessage({
-            text: 'This is a demo message'
+            text: 'The list component is an advanced list creation tool, which aims to simplify the process of creating and managing advanced UI lists with search and filtering functionality. It features highly customizable list items via templates, multiple view modes, and seamless integration with data resources.'
         });
         listNode?.id && initializeList && (await Default.initializeList(listNode?.id));
         await new Promise(resolve => setTimeout(resolve, 50));

@@ -349,7 +349,6 @@ class ListItem extends ArpaElement {
         const { role } = this._config;
         role && this.setAttribute('role', role);
         this.link = this.getLink();
-        this.removeAttribute('link');
     }
 
     _onConnected() {
@@ -645,6 +644,7 @@ class ListItem extends ArpaElement {
     _onComplete() {
         this.setViewClass();
         this._attachOnClick();
+        this.removeAttribute('link');
     }
 
     _attachOnClick() {

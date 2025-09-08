@@ -233,7 +233,9 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasControls() {
-        return this._config.hasControls !== false && (this.hasZone('controls') || !this.hasHeaderControls());
+        if (this._config.hasControls === false) return false;
+        if (this.getControls().length === 0) return false;
+        return this.hasZone('controls') || !this.hasHeaderControls();
     }
 
     /**
