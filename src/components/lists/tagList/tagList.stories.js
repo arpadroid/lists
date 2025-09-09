@@ -40,7 +40,7 @@ const Default = {
      */
     render: args => {
         return html`<tag-list ${attrString(args)}>
-            <template type="list-item" element-has-delete></template>
+            <template template-type="list-item" has-delete></template>
             <tag-item icon="restaurant">Tag 1</tag-item>
             <tag-item icon="lunch_dining">Tag 2</tag-item>
             <tag-item icon="nightlife">Tag 3</tag-item>

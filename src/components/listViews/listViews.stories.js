@@ -134,13 +134,7 @@ export const CustomView = {
 
                 <!-- Custom View Template -->
 
-                <template
-                    type="view"
-                    id="custom-view"
-                    label="Custom View"
-                    icon="dashboard"
-                    element-title-icon="dashboard"
-                >
+                <template template-type="view" id="custom-view" label="Custom View" icon="dashboard" title-icon="dashboard">
                     <div class="listItem__main">
                         {image}
                         <div class="listItem__customView__content">
@@ -199,8 +193,6 @@ export const CustomView = {
                             --icon-button-size: 1.5rem;
                         }
                     }
-
-                    
                 }
             </style>
         `;

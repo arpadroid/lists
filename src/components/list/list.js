@@ -197,6 +197,7 @@ class List extends ArpaElement {
             sortDirParam: 'sortDir',
             sortOptions: [],
             tagName: 'arpa-list',
+            templateTypes: ['content', 'list-item'],
             title: '',
             templateChildren: {
                 messages: { canRender: 'has-messages', tag: 'arpa-messages', id: '{id}-messages' },

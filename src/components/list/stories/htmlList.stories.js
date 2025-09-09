@@ -24,7 +24,7 @@ const Default = {
         return html`<arpa-list ${attrString(args)}>
             <zone name="heading">List heading</zone>
             <zone name="aside"> List aside</zone>
-            <template type="list-item" element-truncate-content="70" element-truncate-button></template>
+            <template template-type="list-item" truncate-content="70" truncate-button></template>
             <list-item title-link="#test-link" title-icon="auto_awesome" title="Morning Motivation">
                 <zone name="title"></zone>
                 <zone name="subtitle"> Start your day with a burst of energy! </zone>

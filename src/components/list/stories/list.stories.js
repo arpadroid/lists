@@ -263,18 +263,16 @@ export const Default = {
     play: async ({ canvasElement }) => {
         await Default.playSetup(canvasElement);
     },
-    renderItemTemplate: (_attr = {}) => {
-        const attr = mergeObjects(
-            {
-                elementTruncateContent: 50,
-                type: 'list-item',
-                elementImage: '{portraitURL}',
-                elementTruncateButton: true
-            },
-            _attr
-        );
+    renderItemTemplate: (attr = {}) => {
         return html` <!-- List Item Template -->
-            <template type="list-item" content-mode="append" ${attrString(attr)}>
+            <template
+                template-type="list-item"
+                template-mode="append"
+                truncate-content="50"
+                image="{portraitURL}"
+                truncate-button
+                ${attrString(attr)}
+            >
                 <zone name="tags">
                     <tag-item label="{date}" icon="calendar_month"></tag-item>
                     <tag-item label="{movement}" icon="palette"></tag-item>

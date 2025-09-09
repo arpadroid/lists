@@ -67,10 +67,10 @@ export const Default = {
     },
     renderItemTemplate: () => {
         return html`<template
-            type="list-item"
-            content-mode="append"
-            element-id="{id}"
-            element-image="/api/image/convert?width=[width]&height=[height]&quality=[quality]&source={image_url}"
+            template-type="list-item"
+            template-mode="append"
+            id="{id}"
+            image="/api/image/convert?width=[width]&height=[height]&quality=[quality]&source={image_url}"
         >
             <zone name="tags">
                 <tag-item label="{author_initials}" icon="person"></tag-item>
