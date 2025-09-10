@@ -8,7 +8,7 @@
  */
 
 import artists from '../../../mockData/artists.json';
-import { attrString, formatDate, mergeObjects } from '@arpadroid/tools';
+import { attrString, formatDate } from '@arpadroid/tools';
 import { within, expect, waitFor } from '@storybook/test';
 
 const html = String.raw;
@@ -248,9 +248,6 @@ export const Default = {
         const listResource = listNode?.listResource;
         typeof preRenderCallback === 'function' && preRenderCallback({ listResource, listNode, listItem });
         await listNode?.promise;
-        listNode?.messages?.addMessage({
-            text: 'The list component is an advanced list creation tool, which aims to simplify the process of creating and managing advanced UI lists with search and filtering functionality. It features highly customizable list items via templates, multiple view modes, and seamless integration with data resources.'
-        });
         listNode?.id && initializeList && (await Default.initializeList(listNode?.id));
         await new Promise(resolve => setTimeout(resolve, 50));
         return { canvas, listNode, listItem, listResource };
@@ -268,7 +265,7 @@ export const Default = {
             <template
                 template-type="list-item"
                 template-mode="append"
-                truncate-content="50"
+                truncate-content="200"
                 image="{portraitURL}"
                 truncate-button
                 ${attrString(attr)}
@@ -300,6 +297,14 @@ export const Default = {
     render: args => {
         return html`
             <arpa-list ${attrString(args)}>
+                <zone name="messages">
+                    <info-message>
+                        The list component is an advanced list creation tool, which aims to simplify the process of
+                        creating and managing advanced UI lists with search and filtering functionality. It features
+                        highly customizable list items via templates, multiple view modes, and seamless integration with
+                        data resources.
+                    </info-message>
+                </zone>
                 <zone name="batch-operations">
                     <select-option value="delete" icon="delete">
                         Delete

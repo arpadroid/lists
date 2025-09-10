@@ -79,7 +79,7 @@ class List extends ArpaElement {
      * @returns {HTMLTemplateElement[]} The selected view templates.
      */
     _selectViewTemplates() {
-        return Array.from(this.querySelectorAll(':scope > template[type="view"]'));
+        return Array.from(this.querySelectorAll(':scope > template[template-type="view"]'));
     }
 
     /**
@@ -159,7 +159,6 @@ class List extends ArpaElement {
     getDefaultConfig(config = {}) {
         /** @type {ListConfigType} */
         const conf = {
-            // template: List.template,
             canCollapse: false,
             className: 'arpaList',
             controls: ['search', 'sort', 'views', 'multiselect', 'filters'],
@@ -560,7 +559,6 @@ class List extends ArpaElement {
         const newItems = items.map(item => this.createItem(item));
         appendNodes(newWrapper, newItems);
         container.after(newWrapper);
-
         container.addEventListener('transitionend', this.onTransitionOut);
         container.classList.add('arpaList--itemsOut');
         newWrapper.classList.add('arpaList--itemsIn');
@@ -896,9 +894,8 @@ class List extends ArpaElement {
         return html`
             <div class="arpaList__header" zone="header">
                 <div class="arpaList__headerTop">{titleWrapper}{headerControls}</div>
-                {messages}
             </div>
-            {controls} {info}
+            {controls} {info} {messages}
             <div class="arpaList__body" zone="body">
                 <div class="arpaList__bodyMain">{heading}{items}</div>
                 {aside}

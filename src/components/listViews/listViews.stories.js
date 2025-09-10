@@ -99,8 +99,7 @@ export const CustomView = {
         title: 'Custom View',
         titleIcon: 'dashboard',
         defaultView: 'custom-view',
-        views: 'list,custom-view',
-        truncateContent: 0
+        views: 'list,custom-view'
     },
     /**
      * Plays the test scenario.
@@ -109,9 +108,33 @@ export const CustomView = {
      */
     play: async ({ canvasElement, step }) => {
         const setup = await Default.playSetup(canvasElement);
-        const { listNode } = setup;
-        await step('Sets list to custom view', async () => {
+        const { listNode, canvas } = setup;
+        await step('Renders the custom view', async () => {
             await listNode?.setView('custom-view');
+            expect(listNode).toHaveClass('listView--custom-view');
+            expect(canvas.getByRole('heading', { name: /Custom View/i })).toBeInTheDocument();
+            const imageContainer = canvasElement.querySelector('.test-image-container img');
+            expect(imageContainer).toBeInTheDocument();
+            const customViewContent = canvasElement.querySelector('.listItem__customView__content');
+            expect(customViewContent).toBeInTheDocument();
+            const customViewHeader = canvasElement.querySelector('.listItem__customView__header');
+            expect(customViewHeader).toBeInTheDocument();
+            expect(canvas.getAllByText('custom text').length).toBeGreaterThan(1);
+        });
+
+        await step('Opens the Views menu and verifies the custom view item is selected', async () => {
+            /** @type {IconMenu | null} */
+            const iconMenu = canvasElement.querySelector('list-views icon-menu');
+            const viewsMenu = /** @type {HTMLElement | null} */ (iconMenu?.navigation);
+            if (!viewsMenu) {
+                throw new Error('Views menu not found');
+            }
+            const viewsButton = canvas.getByRole('button', { name: /Views/i });
+            userEvent.click(viewsButton);
+            const customView = within(viewsMenu).getByText('Custom View').closest('button');
+            await waitFor(() => {
+                expect(customView).toHaveAttribute('aria-current', 'location');
+            });
             expect(listNode).toHaveClass('listView--custom-view');
         });
     },
@@ -134,12 +157,19 @@ export const CustomView = {
 
                 <!-- Custom View Template -->
 
-                <template template-type="view" id="custom-view" label="Custom View" icon="dashboard" title-icon="dashboard">
+                <template
+                    template-type="view"
+                    id="custom-view"
+                    label="Custom View"
+                    icon="dashboard"
+                    title-icon="dashboard"
+                >
                     <div class="listItem__main">
-                        {image}
+                        <div class="test-image-container">{image}</div>
                         <div class="listItem__customView__content">
                             <div class="listItem__customView__header">{titleContainer}{nav}</div>
-                            {children}{tags}
+                            {tags} {children}
+                            <span>custom text</span>
                         </div>
                     </div>
                 </template>
@@ -158,6 +188,7 @@ export const CustomView = {
                 .listItem--custom-view {
                     overflow: visible;
                     margin: 1rem 0;
+                    width: 100%;
 
                     .listItem__content {
                         display: block;
@@ -166,28 +197,31 @@ export const CustomView = {
                     .listItem__image {
                         float: right;
                         margin: 0rem 0 1.5rem 1.5rem;
-                        width: 100px;
                     }
 
                     .listItem__main {
                         flex: none;
                         display: block;
-                        
+
                         margin-top: 10px;
                         max-width: 100%;
+                        width: 100%;
                     }
 
                     .listItem__customView__header {
                         display: flex;
                         align-items: center;
-                        margin-bottom: 0.5rem;
                         gap: 1rem;
+                    }
+
+                    .iconMenu {
+                        margin-top: 0;
+                        flex: 0 1 auto;
                     }
 
                     .listItem__nav {
                         align-self: flex-start;
                         margin-left: 0;
-                        margin-right: 0.5rem;
 
                         .iconButton {
                             --icon-button-size: 1.5rem;

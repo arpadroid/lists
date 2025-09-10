@@ -190,7 +190,7 @@ class ListViews extends ArpaElement {
         this.iconMenu = this.querySelector('icon-menu');
         if (this.iconMenu) {
             this._config.links && this.iconMenu.setLinks(this._config.links);
-            return this.iconMenu?.onRendered(() => {
+            return this.iconMenu.onRendered(() => {
                 /** @type {HTMLElement | null} */
                 this.navigation = /** @type {HTMLElement | null} */ (this.iconMenu?.navigation);
                 this.initializeView();
