@@ -127,7 +127,7 @@ class ListSearch extends ArpaElement {
     // #endregion
     /**
      * Called when the form is submitted.
-     * @type {import('@arpadroid/forms').FormSubmitType}
+     * @returns {boolean}
      */
     _onSubmit() {
         this._onSearch();

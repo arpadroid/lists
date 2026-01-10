@@ -16,7 +16,7 @@
         "mediums": ["Marble", "Bronze"],
         "educationOrTraining": "Trained under the sculptor Ageladas",
         "movement": "Classical Greek",
-        "portraitURL": "/assets/artists/phidias.jpg",
+        "portraitURL": "/test-assets/artists/phidias-200.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Phidias"
     },
     {
@@ -36,7 +36,7 @@
         "mediums": ["Oil painting", "Fresco", "Drawing"],
         "educationOrTraining": "Apprentice to Andrea del Verrocchio in Florence",
         "movement": "High Renaissance",
-        "portraitURL": "/assets/artists/leonardo-da-vinci.jpg",
+        "portraitURL": "/test-assets/artists/leonardo-da-vinci-200.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Leonardo_da_Vinci"
     },
     {
@@ -56,7 +56,7 @@
         "mediums": ["Marble", "Fresco", "Oil painting"],
         "educationOrTraining": "Apprentice to Domenico Ghirlandaio, studied at the Medici Gardens in Florence",
         "movement": "High Renaissance",
-        "portraitURL": "/assets/artists/michelangelo.jpg",
+        "portraitURL": "/test-assets/artists/michelangelo.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Michelangelo"
     },
     {
@@ -76,7 +76,7 @@
         "mediums": ["Oil painting", "Fresco"],
         "educationOrTraining": "Apprentice to Pietro Perugino, influenced by Leonardo and Michelangelo",
         "movement": "High Renaissance",
-        "portraitURL": "/assets/artists/raphael.jpg",
+        "portraitURL": "/test-assets/artists/raphael-200.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Raphael"
     },
     {
@@ -96,7 +96,7 @@
         "mediums": ["Oil painting"],
         "educationOrTraining": "Apprentice to Giovanni Bellini, later worked alongside Giorgione",
         "movement": "Venetian Renaissance",
-        "portraitURL": "/assets/artists/titian.jpg",
+        "portraitURL": "/test-assets/artists/Titian-200.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Titian"
     },
     {
@@ -116,7 +116,7 @@
         "mediums": ["Oil painting"],
         "educationOrTraining": "Apprentice to Simone Peterzano in Milan",
         "movement": "Baroque",
-        "portraitURL": "/assets/artists/caravaggio.jpg",
+        "portraitURL": "/test-assets/artists/Caravaggio-200.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Caravaggio"
     },
 
@@ -137,7 +137,7 @@
         "mediums": ["Oil painting"],
         "educationOrTraining": "Studied in Antwerp and Italy, worked under the influence of Italian Renaissance artists",
         "movement": "Baroque",
-        "portraitURL": "/assets/artists/rubens_sp.jpg",
+        "portraitURL": "/test-assets/artists/rubens-200.jpg",
         "biographyURL": "https://en.wikipedia.org/wiki/Peter_Paul_Rubens"
     },
 
