@@ -1,6 +1,7 @@
 const config = {
     deps: ['messages', 'navigation', 'forms'],
     buildTypes: true,
+    buildType: 'uiComponent',
     logo: `           ┓    • ┓  ┓•   
   ┏┓┏┓┏┓┏┓┏┫┏┓┏┓┓┏┫  ┃┓┏╋┏
   ┗┻┛ ┣┛┗┻┗┻┛ ┗┛┗┗┻  ┗┗┛┗┛

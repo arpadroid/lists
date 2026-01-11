@@ -99,6 +99,12 @@ class ListFilters extends ArpaElement {
         const perPageOptions = Array.isArray(opt) ? opt : [];
         const page = pageFilter?.getValue();
         const perPage = perPageFilter?.getValue();
+        const perPageOptionsHTML = /** @type {any} */ (mapHTML)(
+            perPageOptions,
+            (/** @type {number}*/ value) => {
+                return html`<select-option label="${value}" value="${value}"></select-option>`;
+            }
+        );
         return html`<arpa-form
             variant="compact"
             id="${this.list?.getId()}-filters-form"
@@ -113,11 +119,7 @@ class ListFilters extends ArpaElement {
                 open
             >
                 <select-combo id="perPage" label="Per page" value="${perPage || ''}" variant="small">
-                    ${mapHTML(
-                        perPageOptions,
-                        (/** @type {number}*/ value) =>
-                            html`<select-option label="${value}" value="${value}"></select-option>`
-                    )}
+                    ${perPageOptionsHTML}
                 </select-combo>
                 <number-field
                     icon=""
@@ -145,7 +147,8 @@ class ListFilters extends ArpaElement {
 
     /**
      * Called when the form is submitted.
-     * @type {import('@arpadroid/forms').FormSubmitType}
+     * @param {Record<string, any>} payload
+     * @returns {boolean}
      */
     onSubmit(payload = {}) {
         if (payload.perPage != this.perPageFilter?.getValue()) {

@@ -148,7 +148,7 @@ class ListSort extends ArpaElement {
                 await customElements.whenDefined('nav-list');
                 /** @type {NavList | null} */
                 this.sortNav = this.sortByMenu?.navigation;
-                if (this.sortNav instanceof HTMLElement) {
+                if (this.sortNav) {
                     if (this.sortNav?._config && typeof this._isItemSelected === 'function') {
                         this.sortNav._config.isItemSelected = this._isItemSelected;
                     }
