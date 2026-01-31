@@ -9,8 +9,7 @@
         "build": "arpadroid-build --minify",
         "clean": "rm -rf ./dist ./node_modules package-lock.json",
         "dev": "arpadroid-build --watch --storybook=6008",
-        "test": "arpadroid-test --storybook --jest --port=6008",
-        "test:ci": "npm run test -- --ci"
+        "test": "arpadroid-test --storybook --jest --port=6008"
     },
     "repository": {
         "type": "git",
