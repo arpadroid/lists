@@ -5,7 +5,7 @@
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
  */
 
-import { waitFor, expect, userEvent, within } from '@storybook/test';
+import { waitFor, expect, userEvent, within } from 'storybook/test';
 import { attrString } from '@arpadroid/tools';
 
 const html = String.raw;
@@ -38,7 +38,7 @@ export const Render = {
         iconRight: 'chevron_right',
         title: 'List item',
         subtitle: 'Test subtitle',
-        image: '/assets/artists/phidias.jpg'
+        image: '/test-assets/artists/phidias.jpg'
     },
     /**
      * Plays the test scenario.
@@ -74,7 +74,8 @@ export const WithZones = {
         titleIcon: 'auto_awesome',
         titleLink: '#test-link',
         truncateContent: 100,
-        truncateButton: true
+        truncateButton: true,
+        image: '/test-assets/artists/phidias.jpg'
     },
     params: {
         layout: 'padded'
@@ -96,6 +97,7 @@ export const WithZones = {
     play: async ({ canvasElement, step }) => {
         const { canvas } = await Default.playSetup(canvasElement);
         await step('Renders the list item with the expected zones', async () => {
+            await new Promise(resolve => setTimeout(resolve, 100)); // Wait for truncation to apply
             expect(canvas.getByText('Morning Motivation')).toBeInTheDocument();
             expect(canvas.getByText('Start your day with a burst of energy!')).toBeInTheDocument();
             expect(canvas.getByText('auto_awesome')).toHaveClass('icon--auto_awesome');
@@ -122,7 +124,7 @@ export const WithTemplate = {
     args: {
         subtitle: 'Test sub title',
         title: 'Item with template',
-        image: '/assets/artists/phidias.jpg'
+        image: '/test-assets/artists/phidias.jpg'
     },
     render: (/** @type {Record<string, any>} */ args) => {
         return html`<arpa-list id="item-with-template-list" controls=" ">
@@ -149,7 +151,7 @@ export const WithTemplate = {
             expect(canvas.getByText('Test sub title')).toBeInTheDocument();
             expect(listItem?.querySelector('.customContent')).toBeInTheDocument();
             await waitFor(() => {
-                expect(listItem?.querySelector('img')).toHaveAttribute('src', '/assets/artists/phidias.jpg');
+                expect(listItem?.querySelector('img')).toHaveAttribute('src', '/test-assets/artists/phidias.jpg');
             });
         });
     }

@@ -5,7 +5,7 @@
  */
 import ListStory from './list.stories.js';
 import { attrString, getInitials } from '@arpadroid/tools';
-import { within } from '@storybook/test';
+import { within } from 'storybook/test';
 
 const html = String.raw;
 const ApiDrivenListStory = {

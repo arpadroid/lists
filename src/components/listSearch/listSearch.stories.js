@@ -3,7 +3,7 @@
  * @typedef {import('@arpadroid/module').StepFunction} StepFunction
  */
 import { Default as ListStory } from '../list/stories/list.stories.js';
-import { expect, waitFor, fireEvent } from '@storybook/test';
+import { expect, waitFor, fireEvent } from 'storybook/test';
 
 const Default = {
     ...ListStory,

@@ -9,7 +9,7 @@
 
 import artists from '../../../mockData/artists.json';
 import { attrString, formatDate } from '@arpadroid/tools';
-import { within, expect, waitFor } from '@storybook/test';
+import { within, expect, waitFor } from 'storybook/test';
 
 const html = String.raw;
 const ListStory = {

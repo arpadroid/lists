@@ -1,17 +1,16 @@
 /**
  * @typedef {import('../../list/list.js').default} List
- * @typedef {import('@arpadroid/navigation').IconMenu} IconMenu
  * @typedef {import('@arpadroid/module').StepFunction} StepFunction
  * @typedef {import('../../list/list.types').ListConfigType} ListConfigType
  * @typedef {import('./tagList.js').default} TagList
  */
 import { attrString } from '@arpadroid/tools';
 import { Default as ListStory } from '../../list/stories/list.stories.js';
-import { within, userEvent, waitFor, expect, fn } from '@storybook/test';
-import { action } from '@storybook/addon-actions';
+import { within, userEvent, waitFor, expect, fn } from 'storybook/test';
+import { action } from 'storybook/actions';
 const html = String.raw;
 
-/** @type {import('@storybook/web-components').Meta} */
+/** @type {import('@storybook/web-components-vite').Meta} */
 const Default = {
     ...ListStory,
     title: 'Lists/Lists/Tag List',

@@ -6,7 +6,7 @@
 
 import { attrString } from '@arpadroid/tools';
 import { Default as ListStory } from '../list/stories/list.stories.js';
-import { userEvent, within, waitFor, expect } from '@storybook/test';
+import { userEvent, within, waitFor, expect } from 'storybook/test';
 
 const html = String.raw;
 const Default = {

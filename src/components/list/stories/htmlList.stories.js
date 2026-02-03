@@ -6,7 +6,7 @@
  */
 
 import { attrString } from '@arpadroid/tools';
-import { within, expect } from '@storybook/test';
+import { within, expect } from 'storybook/test';
 const html = String.raw;
 
 const Default = {

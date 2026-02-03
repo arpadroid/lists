@@ -5,7 +5,7 @@
  */
 
 import { Default as ListStory } from '../list/stories/list.stories.js';
-import { userEvent, fireEvent, waitFor, expect } from '@storybook/test';
+import { userEvent, fireEvent, waitFor, expect } from 'storybook/test';
 
 const Default = {
     ...ListStory,
