@@ -1,13 +1,11 @@
 /**
  * @typedef {import('../../list/list.js').default} List
- * @typedef {import('@arpadroid/module').StepFunction} StepFunction
  * @typedef {import('../../list/list.types').ListConfigType} ListConfigType
  * @typedef {import('./tagList.js').default} TagList
  */
 import { attrString } from '@arpadroid/tools';
-import { Default as ListStory } from '../../list/stories/list.stories.js';
+import { Default as ListStory } from '../../list/stories/stories.util.js';
 import { within, userEvent, waitFor, expect, fn } from 'storybook/test';
-import { action } from 'storybook/actions';
 const html = String.raw;
 
 /** @type {import('@storybook/web-components-vite').Meta} */
@@ -30,14 +28,9 @@ const Default = {
         controls: 'search',
         hasInfo: true,
         itemsPerPage: 5,
-        onDelete: fn(() => action('delete_tag'))
+        onDelete: fn()
     },
-    /**
-     * Renders the list component.
-     * @param {ListConfigType} args
-     * @returns {string}
-     */
-    render: args => {
+    render: (/** @type {ListConfigType} */ args) => {
         return html`<tag-list ${attrString(args)}>
             <template template-type="list-item" has-delete></template>
             <tag-item icon="restaurant">Tag 1</tag-item>
@@ -49,30 +42,23 @@ const Default = {
 
 export const Render = Default;
 
+/** @type {import('@storybook/web-components-vite').StoryObj} */
 export const Test = {
     args: {
         ...Default.args,
         id: 'tag-list-test',
         title: 'Tag List Test'
     },
-    /**
-     * Sets up the test scenario.
-     * @param {HTMLElement} canvasElement
-     * @returns {Promise<{ tagList: TagList | null, canvas: ReturnType<typeof within> }>}
-     */
-    playSetup: async canvasElement => {
+    playSetup: async (/** @type {HTMLElement} */ canvasElement) => {
         await customElements.whenDefined('tag-list');
         await customElements.whenDefined('tag-item');
         /** @type {TagList | null} */
         const tagList = canvasElement.querySelector('tag-list');
-        return { tagList, canvas: within(canvasElement) };
+        return { tagList, canvas: /** @type {any} */ within(canvasElement) };
     },
-    /**
-     * Plays the test scenario.
-     * @param {{ canvasElement: HTMLElement, step: StepFunction, args: Record<string, any> }} options
-     * @returns {Promise<void>}
-     */
-    play: async ({ canvasElement, step, args }) => {
+    play: async (
+        /** @type {import('@storybook/web-components-vite').StoryContext} */ { canvasElement, step, args }
+    ) => {
         const setup = await Test.playSetup(canvasElement);
         const { canvas, tagList } = setup;
         tagList?.on('delete_tag', args.onDelete);

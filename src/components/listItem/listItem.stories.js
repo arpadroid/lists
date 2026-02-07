@@ -47,7 +47,6 @@ export const Render = {
      */
     play: async ({ canvasElement, step }) => {
         const { listItem, canvas } = await Default.playSetup(canvasElement);
-        console.log('listItem', listItem);
         const icon = canvasElement.querySelector('list-item arpa-icon');
 
         await step('Renders the list item with the expected content', async () => {

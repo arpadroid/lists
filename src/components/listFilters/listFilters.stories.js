@@ -2,9 +2,8 @@
  * @typedef {import('@arpadroid/forms').FormComponent} FormComponent
  * @typedef {import('@arpadroid/forms').NumberField} NumberField
  * @typedef {import('@arpadroid/forms').SelectCombo} SelectCombo
- * @typedef {import('@arpadroid/module').StepFunction} StepFunction
  */
-import { Default as ListStory } from '../list/stories/list.stories.js';
+import { Default as ListStory } from '../list/stories/stories.util.js';
 import { within, userEvent, expect, waitFor, fireEvent } from 'storybook/test';
 
 const Default = {
@@ -26,12 +25,7 @@ export const Test = {
         ...Default.args,
         id: 'test-filters'
     },
-    /**
-     * Plays the test scenario.
-     * @param {{ canvasElement: HTMLElement, step: StepFunction }} options
-     * @returns {Promise<void>}
-     */
-    play: async ({ canvasElement, step }) => {
+    play: async (/** @type {import('@storybook/web-components-vite').StoryContext} */ { canvasElement, step }) => {
         const setup = await Default.playSetup(canvasElement);
         const { canvas, listNode } = setup;
         const filtersBtn = canvas.getByRole('button', { name: /Filters/i });

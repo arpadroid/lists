@@ -4,7 +4,7 @@
  * @typedef {import('@arpadroid/forms').SelectCombo} SelectCombo
  */
 
-import { Default as ListStory } from '../list/stories/list.stories.js';
+import { Default as ListStory } from '../list/stories/stories.util.js';
 import { within, waitFor, userEvent, expect, fireEvent } from 'storybook/test';
 import { attrString } from '@arpadroid/tools';
 

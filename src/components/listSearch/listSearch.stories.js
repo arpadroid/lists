@@ -2,7 +2,7 @@
  * @typedef {import('../list/list.js').default} List
  * @typedef {import('@arpadroid/module').StepFunction} StepFunction
  */
-import { Default as ListStory } from '../list/stories/list.stories.js';
+import { Default as ListStory } from '../list/stories/stories.util.js';
 import { expect, waitFor, fireEvent } from 'storybook/test';
 
 const Default = {
@@ -28,12 +28,7 @@ export const Test = {
         id: 'test-search',
         searchPlaceholder: 'List Search Test'
     },
-    /**
-     * Plays the test scenario.
-     * @param {{ canvasElement: HTMLElement, step: StepFunction }} options
-     * @returns {Promise<void>}
-     */
-    play: async ({ canvasElement, step }) => {
+    play: async (/** @type {import('@storybook/web-components-vite').StoryContext} */ { canvasElement, step }) => {
         const setup = await Default.playSetup(canvasElement);
         await customElements.whenDefined('field-input');
         const { canvas } = setup;
