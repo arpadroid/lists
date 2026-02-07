@@ -424,6 +424,7 @@ class ListItem extends ArpaElement {
         this.navNode = /** @type {NavList | null} */ (this.querySelector('.listItem__nav'));
         await customElements.whenDefined('icon-menu');
         if (!this.navNode || !this._config.nav) return;
+        // @ts-ignore
         this.navNode?.setConfig(this._config.nav);
     }
 

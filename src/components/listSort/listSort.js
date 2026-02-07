@@ -152,7 +152,7 @@ class ListSort extends ArpaElement {
                     if (this.sortNav?._config && typeof this._isItemSelected === 'function') {
                         this.sortNav._config.isItemSelected = this._isItemSelected;
                     }
-
+                    // @ts-ignore
                     attr(this.sortNav, {
                         'param-name': this.list?.getParamName('sortBy'),
                         'use-router': '',

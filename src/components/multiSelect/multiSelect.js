@@ -183,7 +183,7 @@ class MultiSelect extends ArpaElement {
     }
 
     updateMessage() {
-        /** @type {ListResource | undefined} */
+        /** @type {ListResource | undefined} */ // @ts-ignore
         const resource = this.form?.messages?.listResource;
         const msg = resource?.getItem('info-message');
         if (typeof msg?.node?.setContent === 'function') {

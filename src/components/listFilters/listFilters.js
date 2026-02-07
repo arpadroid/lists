@@ -67,7 +67,7 @@ class ListFilters extends ArpaElement {
 
     async _initializeIconMenu() {
         await customElements.whenDefined('icon-menu');
-        await this.menuNode?.promise;
+        await this.menuNode?.promise; // @ts-ignore
         const itemsNode = /** @type {HTMLElement | null} */ (this.menuNode?.navigation?.itemsNode);
         itemsNode?.setAttribute('zone', 'list-filters');
     }
