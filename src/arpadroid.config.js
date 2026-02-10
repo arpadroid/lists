@@ -4,6 +4,7 @@ const config = {
     deps: ['messages', 'navigation', 'forms'],
     deferTypesBuild: ['navigation', 'messages', 'forms'],
     buildType: 'uiComponent',
+    storybook_port: 6008,
     logo: `           ┓    • ┓  ┓•   
   ┏┓┏┓┏┓┏┓┏┫┏┓┏┓┓┏┫  ┃┓┏╋┏
   ┗┻┛ ┣┛┗┻┗┻┛ ┗┛┗┗┻  ┗┗┛┗┛
