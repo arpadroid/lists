@@ -79,8 +79,6 @@ export const Test = {
             });
         });
 
-        await new Promise(resolve => setTimeout(resolve, 300));
-
         await step('Returns to the List view and verifies the list item is selected', async () => {
             const listView = within(viewsMenu).getByText('List').closest('button');
             listView && userEvent.click(listView);
