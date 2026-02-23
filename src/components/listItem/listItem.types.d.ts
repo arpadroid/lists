@@ -2,7 +2,7 @@ import List from '../list/list';
 import ListItem from './listItem';
 import { ArpaElementConfigType, ImageConfigType } from '@arpadroid/ui';
 import { TagItemConfigType } from '../lists/tagList/tagItem/tagItem.types';
-import { NavListConfigType } from '@arpadroid/navigation';
+import { BaseNavListConfigType } from '../../@types/base.types';
 
 export type ListItemImageTypes =
     | 'adaptive'
@@ -48,7 +48,7 @@ export type ListItemConfigType = ArpaElementConfigType & {
     link?: string;
     list?: List;
     listSelector?: string;
-    nav?: NavListConfigType;
+    nav?: BaseNavListConfigType;
     onImageError?: (event: Event, item: ListItem) => void;
     onImageLoaded?: (event: Event, item: ListItem) => void;
     previewControls?: string[];

@@ -18,6 +18,8 @@ export { ListItemConfigType } from './components/listItem/listItem.types';
 
 export { TagItemConfigType } from './components/lists/tagList/tagItem/tagItem.types';
 
+export { BaseLinkConfigType, BaseNavListConfigType, BaseFieldOptionConfigType } from './@types/base.types';
+
 export { ListInfoConfigType } from './components/listInfo/listInfo.types';
 
 export { ListFiltersConfigType, ListFiltersSubmitPayloadType } from './components/listFilters/listFilters.types';

@@ -3,11 +3,10 @@ import type ListItem from '../listItem/listItem.js';
 import type { ListItemConfigType, ListItemImageTypes } from '../listItem/listItem.types';
 import type { ArpaElementConfigType } from '@arpadroid/ui';
 import type { ListResourceItemType, Router } from './list.js';
-import { FieldOptionConfigType } from '@arpadroid/forms';
-import { NavLinkConfigType } from '@arpadroid/navigation';
+import { BaseLinkConfigType, BaseFieldOptionConfigType } from '../../@types/base.types.js';
 
 export type ListConfigType = ArpaElementConfigType & {
-    actions?: FieldOptionConfigType[];
+    actions?: BaseFieldOptionConfigType[];
     canCollapse?: boolean;
     controls?: string[];
     defaultView?: string;
@@ -50,11 +49,11 @@ export type ListConfigType = ArpaElementConfigType & {
     sortByParam?: string;
     sortDefault?: string;
     sortDirParam?: string;
-    sortOptions?: FieldOptionConfigType[];
+    sortOptions?: BaseFieldOptionConfigType[];
     stickyControls?: boolean;
     template?: string;
     title?: string | null;
     titleIcon?: string;
-    viewOptions?: NavLinkConfigType[];
+    viewOptions?: BaseLinkConfigType[];
     views?: string[];
 };

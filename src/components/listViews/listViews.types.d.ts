@@ -1,4 +1,4 @@
-import { NavLinkConfigType } from '@arpadroid/navigation';
+import { BaseLinkConfigType } from '../../@types/base.types';
 import { ArpaElementConfigType } from '@arpadroid/ui';
 
 export type ListViewsConfigType = ArpaElementConfigType & {
@@ -10,7 +10,7 @@ export type ListViewsConfigType = ArpaElementConfigType & {
     defaultOptions?: ListViewConfigType[];
 };
 
-export type ListViewConfigType = NavLinkConfigType & {
+export type ListViewConfigType = BaseLinkConfigType & {
     value?: string;
     iconRight?: string;
     title?: string;
