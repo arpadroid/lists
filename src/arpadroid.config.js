@@ -5,6 +5,7 @@ const config = {
     deferTypesBuild: ['navigation', 'messages', 'forms'],
     buildType: 'uiComponent',
     storybook_port: 6008,
+    turbo: false,
     logo: `           ┓    • ┓  ┓•   
   ┏┓┏┓┏┓┏┓┏┫┏┓┏┓┓┏┫  ┃┓┏╋┏
   ┗┻┛ ┣┛┗┻┗┻┛ ┗┛┗┗┻  ┗┗┛┗┛

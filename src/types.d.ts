@@ -1,3 +1,5 @@
+import '@arpadroid/module/types';
+
 export { ListConfigType } from './components/list/list.types';
 
 export { ListControlsConfigType } from './components/listControls/listControls.types';
