@@ -38,12 +38,14 @@
         "@babel/core": "^7.24",
         "@babel/preset-env": "^7.23.9"
     },
+    "dependencies": {
+        "@arpadroid/forms": "file:../forms",
+        "@arpadroid/messages": "file:../messages",
+        "@arpadroid/navigation": "file:../navigation"
+    },
     "peerDependencies": {
         "@arpadroid/module": "file:../module",
         "@arpadroid/context": "file:../context",
-        "@arpadroid/forms": "file:../forms",
-        "@arpadroid/messages": "file:../messages",
-        "@arpadroid/navigation": "file:../navigation",
         "@arpadroid/resources": "file:../resources",
         "@arpadroid/services": "file:../services",
         "@arpadroid/tools": "file:../tools",

@@ -1,6 +1,6 @@
 import { ListItemConfigType } from '../components/listItem/listItem.types';
 import { ArpaElementConfigType } from '@arpadroid/ui';
-import type { Router } from '@arpadroid/resources';
+import type { Router } from '@arpadroid/services';
 
 /**
  * Base type for navigation link configuration.
@@ -42,6 +42,6 @@ export type BaseFieldOptionConfigType = ArpaElementConfigType & {
     template?: string;
     className?: string;
     content?: string;
-    onChange?: (checked: boolean, payload: unknown) => void;
+    onChange?: (checked: boolean, payload: any) => void;
     action?: (...args: unknown[]) => void;
 };

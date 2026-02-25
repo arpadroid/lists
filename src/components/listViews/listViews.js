@@ -3,7 +3,6 @@
  * @typedef {import('../list/list.js').default} List
  * @typedef {import('@arpadroid/services').Router} Router
  * @typedef {import('@arpadroid/navigation').NavLink} NavLink
- * @typedef {import('@arpadroid/navigation').NavLinkConfigType} NavLinkConfigType
  * @typedef {import('./listViews.types').ListViewConfigType} ListViewConfigType
  * @typedef {import('./listViews.types').ListViewsConfigType} ListViewsConfigType
  * @typedef {import('@arpadroid/navigation').IconMenu} IconMenu
