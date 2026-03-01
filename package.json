@@ -6,6 +6,14 @@
         ".": {
             "types": "./dist/@types/types.compiled.d.ts",
             "import": "./dist/arpadroid-lists.js"
+        },
+        "./stories/utils": {
+            "types": "./dist/@types/components/list/stories/list.stories.utils.d.ts",
+            "import": "./src/components/list/stories/list.stories.utils.js"
+        },
+        "./stories/list": {
+            "types": "./dist/@types/components/list/stories/list.stories.d.ts",
+            "import": "./src/components/list/stories/list.stories.js"
         }
     },
     "types": "./dist/@types/types.compiled.d.ts",
@@ -38,17 +46,13 @@
         "@babel/core": "^7.24",
         "@babel/preset-env": "^7.23.9"
     },
-    "dependencies": {
-        "@arpadroid/forms": "file:../forms",
-        "@arpadroid/messages": "file:../messages",
-        "@arpadroid/navigation": "file:../navigation"
-    },
     "peerDependencies": {
         "@arpadroid/module": "file:../module",
         "@arpadroid/context": "file:../context",
         "@arpadroid/resources": "file:../resources",
         "@arpadroid/services": "file:../services",
         "@arpadroid/tools": "file:../tools",
-        "@arpadroid/ui": "file:../ui"
+        "@arpadroid/ui": "file:../ui",
+        "@arpadroid/i18n": "file:../i18n"
     }
 }

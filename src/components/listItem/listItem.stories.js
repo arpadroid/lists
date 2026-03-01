@@ -1,37 +1,25 @@
 /**
- * @typedef {import('../list/list.js').default} List
- * @typedef {import('../listItem/listItem.js').default} ListItem
- * @typedef {import('@arpadroid/module').StepFunction} StepFunction
- * @typedef {import('@arpadroid/resources').ListResource} ListResource
+ * @typedef {import('@storybook/web-components-vite').Meta} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
+ * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
+ * @typedef {import('@storybook/web-components-vite').Args} Args
  */
-
-import { waitFor, expect, userEvent, within } from 'storybook/test';
+import { waitFor, expect, userEvent } from 'storybook/test';
 import { attrString } from '@arpadroid/tools';
+import { playSetup } from './listItem.stories.util.js';
 
 const html = String.raw;
 
+/** @type {Meta} */
 const Default = {
     title: 'Lists/List Item',
     args: {},
-    /**
-     * Sets up the test scenario.
-     * @param {HTMLElement} canvasElement
-     * @returns {Promise<import('../list/stories/list.stories.types.js').ListPlaySetupResponseType>}
-     */
-    playSetup: async canvasElement => {
-        const canvas = within(canvasElement);
-        /** @type {ListItem | null} */
-        const listItem = canvasElement.querySelector('list-item');
-        await customElements.whenDefined('arpa-list');
-        await customElements.whenDefined('list-item');
-        await listItem?.promise;
-        return { canvas, listItem };
-    },
     parameters: {
         layout: 'centered'
     }
 };
 
+/** @type {StoryObj} */
 export const Render = {
     args: {
         icon: 'list',
@@ -40,13 +28,8 @@ export const Render = {
         subtitle: 'Test subtitle',
         image: '/test-assets/artists/phidias.jpg'
     },
-    /**
-     * Plays the test scenario.
-     * @param {{ canvasElement: HTMLElement, step: StepFunction, args: Record<string, any> }} options
-     * @returns {Promise<void>}
-     */
-    play: async ({ canvasElement, step }) => {
-        const { listItem, canvas } = await Default.playSetup(canvasElement);
+    play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
+        const { listItem, canvas } = await playSetup(canvasElement);
         const icon = canvasElement.querySelector('list-item arpa-icon');
 
         await step('Renders the list item with the expected content', async () => {
@@ -58,7 +41,7 @@ export const Render = {
             expect(canvas.getByText('test content')).toBeInTheDocument();
         });
     },
-    render: (/** @type {Record<string, any>} */ args) => {
+    render: args => {
         return html`<arpa-list id="list-item-list" controls=" ">
             <list-item ${attrString(args)}> test content </list-item>
         </arpa-list>`;
@@ -68,6 +51,7 @@ export const Render = {
 const longText =
     'Morning motivation is key to setting a positive tone for the day. Starting your morning with an energizing mindset can enhance focus, boost productivity, and improve overall well-being. When you take time in the morning to set goals or engage in uplifting activities, it strengthens mental resilience and prepares you to handle challenges. This initial boost also impacts mood, helping maintain a positive outlook. Consistently practicing morning motivation can gradually lead to more fulfilling days and a healthier lifestyle.';
 
+/** @type {StoryObj} */
 export const WithZones = {
     args: {
         titleIcon: 'auto_awesome',
@@ -76,10 +60,10 @@ export const WithZones = {
         truncateButton: true,
         image: '/test-assets/artists/phidias.jpg'
     },
-    params: {
+    parameters: {
         layout: 'padded'
     },
-    render: (/** @type {Record<string, any>} */ args) => {
+    render: (/** @type {Args} */ args) => {
         return html`<arpa-list id="list-item-list" title="List Item" controls=" ">
             <list-item ${attrString(args)}>
                 <zone name="title"><strong>Morning Motivation</strong></zone>
@@ -88,13 +72,8 @@ export const WithZones = {
             </list-item></arpa-list
         >`;
     },
-    /**
-     * Plays the test scenario.
-     * @param {{ canvasElement: HTMLElement, step: StepFunction, args: Record<string, any> }} options
-     * @returns {Promise<void>}
-     */
-    play: async ({ canvasElement, step }) => {
-        const { canvas } = await Default.playSetup(canvasElement);
+    play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
+        const { canvas } = await playSetup(canvasElement);
         await step('Renders the list item with the expected zones', async () => {
             await new Promise(resolve => setTimeout(resolve, 100)); // Wait for truncation to apply
             expect(canvas.getByText('Morning Motivation')).toBeInTheDocument();
@@ -119,13 +98,14 @@ export const WithZones = {
     }
 };
 
+/** @type {StoryObj} */
 export const WithTemplate = {
     args: {
         subtitle: 'Test sub title',
         title: 'Item with template',
         image: '/test-assets/artists/phidias.jpg'
     },
-    render: (/** @type {Record<string, any>} */ args) => {
+    render: (/** @type {Args} */ args) => {
         return html`<arpa-list id="item-with-template-list" controls=" ">
             <template template-type="list-item">
                 <div class="customContent">
@@ -138,13 +118,8 @@ export const WithTemplate = {
             <list-item ${attrString(args)}> </list-item>
         </arpa-list>`;
     },
-    /**
-     * Plays the test scenario.
-     * @param {{ canvasElement: HTMLElement, step: StepFunction, args: Record<string, any> }} options
-     * @returns {Promise<void>}
-     */
-    play: async ({ canvasElement, step }) => {
-        const { canvas, listItem } = await Default.playSetup(canvasElement);
+    play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
+        const { canvas, listItem } = await playSetup(canvasElement);
         await step('Renders the list item with the expected template', async () => {
             expect(canvas.getByText('Item with template')).toBeInTheDocument();
             expect(canvas.getByText('Test sub title')).toBeInTheDocument();

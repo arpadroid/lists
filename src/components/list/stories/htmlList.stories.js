@@ -2,13 +2,17 @@
  * @typedef {import('../list.js').default} List
  * @typedef {import('../../listItem/listItem.js').default} ListItem
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
- * @typedef {import('@arpadroid/module').StepFunction} StepFunction
+ * @typedef {import('@storybook/web-components-vite').Args} Args
+ * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
+ * @typedef {import('@storybook/web-components-vite').Meta} Meta
  */
 
 import { attrString } from '@arpadroid/tools';
-import { within, expect } from 'storybook/test';
+import { expect } from 'storybook/test';
+import { playSetup } from './list.stories.utils.js';
 const html = String.raw;
 
+/** @type {Meta} */
 const Default = {
     title: 'Lists/List/HTML List',
     args: {
@@ -20,7 +24,7 @@ const Default = {
     parameters: {
         layout: 'centered'
     },
-    render: (/** @type {Record<string, any>} */ args) => {
+    render: args => {
         return html`<arpa-list ${attrString(args)}>
             <zone name="heading">List heading</zone>
             <zone name="aside"> List aside</zone>
@@ -106,32 +110,8 @@ const Default = {
             </list-item>
         </arpa-list>`;
     },
-    /**
-     * Sets up the test scenario.
-     * @param {HTMLElement} canvasElement
-     * @returns {Promise<{ canvas: any, listNode: HTMLElement | null, listResource: ListResource | undefined }>}
-     */
-    playSetup: async (/** @type {HTMLElement} */ canvasElement) => {
-        await customElements.whenDefined('arpa-list');
-        await customElements.whenDefined('list-item');
-        const canvas = within(canvasElement);
-        /** @type {List | null} */
-        const listNode = canvasElement.querySelector('arpa-list');
-        /** @type {ListResource | undefined} */
-        const listResource = listNode?.listResource;
-        return {
-            canvas,
-            listNode,
-            listResource
-        };
-    },
-    /**
-     * Plays the test scenario.
-     * @param {{ canvasElement: HTMLElement, step: StepFunction }} options
-     * @returns {Promise<void>}
-     */
     play: async ({ canvasElement, step }) => {
-        const { canvas } = await Default.playSetup(canvasElement);
+        const { canvas } = await playSetup(canvasElement);
         step('Renders the items', async () => {
             const items = canvas.getAllByRole('listitem');
             expect(items).toHaveLength(8);
@@ -143,7 +123,6 @@ const Default = {
         });
     }
 };
-
 
 export const HTMLList = Default;
 

@@ -2,23 +2,12 @@
     "extends": "./node_modules/@arpadroid/module/src/tsconfig/esnext/tsconfig.json",
     "compilerOptions": {
         "baseUrl": ".",
-        "rootDir": "./src",
         "moduleResolution": "bundler",
         "outDir": "./.tmp/.types",
-        "emitDeclarationOnly": true,
-        "composite": false,
-        "skipLibCheck": true,
-        "skipDefaultLibCheck": true,
-        "preserveSymlinks": true
+        "preserveSymlinks": true,
+        "rootDir": "./src",
+        "skipLibCheck": false
     },
     "include": ["src/**/*", "src/mockData/**/*.json"],
-    "exclude": [
-        "node_modules",
-        "dist",
-        ".tmp",
-        "**/*.stories.js",
-        "**/*.stories.util.js",
-        "**/stories.util.js",
-        "**/*.stories.types.d.ts"
-    ]
+    "exclude": ["node_modules", "dist", ".tmp"]
 }

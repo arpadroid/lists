@@ -1,24 +1,18 @@
 /**
- * @typedef {import('./list.types').ListConfigType} ListConfigType
- * @typedef {import('../listItem/listItem.types').ListItemConfigType} ListItemConfigType
  * @typedef {import('@arpadroid/resources').ListResourceItemType} ListResourceItemType
  * @typedef {import('@arpadroid/ui').Pager} Pager
  * @typedef {import('@arpadroid/ui').ArpaElementTemplateType} ArpaElementTemplateType
- * @typedef {import('@arpadroid/services').Router} Router
+ * @typedef {import('./list.types').ListConfigType} ListConfigType
+ * @typedef {import('../listItem/listItem.types').ListItemConfigType} ListItemConfigType
  * @typedef {import('../listItem/listItem.types').ListItemImageSizeType} ListItemImageSizeType
- * @typedef {import('../listSort/listSort.js').default} ListSort
- * @typedef {import('@arpadroid/messages').Messages} Messages
- * @typedef {import('@arpadroid/forms').FieldOptionConfigType} FieldOptionConfigType
  */
 
 import { ArpaElement } from '@arpadroid/ui';
 import { ListResource, getResource } from '@arpadroid/resources';
-import ListControls from '../listControls/listControls.js';
-import { mergeObjects, appendNodes, editURL, defineCustomElement } from '@arpadroid/tools';
-import { renderNode, renderAttr, attrString, bind, ucFirst } from '@arpadroid/tools';
+import { mergeObjects, appendNodes, defineCustomElement } from '@arpadroid/tools';
+import { renderNode, renderAttr, attrString, bind } from '@arpadroid/tools';
 import { processTemplate } from '@arpadroid/ui';
 import ListItem from '../listItem/listItem.js';
-import { getService } from '@arpadroid/context';
 
 const html = String.raw;
 
@@ -30,19 +24,28 @@ class List extends ArpaElement {
     itemImageDimensions;
     // isLoading = false;
 
-    /////////////////////////
+    ///////////////////////////
     // #region Initialization
     //////////////////////////
 
     _preInitialize() {
         bind(this, 'onResourceAddItem', 'onResourceRemoveItem', 'onResourceRemoveItems', '_initializeList');
         bind(this, 'onResourceItemsUpdated', 'onResourceSetItems', 'onResourceAddItems', 'onResourceFetch');
-        bind(this, 'onTransitionOut');
+        bind(this, 'onTransitionOut', 'onPagerChange');
     }
 
     _initialize() {
         this._initializeListResource();
         this.isLoading = false;
+    }
+
+    /**
+     * Returns the parent list component from a given element.
+     * @param {Element} element
+     * @returns {List | null}
+     */
+    static getList(element) {
+        return element.closest('.arpaList, arpa-list, arpa-gallery, list-manager');
     }
 
     _initializeListResource() {
@@ -57,29 +60,6 @@ class List extends ArpaElement {
             this.listResource.setUrl(url);
             this.removeAttribute('url');
         }
-    }
-
-    _initializeTemplates() {
-        super._initializeTemplates();
-        this.viewTemplates = this._selectViewTemplates();
-        this.viewTemplates.forEach(template => template.remove());
-    }
-
-    /**
-     * Returns the view template for a given view.
-     * @param {string} view
-     * @returns {HTMLTemplateElement | undefined}
-     */
-    getViewTemplate(view) {
-        return this.viewTemplates?.find(template => template.getAttribute('id') === view);
-    }
-
-    /**
-     * Selects the view templates for the element.
-     * @returns {HTMLTemplateElement[]} The selected view templates.
-     */
-    _selectViewTemplates() {
-        return Array.from(this.querySelectorAll(':scope > template[template-type="view"]'));
     }
 
     /**
@@ -102,10 +82,11 @@ class List extends ArpaElement {
         return namespace + this.getProperty(`${param}-param`);
     }
 
-    instantiateResource(id = this.getId()) {
-        return (
-            getResource(id) ||
-            new ListResource({
+    instantiateResource(id = this.getId(), userConfig = {}) {
+        const resource = getResource(id);
+        if (resource) return resource;
+        const config = mergeObjects(
+            {
                 id,
                 pageParam: this.getParamName('page'),
                 searchParam: this.getParamName('search'),
@@ -116,10 +97,11 @@ class List extends ArpaElement {
                 mapItemId: this._config?.mapItemId,
                 itemIdMap: this.getProperty('item-id-map'),
                 listComponent: this,
-                url: this.getProperty('url'),
-                router: this.router
-            })
+                url: this.getProperty('url')
+            },
+            userConfig
         );
+        return new ListResource(config);
     }
 
     _initializeList() {
@@ -139,16 +121,27 @@ class List extends ArpaElement {
         }
         super.setConfig(config);
         this._initializeZoneSelector();
-        if (this.hasResource()) {
-            /** @type {Router} */
-            this.router = this.getRouter();
-        }
         return this._config;
     }
 
     _initializeZoneSelector() {
         const itemTag = this._config?.itemTag || 'list-item';
         !this._config?.zoneSelector && (this._config.zoneSelector = `zone:not(${itemTag} zone)`);
+    }
+
+    getTemplateChildren() {
+        return {
+            heading: {},
+            titleWrapper: { tag: 'h2', hasZone: false, content: '{titleIcon}{title}' },
+            title: { tag: 'span' },
+            titleIcon: { tag: 'arpa-icon' },
+            aside: {},
+            footer: { content: '{pager}' },
+            preloader: { tag: 'circular-preloader', canRender: 'has-preloader' },
+            noItems: { content: '{noItemsIcon}{noItemsText}', canRender: true },
+            noItemsIcon: { tag: 'arpa-icon' },
+            noItemsText: { content: () => this.getNoItemsContent() }
+        };
     }
 
     /**
@@ -161,16 +154,10 @@ class List extends ArpaElement {
         const conf = {
             canCollapse: false,
             className: 'arpaList',
-            controls: ['search', 'sort', 'views', 'multiselect', 'filters'],
-            defaultView: 'list',
-            hasControls: undefined,
-            hasInfo: false,
             hasItemsTransition: false,
-            hasMiniSearch: true,
             hasPager: true,
             hasPreloader: true,
             hasResource: false,
-            hasMessages: false,
             imageSize: 'list',
             isCollapsed: false,
             itemComponent: ListItem,
@@ -188,83 +175,21 @@ class List extends ArpaElement {
             perPageParam: 'perPage',
             renderMode: 'full',
             resetScrollOnLoad: true,
-            router: undefined,
             searchParam: 'search',
             showResultsText: true,
-            sortByParam: 'sortBy',
-            sortDefault: undefined,
-            sortDirParam: 'sortDir',
-            sortOptions: [],
             tagName: 'arpa-list',
             templateTypes: ['content', 'list-item'],
             title: '',
-            templateChildren: {
-                messages: { canRender: 'has-messages', tag: 'arpa-messages', id: '{id}-messages' },
-                info: { tag: 'list-info', canRender: 'has-info' },
-                heading: {},
-                titleWrapper: { tag: 'h2', hasZone: false, content: '{titleIcon}{title}' },
-                title: { tag: 'span' },
-                titleIcon: { tag: 'arpa-icon' },
-                aside: {},
-                footer: { content: '{pager}' },
-                preloader: { tag: 'circular-preloader', canRender: 'has-preloader' },
-                noItems: { content: '{noItemsIcon}{noItemsText}', canRender: true },
-                noItemsIcon: { tag: 'arpa-icon' },
-                noItemsText: { content: () => this.getNoItemsContent() },
-                controls: {
-                    tag: 'list-controls',
-                    content: ' ',
-                    canRender: () => this.hasControls(),
-                    attr: { controls: () => this.getArrayProperty('controls')?.toString() || '' }
-                }
-            }
+            templateChildren: this.getTemplateChildren()
         };
         return mergeObjects(super.getDefaultConfig(conf), config);
     }
 
     // #endregion
 
-    /////////////////////////
-    // #region has
-    /////////////////////////
-
-    /**
-     * Returns true if the list has any controls enabled.
-     * @returns {boolean}
-     */
-    hasControls() {
-        if (this._config.hasControls === false) return false;
-        if (this.getControls().length === 0) return false;
-        return this.hasZone('controls') || !this.hasHeaderControls();
-    }
-
-    /**
-     * Returns true if the list has a specific control.
-     * @param {string} control
-     * @returns {boolean}
-     */
-    hasControl(control) {
-        if (this.getRenderMode() === 'minimal') return false;
-        return this.getControls()?.includes(control);
-    }
-
-    /**
-     * Returns the list of controls assigned to the list.
-     * @returns {string[]}
-     */
-    getControls() {
-        const arr = this.getArrayProperty('controls');
-        return Array.isArray(arr) ? arr : [];
-    }
-
-    /**
-     * Returns the control element given its name.
-     * @param {string} control
-     * @returns {HTMLElement | undefined | null}
-     */
-    getControl(control) {
-        return this.controls?.getControl(control);
-    }
+    ////////////////
+    // #region Has
+    ////////////////
 
     /**
      * Returns true if the list has a pager component.
@@ -285,27 +210,9 @@ class List extends ArpaElement {
 
     // #endregion
 
-    /////////////////////////////
-    // #region get
-    /////////////////////////////
-
-    /**
-     * Returns the router service.
-     * @returns {Router}
-     */
-    getRouter() {
-        return /** @type {Router} */ (this._config?.router || getService('router'));
-    }
-
-    getViewFilter() {
-        return this.listResource?.getViewFilter({
-            defaultValue: this.getDefaultView()
-        });
-    }
-
-    getView() {
-        return this.getViewFilter()?.getValue() || this.getDefaultView();
-    }
+    /////////////////
+    // #region Get
+    /////////////////
 
     /**
      * Returns the list item template.
@@ -316,23 +223,11 @@ class List extends ArpaElement {
     }
 
     /**
-     * Sets the view for the list.
-     * @param {string} view
-     */
-    setView(view) {
-        this.getViewFilter()?.setValue(view);
-    }
-
-    /**
      * Returns the component id.
      * @returns {string}
      */
     getId() {
         return this.getProperty('id');
-    }
-
-    getDefaultView() {
-        return this.getProperty('default-view');
     }
 
     getItemCount() {
@@ -356,15 +251,6 @@ class List extends ArpaElement {
     }
 
     /**
-     * Returns the different options by which the list items can be sorted.
-     * @returns {FieldOptionConfigType[]}
-     * Have to sort out the forms library types first.
-     */
-    getSortOptions() {
-        return this.getProperty('sort-options');
-    }
-
-    /**
      * Gets the list items that are initially added to the DOM.
      * @returns {(ListItem | Node | HTMLElement)[]}
      */
@@ -381,14 +267,6 @@ class List extends ArpaElement {
         return this.getProperty('no-items-content');
     }
 
-    /**
-     * Returns the default sort option value.
-     * @returns {string}
-     */
-    getSortDefault() {
-        return this.getProperty('sort-default');
-    }
-
     getChildren() {
         return this.itemsNode?.children ?? [];
     }
@@ -397,27 +275,11 @@ class List extends ArpaElement {
         return this.getProperty('lazy-load-images');
     }
 
-    //////////////////////
     // #endregion get
-    /////////////////////
 
-    /////////////////////////
-    // #region set
-    /////////////////////////
-
-    /**
-     * Sets the sort options for the list.
-     * @param {FieldOptionConfigType[]} options
-     * @param {string} defaultValue
-     */
-    async setSortOptions(options, defaultValue) {
-        this._config.sortOptions = options;
-        this._config.sortDefault = defaultValue;
-        /** @type {ListSort | undefined} */
-        // const listSort = /** @type {ListSort | undefined} */ (this.controls?.search?.listSort);
-        // const sortField = listSort?.sortByMenu;
-        // sortField?.setOptions(options, defaultValue);
-    }
+    /////////////////
+    // #region Set
+    ////////////////
 
     /**
      * Scrolls list to the top.
@@ -426,13 +288,11 @@ class List extends ArpaElement {
         this.hasProperty('resetScrollOnLoad') && this.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    /////////////////////////
     // #endregion set
-    /////////////////////////
 
-    ////////////////////////
+    //////////////////////////
     // #region Resource API
-    ///////////////////////
+    /////////////////////////
 
     /**
      * Sets the list items and deletes existing ones.
@@ -689,9 +549,9 @@ class List extends ArpaElement {
 
     // #endregion Resource API
 
-    /////////////////////////////
+    ///////////////////////////////
     // #region Resource Handlers
-    /////////////////////////////
+    ///////////////////////////////
 
     /**
      * Handles the list items through the list resource events.
@@ -774,16 +634,15 @@ class List extends ArpaElement {
 
     // #endregion
 
-    /////////////////////////
-    // #region RENDER
-    ////////////////////////
+    ///////////////////
+    // #region Render
+    ///////////////////
 
     getTemplateVars() {
         return {
-            headerControls: this.renderHeaderControls(),
+            pager: this.renderPager(),
             id: this.getId(),
-            items: this.renderItemsWrapper(),
-            pager: this.renderPager()
+            items: this.renderItemsWrapper()
         };
     }
 
@@ -819,11 +678,8 @@ class List extends ArpaElement {
             }
         });
 
-        /** @type {ListControls | null} */
-        this.controls = this.querySelector('list-controls');
         this.noItemsNode = this.querySelector('.arpaList__noItems');
         this.preloader = this.querySelector('.arpaList__preloader');
-        this.messages = /** @type {Messages | null} */ (this.querySelector('arpa-messages'));
         this._handleNoItems();
         return true;
     }
@@ -912,22 +768,6 @@ class List extends ArpaElement {
         return html`{items}`;
     }
 
-    hasHeaderControls() {
-        return this.getControls()?.length === 1;
-    }
-
-    renderHeaderControls() {
-        if (!this.hasHeaderControls()) return '';
-        /** @type {string[]} */
-        const controls = /** @type {string[]} */ (this.getArrayProperty('controls') || []);
-        const control = controls?.[0];
-        if (!control) return '';
-        const fn = /** @type {keyof ListControls.prototype} */ (`render${ucFirst(control)}`);
-        const method = /** @type {((...args: any[]) => string) | undefined} */ (ListControls.prototype[fn]);
-        if (typeof method === 'function') return method(this);
-        return '';
-    }
-
     renderItemsWrapper() {
         if (this.getRenderMode() === 'minimal') return '';
         const ariaLabel = processTemplate(this.getProperty('heading'), {}, this);
@@ -944,9 +784,7 @@ class List extends ArpaElement {
         return html`<${component} ${attrString(config)}></${component}>`;
     }
 
-    //////////////////////////////
-    // #endregion RENDER
-    //////////////////////////////
+    // #endregion Render
 
     ////////////////////////////
     // #region Pager
@@ -977,16 +815,18 @@ class List extends ArpaElement {
     _initializePager() {
         /** @type {Pager | null} */
         this.pagerNode = this.querySelector('arpa-pager');
-        this.pagerNode?.onChange((/** @type {import('@arpadroid/ui').PagerCallbackPayloadType} */ payload) => {
-            const { page } = payload;
-            const newURL = editURL(window.location.href, { [this.getParamName('page')]: String(page) });
-            this.resetScroll();
-            this.router?.go(newURL);
-        });
+        this.pagerNode?.onChange(this.onPagerChange);
     }
-    ////////////////////////////
+
+    /**
+     * Handles the pager change event.
+     * @param {import('@arpadroid/ui').PagerCallbackPayloadType} _payload
+     */
+    onPagerChange(_payload) {
+        this.resetScroll();
+    }
+
     // #endregion Pager
-    ////////////////////////////
 
     /////////////////////////
     // #region Lifecycle
@@ -1013,9 +853,7 @@ class List extends ArpaElement {
     _onDestroy() {
         this?.listResource?.destroy();
     }
-    /////////////////////////
     // #endregion Lifecycle
-    /////////////////////////
 }
 
 defineCustomElement('arpa-list', List);

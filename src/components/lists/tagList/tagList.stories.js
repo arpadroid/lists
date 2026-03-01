@@ -2,16 +2,19 @@
  * @typedef {import('../../list/list.js').default} List
  * @typedef {import('../../list/list.types').ListConfigType} ListConfigType
  * @typedef {import('./tagList.js').default} TagList
+ * @typedef {import('@storybook/web-components-vite').Args} Args
+ * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
+ * @typedef {import('@storybook/web-components-vite').Meta} Meta
  */
 import { attrString } from '@arpadroid/tools';
-import { Default as ListStory } from '../../list/stories/stories.util.js';
+import { DataDrivenList as ListStory } from '../../list/stories/list.stories.js';
 import { within, userEvent, waitFor, expect, fn } from 'storybook/test';
 const html = String.raw;
 
-/** @type {import('@storybook/web-components-vite').Meta} */
-const Default = {
+/** @type {Meta} */
+const TagListStory = {
     ...ListStory,
-    title: 'Lists/Lists/Tag List',
+    title: 'Lists/Tag List',
     parameters: {},
     argTypes: {
         id: { control: 'text' },
@@ -30,7 +33,7 @@ const Default = {
         itemsPerPage: 5,
         onDelete: fn()
     },
-    render: (/** @type {ListConfigType} */ args) => {
+    render: args => {
         return html`<tag-list ${attrString(args)}>
             <template template-type="list-item" has-delete></template>
             <tag-item icon="restaurant">Tag 1</tag-item>
@@ -40,26 +43,26 @@ const Default = {
     }
 };
 
-export const Render = Default;
+export const Render = TagListStory;
 
-/** @type {import('@storybook/web-components-vite').StoryObj} */
+async function playSetup(/** @type {HTMLElement} */ canvasElement) {
+    await customElements.whenDefined('tag-list');
+    await customElements.whenDefined('tag-item');
+    /** @type {TagList | null} */
+    const tagList = canvasElement.querySelector('tag-list');
+    return { tagList, canvas: /** @type {any} */ within(canvasElement) };
+}
+
+/** @type {StoryObj} */
 export const Test = {
     args: {
-        ...Default.args,
+        ...TagListStory.args,
         id: 'tag-list-test',
         title: 'Tag List Test'
     },
-    playSetup: async (/** @type {HTMLElement} */ canvasElement) => {
-        await customElements.whenDefined('tag-list');
-        await customElements.whenDefined('tag-item');
-        /** @type {TagList | null} */
-        const tagList = canvasElement.querySelector('tag-list');
-        return { tagList, canvas: /** @type {any} */ within(canvasElement) };
-    },
-    play: async (
-        /** @type {import('@storybook/web-components-vite').StoryContext} */ { canvasElement, step, args }
-    ) => {
-        const setup = await Test.playSetup(canvasElement);
+
+    play: async ({ canvasElement, step, args }) => {
+        const setup = await playSetup(canvasElement);
         const { canvas, tagList } = setup;
         tagList?.on('delete_tag', args.onDelete);
 
@@ -73,7 +76,7 @@ export const Test = {
         });
 
         await step('Sets an event listener on delete and receives callback when delete tag is clicked.', async () => {
-            const tag = canvas.getByText('Tag 1').closest('tag-item');
+            const tag = /** @type {HTMLElement} */ (canvas.getByText('Tag 1').closest('tag-item'));
             const deleteButton = within(tag).getByRole('button');
             expect(deleteButton).toBeInTheDocument();
             userEvent.click(deleteButton);
@@ -84,4 +87,4 @@ export const Test = {
     }
 };
 
-export default Default;
+export default TagListStory;

@@ -1,10 +1,8 @@
 /** @type {import('@arpadroid/module').BuildConfigType} */
 const config = {
     buildTypes: true,
-    deps: ['messages', 'navigation', 'forms'],
-    deferTypesBuild: ['navigation', 'messages', 'forms'],
     buildType: 'uiComponent',
-    storybook_port: 6008,
+    storybook_port: 6010,
     turbo: false,
     logo: `           ┓    • ┓  ┓•   
   ┏┓┏┓┏┓┏┓┏┫┏┓┏┓┓┏┫  ┃┓┏╋┏

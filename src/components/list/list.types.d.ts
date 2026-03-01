@@ -2,18 +2,15 @@ import type { ListResource } from '@arpadroid/resources';
 import type ListItem from '../listItem/listItem.js';
 import type { ListItemConfigType, ListItemImageTypes } from '../listItem/listItem.types';
 import type { ArpaElementConfigType } from '@arpadroid/ui';
-import type { ListResourceItemType, Router } from './list.js';
-import { BaseLinkConfigType, BaseFieldOptionConfigType } from '../../@types/base.types.js';
+import type { ListResourceItemType } from './list.js';
 
 export type ListConfigType = ArpaElementConfigType & {
-    actions?: BaseFieldOptionConfigType[];
     canCollapse?: boolean;
     controls?: string[];
     defaultView?: string;
     hasControls?: boolean;
     hasInfo?: boolean;
     hasItemsTransition?: boolean;
-    hasMiniSearch?: boolean;
     hasPager?: boolean;
     hasMessages?: boolean;
     hasPreloader?: boolean;
@@ -43,17 +40,11 @@ export type ListConfigType = ArpaElementConfigType & {
     preProcessNode?: (node?: ListItem | HTMLElement | undefined) => ListItem | HTMLElement | undefined;
     renderMode?: 'minimal' | 'full';
     resetScrollOnLoad?: boolean;
-    router?: Router;
     searchParam?: string;
     showResultsText?: boolean;
-    sortByParam?: string;
-    sortDefault?: string;
-    sortDirParam?: string;
-    sortOptions?: BaseFieldOptionConfigType[];
     stickyControls?: boolean;
     template?: string;
     title?: string | null;
     titleIcon?: string;
-    viewOptions?: BaseLinkConfigType[];
     views?: string[];
 };

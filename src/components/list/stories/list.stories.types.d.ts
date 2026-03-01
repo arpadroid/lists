@@ -1,3 +1,4 @@
+import { within } from 'storybook/test';
 import { ListResource } from '@arpadroid/resources';
 import List from '../../list/list.js';
 import ListItem from '../../listItem/listItem.js';
@@ -9,7 +10,7 @@ export type ListPlaySetupPayloadType = {
 };
 
 export type ListPlaySetupResponseType = {
-    canvas?: BoundFunctions<Queries>;
+    canvas?: ReturnType<typeof within>;
     listNode?: List | null;
     listItem?: ListItem | null;
     listResource?: ListResource | null;
