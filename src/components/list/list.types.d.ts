@@ -37,7 +37,7 @@ export type ListConfigType = ArpaElementConfigType & {
     paramNamespace?: string;
     perPageParam?: string;
     preProcessItem?: (item: ListConfigType) => ListConfigType;
-    preProcessNode?: (node?: ListItem | HTMLElement | undefined) => ListItem | HTMLElement | undefined;
+    preProcessNode?: (node?: ListItem | HTMLElement | undefined) => ListResourceItemType;
     renderMode?: 'minimal' | 'full';
     resetScrollOnLoad?: boolean;
     searchParam?: string;

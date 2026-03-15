@@ -75,7 +75,6 @@ export const WithZones = {
     play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
         const { canvas } = await playSetup(canvasElement);
         await step('Renders the list item with the expected zones', async () => {
-            await new Promise(resolve => setTimeout(resolve, 100)); // Wait for truncation to apply
             expect(canvas.getByText('Morning Motivation')).toBeInTheDocument();
             expect(canvas.getByText('Start your day with a burst of energy!')).toBeInTheDocument();
             expect(canvas.getByText('auto_awesome')).toHaveClass('icon--auto_awesome');

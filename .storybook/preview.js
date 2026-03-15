@@ -1,4 +1,3 @@
-// @ts-ignore
 import { bootstrapDecorator } from '@arpadroid/module/storybook/decorators';
 import { setService } from '@arpadroid/context';
 import { Router, APIService } from '@arpadroid/services';
@@ -10,8 +9,7 @@ const config = mergeObjects(
     {
         decorators: [
             bootstrapDecorator(() => {
-                // @ts-ignore
-                setService('router', new Router()); // @ts-ignore
+                setService('router', new Router());
                 setService('apiService', APIService);
             })
         ]

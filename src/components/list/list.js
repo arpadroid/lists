@@ -315,8 +315,7 @@ class List extends ArpaElement {
      * @param {ListConfigType['preProcessNode']} callback
      */
     setPreProcessNode(callback) {
-        if (this.listResource) {
-            // @ts-ignore
+        if (this.listResource) { // @ts-ignore --- IGNORE ---
             callback && this.listResource?.setPreProcessNode(callback);
         } else {
             this._config.preProcessNode = callback;
@@ -326,7 +325,7 @@ class List extends ArpaElement {
     /**
      * Preprocess a list item node.
      * @param {ListItem | undefined} node
-     * @returns {ListItem | HTMLElement | undefined}
+     * @returns {ListResourceItemType | undefined}
      */
     preProcessNode(node) {
         const { preProcessNode } = this._config;
@@ -709,12 +708,11 @@ class List extends ArpaElement {
         if (isStatic && perPage && perPage < this.initialItems.length) {
             /** @type {Record<string, unknown>[]} */
             const payload = [];
-            this.initialItems.forEach((item, index) => {
-                item instanceof HTMLElement && item.remove();
-                payload.push({
-                    node: item, // @ts-ignore
-                    id: item?.id || 'item-' + index
-                });
+            this.initialItems.forEach((node, index) => {
+                node instanceof HTMLElement && node.remove();
+                const defaultId = `item-${index}`;
+                const id = node instanceof HTMLElement ? node.getAttribute('id') || defaultId : defaultId;
+                payload.push({ node, id });
             });
             resource?.setItems(payload);
             return [];

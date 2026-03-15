@@ -44,7 +44,7 @@ class ListItem extends ArpaElement {
      */
     getDefaultConfig() {
         this.bind('_onImageLoaded', '_onImageError', 'setSelected');
-        this.bind('_onSelected', '_onDeselected', '_doAction');
+        this.bind('_onSelected', '_onDeselected', '_doAction', 'getImageAttributes');
         /** @type {ListItemConfigType} */
         const conf = {
             lazyLoad: false,
@@ -79,8 +79,8 @@ class ListItem extends ArpaElement {
             templateChildren: {
                 icon: { tag: 'arpa-icon', canRender: true },
                 iconRight: { tag: 'arpa-icon' },
-                titleIcon: { tag: 'arpa-icon' }, // @ts-ignore
-                image: { tag: 'arpa-image', attr: this.getImageAttributes.bind(this) },
+                titleIcon: { tag: 'arpa-icon' },
+                image: { tag: 'arpa-image', attr: this.getImageAttributes },
                 subtitle: { tag: 'span', canRender: true },
                 nav: { tag: 'icon-menu', id: this.getId() + '-nav' }
             }
