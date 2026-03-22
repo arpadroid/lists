@@ -29,7 +29,7 @@ export const Render = {
         image: '/test-assets/artists/phidias.jpg'
     },
     play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
-        const { listItem, canvas } = await playSetup(canvasElement);
+        const { canvas } = await playSetup(canvasElement);
         const icon = canvasElement.querySelector('list-item arpa-icon');
 
         await step('Renders the list item with the expected content', async () => {
