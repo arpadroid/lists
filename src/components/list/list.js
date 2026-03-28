@@ -154,6 +154,7 @@ class List extends ArpaElement {
         const conf = {
             canCollapse: false,
             className: 'arpaList',
+            handleContent: false,
             hasItemsTransition: false,
             hasPager: true,
             hasPreloader: true,
@@ -315,7 +316,8 @@ class List extends ArpaElement {
      * @param {ListConfigType['preProcessNode']} callback
      */
     setPreProcessNode(callback) {
-        if (this.listResource) { // @ts-ignore --- IGNORE ---
+        if (this.listResource) {
+            // @ts-ignore --- IGNORE ---
             callback && this.listResource?.setPreProcessNode(callback);
         } else {
             this._config.preProcessNode = callback;
@@ -407,9 +409,9 @@ class List extends ArpaElement {
     transitionNewItems(items) {
         const container = this.getItemsContainer();
         if (!container?.children?.length) return this.addItemsBatched(items);
-        const newWrapper = renderNode(this.renderItemsWrapper());
+        const newWrapper = /** @type {HTMLElement | null} */ (renderNode(this.renderItemsWrapper()));
         if (!newWrapper) return this.addItemsBatched(items);
-        newWrapper.classList.add('arpaList__items--transitioning');
+        newWrapper.classList?.add('arpaList__items--transitioning');
         /** @type {HTMLElement} */
         this.itemsNode = newWrapper;
         /** @type {HTMLElement | null} */
@@ -766,6 +768,10 @@ class List extends ArpaElement {
         return html`{items}`;
     }
 
+    /**
+     * Renders the items wrapper.
+     * @returns {string}
+     */
     renderItemsWrapper() {
         if (this.getRenderMode() === 'minimal') return '';
         const ariaLabel = processTemplate(this.getProperty('heading'), {}, this);
