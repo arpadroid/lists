@@ -60,6 +60,7 @@ class ListItem extends ArpaElement {
             imageSize: undefined,
             titleTag: 'span',
             defaultImageSize: 'list',
+            handleContent: false,
             zoneResolverSelector: '[zone="{zoneName}"]:not(nav-list [zone="{zoneName}"])',
             imageSizes: {
                 small: { width: 50, height: 50 },
@@ -85,7 +86,7 @@ class ListItem extends ArpaElement {
                 nav: { tag: 'icon-menu', id: this.getId() + '-nav' }
             }
         };
-        return super.getDefaultConfig(conf);
+        return /** @type {ListItemConfigType} */ (super.getDefaultConfig(conf));
     }
 
     initializeProperties() {
