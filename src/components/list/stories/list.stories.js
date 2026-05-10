@@ -1,16 +1,15 @@
 /**
  * @typedef {import('../list.js').default} List
+ * @typedef {import('../list.types.js').ListConfigType} ListConfigType
  * @typedef {import('../../listItem/listItem.js').default} ListItem
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
- * @typedef {import('@storybook/web-components-vite').Args} Args
- * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
- * @typedef {import('@storybook/web-components-vite').Meta} Meta
- *
+ * @typedef {import('@storybook/web-components-vite').Meta<ListConfigType>} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj<ListConfigType>} Story
  */
 
 import { attrString } from '@arpadroid/tools';
 import { expect, waitFor } from 'storybook/test';
-import { getArgTypes, playSetup, renderItemTemplate } from './list.stories.utils.js';
+import { playSetup, renderItemTemplate } from './list.stories.utils.js';
 
 const html = String.raw;
 
@@ -18,6 +17,7 @@ const html = String.raw;
 const ListStory = {
     title: 'Lists/List',
     tags: ['docs'],
+    component: 'arpa-list',
     parameters: {
         layout: 'padded'
     },
@@ -31,9 +31,8 @@ const ListStory = {
         controls: ['search', 'sort', 'views', 'multiselect', 'filters'],
         views: ['grid', 'list', 'list-compact', 'grid-compact']
     },
-    argTypes: getArgTypes(),
     render: args => {
-        delete args.text;
+        // delete args.text;
         return html`
             <arpa-list ${attrString(args)} views="grid, list">
                 <list-item title="Some title" title-link="/some-link" image="/some-image.jpg">
@@ -51,10 +50,8 @@ const ListStory = {
     }
 };
 
-/** @type {StoryObj} */
+/** @type {Story} */
 export const DataDrivenList = {
-    // name: 'Render',
-    argTypes: getArgTypes(),
     parameters: {
         layout: 'flexColumn'
     },
@@ -101,13 +98,13 @@ export const DataDrivenList = {
     }
 };
 
-/** @type {StoryObj} */
+/** @type {Story} */
 export const EmptyList = {
     // name: 'Empty List',
     args: {
         id: 'static-list-test',
         title: 'Empty List',
-        controls: ' '
+        controls: []
     },
     parameters: {
         layout: 'padded'
@@ -125,7 +122,7 @@ export const EmptyList = {
     }
 };
 
-/** @type {StoryObj} */
+/** @type {Story} */
 export const Test200 = {
     ...DataDrivenList,
     args: {

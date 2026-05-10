@@ -1,10 +1,10 @@
 /**
  * @typedef {import('../list.js').default} List
+ * @typedef {import('../list.types.js').ListConfigType} ListConfigType
  * @typedef {import('../../listItem/listItem.js').default} ListItem
  * @typedef {import('@arpadroid/resources').ListResource} ListResource
- * @typedef {import('@storybook/web-components-vite').Args} Args
- * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
- * @typedef {import('@storybook/web-components-vite').Meta} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj<ListConfigType>} Story
+ * @typedef {import('@storybook/web-components-vite').Meta<ListConfigType>} Meta
  */
 
 import { attrString } from '@arpadroid/tools';
@@ -15,11 +15,12 @@ const html = String.raw;
 /** @type {Meta} */
 const Default = {
     title: 'Lists/List/HTML List',
+    component: 'arpa-list',
     args: {
         id: 'static-list-test',
         title: 'HTML List',
         titleIcon: 'list',
-        controls: ' '
+        controls: []
     },
     parameters: {
         layout: 'centered'
@@ -124,6 +125,7 @@ const Default = {
     }
 };
 
+/** @type {Story} */
 export const HTMLList = Default;
 
 export default Default;

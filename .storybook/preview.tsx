@@ -13,7 +13,7 @@ const config = mergeObjects(
             })
         ]
     },
-    true
+    { mergeArrays: true }
 );
 
 export default { ...config };
