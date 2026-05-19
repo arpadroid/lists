@@ -2,7 +2,7 @@
 const config = {
     buildTypes: true,
     buildType: 'uiComponent',
-    buildManifest: true,
+    buildManifest: false,
     storybook_port: 6010,
     turbo: false,
     logo: `           ┓    • ┓  ┓•   
