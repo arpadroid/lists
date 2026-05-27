@@ -3,7 +3,7 @@
  * @typedef {import('../tagList.js').default} TagList
  */
 
-import { render, renderNode, appendNodes, defineCustomElement } from '@arpadroid/tools';
+import { render, renderNode, appendNodes, defineCustomElement, mergeObjects } from '@arpadroid/tools';
 import { processTemplate } from '@arpadroid/ui';
 import ListItem from '../../../listItem/listItem.js';
 
@@ -19,7 +19,8 @@ class TagItem extends ListItem {
      */
     getDefaultConfig() {
         this._onDelete = this._onDelete.bind(this);
-        return {
+
+        const config = {
             classNames: ['tagItem', 'tag'],
             listSelector: 'tag-list',
             tooltip: '',
@@ -28,6 +29,7 @@ class TagItem extends ListItem {
                 role: 'listitem'
             }
         };
+        return mergeObjects(super.getDefaultConfig(), config);
     }
 
     getId() {

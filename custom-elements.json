@@ -883,7 +883,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -893,7 +892,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": true
             },
             {
@@ -903,7 +901,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -913,7 +910,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -923,7 +919,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -933,7 +928,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -943,7 +937,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -953,7 +946,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -963,7 +955,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -973,7 +964,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -983,7 +973,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -993,7 +982,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ListItemImageTypes",
               "optional": true
             },
             {
@@ -1003,7 +991,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -1013,7 +1000,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -1023,7 +1009,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -1033,17 +1018,16 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: typeof ListItem",
               "optional": true
             },
             {
               "name": "items",
               "type": {
                 "text": "ListItemConfigType[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "any[]"
               },
               "serializedAs": "json",
-              "description": "TS type: ListItemConfigType[]",
               "optional": true
             },
             {
@@ -1053,7 +1037,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean | 'auto'",
               "optional": true
             },
             {
@@ -1063,7 +1046,6 @@
                 "summary": "number"
               },
               "serializedAs": "number",
-              "description": "TS type: number",
               "optional": true
             },
             {
@@ -1073,7 +1055,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -1083,7 +1064,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -1093,7 +1073,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ListResource",
               "optional": true
             },
             {
@@ -1103,7 +1082,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -1113,17 +1091,16 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: number | string",
               "optional": true
             },
             {
               "name": "map-item-id",
               "type": {
                 "text": "(item: ListResourceItemType) => string",
-                "summary": "string"
+                "summary": "string",
+                "detail": "(item: any) => string"
               },
               "serializedAs": "string",
-              "description": "TS type: (item: ListResourceItemType) => string",
               "optional": true
             },
             {
@@ -1133,7 +1110,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -1143,7 +1119,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -1153,7 +1128,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: (value: string) => void",
               "optional": true
             },
             {
@@ -1163,7 +1137,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -1173,7 +1146,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -1183,7 +1155,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -1193,17 +1164,16 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (item: ListConfigType) => ListConfigType",
               "optional": true
             },
             {
               "name": "pre-process-node",
               "type": {
                 "text": "(node?: ListItem | HTMLElement | undefined) => ListResourceItemType",
-                "summary": "unknown"
+                "summary": "unknown",
+                "detail": "(node?: ListItem | HTMLElement | undefined) => any"
               },
               "serializedAs": "string",
-              "description": "TS type: (node?: ListItem | HTMLElement | undefined) => ListResourceItemType",
               "optional": true
             },
             {
@@ -1213,7 +1183,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: 'minimal' | 'full'",
               "optional": true
             },
             {
@@ -1223,7 +1192,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -1233,7 +1201,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -1243,7 +1210,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -1253,7 +1219,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -1263,7 +1228,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -1273,7 +1237,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | null",
               "optional": true
             },
             {
@@ -1283,7 +1246,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -1293,7 +1255,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": true
             }
           ],
@@ -3059,7 +3020,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: OnDeleteCallbackType",
               "optional": true
             },
             {
@@ -3069,7 +3029,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3083,7 +3042,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3097,7 +3055,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3111,7 +3068,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3125,7 +3081,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3139,7 +3094,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3153,7 +3107,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3167,7 +3120,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3181,7 +3133,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3195,7 +3146,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3209,7 +3159,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3223,7 +3172,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ListItemImageTypes",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3237,7 +3185,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3251,7 +3198,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3265,7 +3211,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3279,7 +3224,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: typeof ListItem",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3290,10 +3234,10 @@
               "name": "items",
               "type": {
                 "text": "ListItemConfigType[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "any[]"
               },
               "serializedAs": "json",
-              "description": "TS type: ListItemConfigType[]",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3307,7 +3251,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean | 'auto'",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3321,7 +3264,6 @@
                 "summary": "number"
               },
               "serializedAs": "number",
-              "description": "TS type: number",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3335,7 +3277,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3349,7 +3290,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3363,7 +3303,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ListResource",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3377,7 +3316,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3391,7 +3329,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: number | string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3402,10 +3339,10 @@
               "name": "map-item-id",
               "type": {
                 "text": "(item: ListResourceItemType) => string",
-                "summary": "string"
+                "summary": "string",
+                "detail": "(item: any) => string"
               },
               "serializedAs": "string",
-              "description": "TS type: (item: ListResourceItemType) => string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3419,7 +3356,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3433,7 +3369,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3447,7 +3382,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: (value: string) => void",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3461,7 +3395,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3475,7 +3408,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3489,7 +3421,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3503,7 +3434,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (item: ListConfigType) => ListConfigType",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3514,10 +3444,10 @@
               "name": "pre-process-node",
               "type": {
                 "text": "(node?: ListItem | HTMLElement | undefined) => ListResourceItemType",
-                "summary": "unknown"
+                "summary": "unknown",
+                "detail": "(node?: ListItem | HTMLElement | undefined) => any"
               },
               "serializedAs": "string",
-              "description": "TS type: (node?: ListItem | HTMLElement | undefined) => ListResourceItemType",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3531,7 +3461,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: 'minimal' | 'full'",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3545,7 +3474,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3559,7 +3487,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3573,7 +3500,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3587,7 +3513,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3601,7 +3526,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3615,7 +3539,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | null",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3629,7 +3552,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -3643,7 +3565,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": true,
               "inheritedFrom": {
                 "name": "List",
@@ -4462,7 +4383,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -4472,7 +4392,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -4482,7 +4401,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -4492,7 +4410,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -4502,7 +4419,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -4512,7 +4428,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: 'top' | 'bottom' | 'left' | 'right'",
               "optional": true
             },
             {
@@ -4522,7 +4437,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: OnDeleteCallbackType",
               "optional": true
             }
           ],

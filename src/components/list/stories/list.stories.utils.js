@@ -66,7 +66,7 @@ export function renderItemTemplate(attr = {}) {
         <template
             template-type="list-item"
             template-mode="append"
-            truncate-content="200"
+            truncate-content="100"
             image="{portraitURL}"
             truncate-button
             ${attrString(attr)}
@@ -79,7 +79,7 @@ export function renderItemTemplate(attr = {}) {
                 <nav-link link="javascript:void(0)" icon-right="visibility">View</nav-link>
                 <nav-link link="javascript:void(0)" icon-right="edit">Edit</nav-link>
             </zone>
-            <zone name="content">{legacy}</zone>
+            {legacy}
         </template>`;
 }
 

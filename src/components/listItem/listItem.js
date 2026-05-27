@@ -547,13 +547,15 @@ class ListItem extends ArpaElement {
     }
 
     renderContent(truncate = this.getProperty('truncate-content'), content = this.getContent()?.trim() || '') {
-        if (!this.hasZone('content') && !content) return '';
+        if (!this.hasZone('content') && !content) {
+            return '';
+        }
+
         if (truncate) {
             return html`<truncate-text
                 ${attrString({
                     maxLength: truncate,
                     hasReadMoreButton: this.hasProperty('truncate-button'),
-                    zone: 'content',
                     class: 'listItem__content'
                 })}
             >

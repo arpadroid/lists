@@ -1,6 +1,6 @@
-.tagItem {
+.listItem.tagItem {
     align-items: center;
-    background-color: var(--primary-hilight);
+    background-color: var(--blue-light);
     border-radius: 0.5rem;
     color: var(--grey-600);
     display: flex;
@@ -13,6 +13,8 @@
     overflow: visible;
     position: relative;
     transition: none;
+    padding: 0 0.5rem;
+    width: auto;
 
     .icon.icon.icon {
         font-size: 1.3rem;
@@ -28,7 +30,7 @@
     flex: 1 1 auto;
     text-align: center;
     font-weight: 700;
-    color: var(--grey-600);
+    color: var(--grey-700);
     padding-left: 0.5rem;
     padding-right: 0.5rem;
 }
