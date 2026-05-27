@@ -73,9 +73,12 @@ export const WithZones = {
         >`;
     },
     play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
+        await new Promise(resolve => setTimeout(resolve, 100));
         const { canvas } = await playSetup(canvasElement);
         await step('Renders the list item with the expected zones', async () => {
-            expect(canvas.getByText('Morning Motivation')).toBeInTheDocument();
+            await waitFor(() => {
+                expect(canvas.getByText('Morning Motivation')).toBeInTheDocument();
+            });
             expect(canvas.getByText('Start your day with a burst of energy!')).toBeInTheDocument();
             expect(canvas.getByText('auto_awesome')).toHaveClass('icon--auto_awesome');
             const titleLink = canvas.getByRole('link', { name: /Morning Motivation/i });
