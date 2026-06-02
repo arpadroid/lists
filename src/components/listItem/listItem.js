@@ -552,10 +552,11 @@ class ListItem extends ArpaElement {
         }
 
         if (truncate) {
+            const hasButton = this.hasProperty('truncate-button');
             return html`<truncate-text
                 ${attrString({
                     maxLength: truncate,
-                    hasReadMoreButton: this.hasProperty('truncate-button'),
+                    hasButton,
                     class: 'listItem__content'
                 })}
             >

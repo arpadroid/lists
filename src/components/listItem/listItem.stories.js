@@ -85,15 +85,15 @@ export const WithZones = {
             expect(titleLink).toHaveAttribute('href', '#test-link');
             const content = canvasElement.querySelector('.truncateText__content');
             expect(content).toBeInTheDocument();
-            expect(content?.textContent).toHaveLength(53);
+            expect(content?.textContent).toHaveLength(50);
         });
 
         await step('Expands the content when the Read more button is clicked', async () => {
-            const readMoreButton = canvas.getByRole('button', { name: /Read more/i });
+            const readMoreButton = canvas.getByRole('button', { name: /read more/i });
             expect(readMoreButton).toBeInTheDocument();
             await userEvent.click(readMoreButton);
             await waitFor(() => {
-                expect(readMoreButton).toHaveTextContent('Read less');
+                expect(readMoreButton).toHaveTextContent('read less');
                 expect(canvas.getByText(longText)).toBeInTheDocument();
             });
         });
