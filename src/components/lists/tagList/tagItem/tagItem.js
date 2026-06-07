@@ -33,15 +33,15 @@ class TagItem extends ListItem {
     }
 
     getId() {
-        return this.getProperty('id');
+        return this.getProp('id');
     }
 
     getValue() {
-        return this.getProperty('value') ?? this.getText();
+        return this.getProp('value') ?? this.getText();
     }
 
     getText() {
-        return this.getProperty('text') ?? this.textNode?.textContent ?? '';
+        return this.getProp('text') ?? this.textNode?.textContent ?? '';
     }
 
     hasOnDelete() {
@@ -52,14 +52,14 @@ class TagItem extends ListItem {
         return {
             id: this.getId(),
             value: this.getValue(),
-            text: this.getProperty('text')
+            text: this.getProp('text')
         };
     }
 
     async render() {
-        const tooltip = this.getProperty('tooltip');
-        const tooltipPosition = this.getProperty('tooltip-position');
-        const text = this.getProperty('text') || this.getProperty('label') || '';
+        const tooltip = this.getProp('tooltip');
+        const tooltipPosition = this.getProp('tooltip-position');
+        const text = this.getProp('text') || this.getProp('label') || '';
         const template = html`
             <arpa-icon>{icon}</arpa-icon>
             <div class="tag__text">${text}</div>

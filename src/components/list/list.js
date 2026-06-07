@@ -55,7 +55,7 @@ class List extends ArpaElement {
         this.listResource.on('payload', this._initializeList);
         this._handleItems();
         this._handlePreloading();
-        const url = this.getProperty('url');
+        const url = this.getProp('url');
         if (url) {
             this.listResource.setUrl(url);
             this.removeAttribute('url');
@@ -78,8 +78,8 @@ class List extends ArpaElement {
      * @returns {string}
      */
     getParamName(param) {
-        const namespace = this.getProperty('param-namespace');
-        return namespace + this.getProperty(`${param}-param`);
+        const namespace = this.getProp('param-namespace');
+        return namespace + this.getProp(`${param}-param`);
     }
 
     instantiateResource(id = this.getId(), userConfig = {}) {
@@ -93,11 +93,11 @@ class List extends ArpaElement {
                 perPageParam: this.getParamName('perPage'),
                 sortByParam: this.getParamName('sortBy'),
                 sortDirParam: this.getParamName('sortDir'),
-                itemsPerPage: this.getProperty('items-per-page'),
+                itemsPerPage: this.getProp('items-per-page'),
                 mapItemId: this._config?.mapItemId,
-                itemIdMap: this.getProperty('item-id-map'),
+                itemIdMap: this.getProp('item-id-map'),
                 listComponent: this,
-                url: this.getProperty('url')
+                url: this.getProp('url')
             },
             userConfig
         );
@@ -197,7 +197,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasPager() {
-        return Boolean(this.hasResource() && this.hasProperty('has-pager'));
+        return Boolean(this.hasResource() && this.hasProp('has-pager'));
     }
 
     /**
@@ -206,7 +206,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasResource() {
-        return Boolean(this.hasProperty('url') || this.hasProperty('has-resource'));
+        return Boolean(this.hasProp('url') || this.hasProp('has-resource'));
     }
 
     // #endregion
@@ -228,7 +228,7 @@ class List extends ArpaElement {
      * @returns {string}
      */
     getId() {
-        return this.getProperty('id');
+        return this.getProp('id');
     }
 
     getItemCount() {
@@ -240,7 +240,7 @@ class List extends ArpaElement {
      * @returns {string}
      */
     getRenderMode() {
-        return this.getProperty('render-mode');
+        return this.getProp('render-mode');
     }
 
     /**
@@ -248,7 +248,7 @@ class List extends ArpaElement {
      * @returns {string}
      */
     getTitle() {
-        return this.getProperty('title');
+        return this.getProp('title');
     }
 
     /**
@@ -256,7 +256,7 @@ class List extends ArpaElement {
      * @returns {(ListItem | Node | HTMLElement)[]}
      */
     getInitialItems() {
-        const itemTagName = this.getProperty('item-tag');
+        const itemTagName = this.getProp('item-tag');
         return (
             this._childNodes?.filter(node => {
                 return node instanceof Element && node.tagName?.toLowerCase() === itemTagName;
@@ -265,7 +265,7 @@ class List extends ArpaElement {
     }
 
     getNoItemsContent() {
-        return this.getProperty('no-items-content');
+        return this.getProp('no-items-content');
     }
 
     getChildren() {
@@ -273,7 +273,7 @@ class List extends ArpaElement {
     }
 
     getLazyLoadImages() {
-        return this.getProperty('lazy-load-images');
+        return this.getProp('lazy-load-images');
     }
 
     // #endregion get
@@ -286,7 +286,7 @@ class List extends ArpaElement {
      * Scrolls list to the top.
      */
     resetScroll() {
-        this.hasProperty('resetScrollOnLoad') && this.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        this.hasProp('resetScrollOnLoad') && this.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     // #endregion set
@@ -590,7 +590,7 @@ class List extends ArpaElement {
      */
     async onResourceSetItems(items = []) {
         this.updatePager();
-        const hasItemsTransition = this.hasProperty('has-items-transition');
+        const hasItemsTransition = this.hasProp('has-items-transition');
         if (hasItemsTransition) {
             const oldItems = document.querySelectorAll('.arpaList__items--out');
             oldItems.forEach(element => element.remove());
@@ -774,7 +774,7 @@ class List extends ArpaElement {
      */
     renderItemsWrapper() {
         if (this.getRenderMode() === 'minimal') return '';
-        const ariaLabel = processTemplate(this.getProperty('heading'), {}, this);
+        const ariaLabel = processTemplate(this.getProp('heading'), {}, this);
         return html`<div class="arpaList__items" role="list" ${renderAttr('aria-label', ariaLabel)}></div>`;
     }
 
@@ -784,7 +784,7 @@ class List extends ArpaElement {
      * @returns {string}
      */
     renderItem(config) {
-        const component = this.getProperty('item-tag');
+        const component = this.getProp('item-tag');
         return html`<${component} ${attrString(config)}></${component}>`;
     }
 
@@ -799,7 +799,7 @@ class List extends ArpaElement {
         return html`<arpa-pager
             id="${this.id}-listPager"
             class="arpaList__pager"
-            max-nodes="${this.getProperty('max-pager-nodes')}"
+            max-nodes="${this.getProp('max-pager-nodes')}"
             total-pages="${this.listResource?.getTotalPages()}"
             current-page="${this.listResource?.getCurrentPage()}"
             url-param="${this.getParamName('page')}"
@@ -837,7 +837,7 @@ class List extends ArpaElement {
     /////////////////////////
 
     _handlePreloading() {
-        const hasPreloader = this.hasProperty('has-preloader');
+        const hasPreloader = this.hasProp('has-preloader');
         if (!hasPreloader) return;
         this.listResource?.on('fetch', async () => {
             this.isLoading = true;

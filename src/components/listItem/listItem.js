@@ -99,7 +99,7 @@ class ListItem extends ArpaElement {
 
     grabList() {
         if (this.list) return this.list;
-        const listSelector = this.getProperty('list-selector');
+        const listSelector = this.getProp('list-selector');
         /** @type {List} */
         this.list = this._config?.list || this.closest(listSelector);
         /** @type {ListResource} */
@@ -127,24 +127,24 @@ class ListItem extends ArpaElement {
     }
 
     getId() {
-        return this.payload?.id || this.getProperty('id');
+        return this.payload?.id || this.getProp('id');
     }
 
     getImage() {
-        const image = this.getProperty('image');
+        const image = this.getProp('image');
         if (image === 'undefined') return '';
         return image;
     }
 
     getImageAlt() {
-        return this.getProperty('image-alt');
+        return this.getProp('image-alt');
     }
 
     getLink() {
-        return this.getProperty('link');
+        return this.getProp('link');
     }
 
-    getLabelText(label = this.getProperty('label')) {
+    getLabelText(label = this.getProp('label')) {
         return label || this.getLabelNode()?.textContent?.trim();
     }
 
@@ -153,11 +153,11 @@ class ListItem extends ArpaElement {
     }
 
     getSelectedClass() {
-        return this.getProperty('selected-class');
+        return this.getProp('selected-class');
     }
 
     getTitleLink() {
-        const titleLink = this.getProperty('title-link');
+        const titleLink = this.getProp('title-link');
         if (titleLink) {
             this.titleLink = titleLink;
             this.removeAttribute('title-link');
@@ -166,7 +166,7 @@ class ListItem extends ArpaElement {
     }
 
     getTitle() {
-        return this.getProperty('title');
+        return this.getProp('title');
     }
 
     getContentNode() {
@@ -199,7 +199,7 @@ class ListItem extends ArpaElement {
         if (typeof action === 'function') {
             return 'button';
         }
-        return this.getProperty('wrapper-component');
+        return this.getProp('wrapper-component');
     }
 
     // #endregion Get
@@ -209,7 +209,7 @@ class ListItem extends ArpaElement {
     /////////////////////////////
 
     hasSelection() {
-        return this.getProperty('has-selection');
+        return this.getProp('has-selection');
     }
 
     // #endregion Has
@@ -319,7 +319,7 @@ class ListItem extends ArpaElement {
     }
 
     _preRender() {
-        this.imageURL = this.getProperty('image');
+        this.imageURL = this.getProp('image');
         const { role } = this._config;
         role && this.setAttribute('role', role);
         this.link = this.getLink();
@@ -391,7 +391,7 @@ class ListItem extends ArpaElement {
         if (!this.hasContent('title')) return '';
         const titleLink = this.getTitleLink();
         const titleClass = 'listItem__title';
-        const titleTag = this.getProperty('title-tag') || 'span';
+        const titleTag = this.getProp('title-tag') || 'span';
         const content = this.renderTitleContent();
         return titleLink
             ? html`<a href="${titleLink}" class="${titleClass}" zone="title">${content}</a>`
@@ -469,19 +469,19 @@ class ListItem extends ArpaElement {
         const isAuto = lazyLoad === 'auto' && (totalItems || 0) > 100;
         /** @type {Record<string, unknown>} */
         const attr = {
-            'has-thumbnail': this.getProperty('has-image-thumbnail'),
+            'has-thumbnail': this.getProp('has-image-thumbnail'),
             'lazy-load': lazyLoad || isAuto,
-            'has-native-lazy': this.getProperty('has-native-lazy') || isAuto,
-            'preview-controls': this.getProperty('preview-controls'),
-            'has-preview': this.getProperty('image-preview'),
-            'preview-title': this.getProperty('image-preview-title'),
-            'image-position': this.getProperty('image-position'),
+            'has-native-lazy': this.getProp('has-native-lazy') || isAuto,
+            'preview-controls': this.getProp('preview-controls'),
+            'has-preview': this.getProp('image-preview'),
+            'preview-title': this.getProp('image-preview-title'),
+            'image-position': this.getProp('image-position'),
             alt: this.getImageAlt(),
             class: 'listItem__image',
             src: this.getImage()
         };
 
-        const isAdaptive = this.getProperty('image-size') === 'adaptive';
+        const isAdaptive = this.getProp('image-size') === 'adaptive';
         const dimensions = this.getImageDimensions(false);
         const width = isAdaptive ? 'adaptive' : dimensions?.width;
         const height = dimensions?.height;
@@ -499,7 +499,7 @@ class ListItem extends ArpaElement {
     getLazyLoad() {
         return typeof this.list?.getLazyLoadImages === 'function'
             ? this.list?.getLazyLoadImages()
-            : this.getProperty('lazy-load-image');
+            : this.getProp('lazy-load-image');
     }
 
     /**
@@ -525,30 +525,30 @@ class ListItem extends ArpaElement {
     _getImageDimensions(memoized) {
         if (memoized && this.list?.itemImageDimensions) return this.list.itemImageDimensions;
         const imageSizes = this.getImageSizes();
-        const size = this.getProperty('image-size');
+        const size = this.getProp('image-size');
 
         if (Array.isArray(imageSizes) && imageSizes[size]) {
             if (typeof imageSizes[size] === 'function') return imageSizes[size]();
             return imageSizes[size];
         }
-        const width = this.getProperty('image-width') || size;
-        const height = this.getProperty('image-height');
+        const width = this.getProp('image-width') || size;
+        const height = this.getProp('image-height');
         if (width || height) return { width, height };
 
-        const defaultSize = this.getProperty('default-image-size');
+        const defaultSize = this.getProp('default-image-size');
         let rv = imageSizes[defaultSize];
 
         if (typeof rv === 'function') rv = rv();
         return rv;
     }
 
-    renderContent(truncate = this.getProperty('truncate-content'), content = this.getContent()?.trim() || '') {
+    renderContent(truncate = this.getProp('truncate-content'), content = this.getContent()?.trim() || '') {
         if (!this.hasZone('content') && !content) {
             return '';
         }
 
         if (truncate) {
-            const hasButton = this.hasProperty('truncate-button');
+            const hasButton = this.hasProp('truncate-button');
             return html`<truncate-text
                 ${attrString({
                     maxLength: truncate,
