@@ -223,14 +223,10 @@ class ListItem extends ArpaElement {
      * @param {string | HTMLElement} content
      */
     setContent(content) {
-        if (!this.contentNode) {
-            return;
-        }
-        if (typeof content === 'string') {
-            this.contentNode.innerHTML = content;
-        } else if (content instanceof HTMLElement) {
-            this.contentNode.innerHTML = '';
-            this.contentNode.appendChild(content);
+        if (typeof this.contentNode?.setContent === 'function') {
+            this.contentNode.setContent(content);
+        } else {
+            super.setContent(content);
         }
     }
 
