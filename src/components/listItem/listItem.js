@@ -89,8 +89,8 @@ class ListItem extends ArpaElement {
         return /** @type {ListItemConfigType} */ (super.getDefaultConfig(conf));
     }
 
-    initializeProperties() {
-        super.initializeProperties();
+    $initializeProperties() {
+        super.$initializeProperties();
         this.grabList();
         !this.listResource && typeof this.list?.preProcessNode === 'function' && this.list?.preProcessNode(this);
 
@@ -329,7 +329,7 @@ class ListItem extends ArpaElement {
      * Returns the template for the list item.
      * @returns {string}
      */
-    _getTemplate() {
+    $renderTemplate() {
         return html`<{wrapperComponent} {wrapperAttributes}>
             {icon} {image}
             <div class="listItem__contentWrapper">
@@ -568,7 +568,7 @@ class ListItem extends ArpaElement {
     // #region LIFECYCLE
     /////////////////////////////
 
-    async _initializeNodes() {
+    async $initializeNodes() {
         /** @type {HTMLElement | null} */
         this.button = this.querySelector('button.listItem__main');
         /** @type {HTMLElement | null} */
@@ -603,7 +603,7 @@ class ListItem extends ArpaElement {
         this.itemInitialized = true;
     }
 
-    _onComplete() {
+    $onComplete() {
         this._attachOnClick();
         this.removeAttribute('link');
     }

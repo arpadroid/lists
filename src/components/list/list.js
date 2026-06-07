@@ -28,13 +28,13 @@ class List extends ArpaElement {
     // #region Initialization
     //////////////////////////
 
-    _preInitialize() {
+    $preInitialize() {
         bind(this, 'onResourceAddItem', 'onResourceRemoveItem', 'onResourceRemoveItems', '_initializeList');
         bind(this, 'onResourceItemsUpdated', 'onResourceSetItems', 'onResourceAddItems', 'onResourceFetch');
         bind(this, 'onTransitionOut', 'onPagerChange');
     }
 
-    _initialize() {
+    $initialize() {
         this._initializeListResource();
         this.isLoading = false;
     }
@@ -655,7 +655,7 @@ class List extends ArpaElement {
         }
     }
 
-    _getTemplate() {
+    $renderTemplate() {
         return this.getRenderMode() === 'minimal' ? this.renderMinimal() : this.renderFull();
     }
 
@@ -672,7 +672,7 @@ class List extends ArpaElement {
         this.itemsNode && appendNodes(this.itemsNode, initialItems);
     }
 
-    async _initializeNodes() {
+    async $initializeNodes() {
         this._childNodes?.forEach(item => {
             if (item instanceof HTMLElement && item?.tagName?.toLowerCase() === this._config?.itemTag) {
                 this.preProcessNode(/** @type {ListItem} */ (item));
@@ -854,7 +854,7 @@ class List extends ArpaElement {
         });
     }
 
-    _onDestroy() {
+    $onDestroy() {
         this?.listResource?.destroy();
     }
     // #endregion Lifecycle
