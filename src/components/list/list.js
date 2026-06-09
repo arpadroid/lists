@@ -137,7 +137,7 @@ class List extends ArpaElement {
             titleIcon: { tag: 'arpa-icon' },
             aside: {},
             footer: { content: '{pager}' },
-            preloader: { tag: 'circular-preloader', canRender: 'has-preloader' },
+            preloader: { tag: 'circular-spinner', canRender: 'has-preloader' },
             noItems: { content: '{noItemsIcon}{noItemsText}', canRender: true },
             noItemsIcon: { tag: 'arpa-icon' },
             noItemsText: { content: () => this.getNoItemsContent() }

@@ -32,7 +32,7 @@
  */
 
 .arpaList__header {
-    gap: .5rem;
+    gap: 0.5rem;
     display: flex;
     flex-direction: column;
 }
@@ -179,7 +179,7 @@
     opacity: 0;
     z-index: -1;
 
-    .circularPreloader__spinnerContainer {
+    .circularSpinner__spinnerContainer {
         position: fixed;
     }
 }
@@ -208,9 +208,9 @@
         opacity: 1;
         z-index: 1;
         visibility: hidden;
-        .circularPreloader__spinnerContainer {
+        .circularSpinner__spinnerContainer {
             visibility: hidden;
-            .circularPreloader__spinner {
+            .circularSpinner__spinner {
                 visibility: visible;
             }
         }
