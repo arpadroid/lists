@@ -172,10 +172,9 @@
 }
 
 .arpaList__preloader {
-    --preloader-size: 70px;
-    --preloader-border-width: 2px;
-    --preloader-outline-width: 2px;
-    --preloader-bg-color: rgba(255, 255, 255, 0.3);
+    --spinner-size: 70px;
+    --spinner-thickness: 2px;
+    --spinner-color: rgba(255, 255, 255, 0.3);
     opacity: 0;
     z-index: -1;
 
