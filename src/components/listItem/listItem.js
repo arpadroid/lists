@@ -77,7 +77,7 @@ class ListItem extends ArpaElement {
             imageConfig: {
                 showPreloader: true
             },
-            templateChildren: {
+            nodesConfig: {
                 icon: { tag: 'arpa-icon', canRender: true },
                 iconRight: { tag: 'arpa-icon' },
                 titleIcon: { tag: 'arpa-icon' },

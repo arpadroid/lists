@@ -181,7 +181,7 @@ class List extends ArpaElement {
             tagName: 'arpa-list',
             templateTypes: ['content', 'list-item'],
             title: '',
-            templateChildren: this.getTemplateChildren()
+            nodesConfig: this.getTemplateChildren()
         };
         return mergeObjects(super.getDefaultConfig(conf), config);
     }
