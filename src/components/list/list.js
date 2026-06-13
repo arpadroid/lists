@@ -129,7 +129,7 @@ class List extends ArpaElement {
         !this._config?.zoneSelector && (this._config.zoneSelector = `zone:not(${itemTag} zone)`);
     }
 
-    getTemplateChildren() {
+    getNodesConfig() {
         return {
             heading: {},
             titleWrapper: { tag: 'h2', hasZone: false, content: '{titleIcon}{title}' },
@@ -181,7 +181,7 @@ class List extends ArpaElement {
             tagName: 'arpa-list',
             templateTypes: ['content', 'list-item'],
             title: '',
-            nodesConfig: this.getTemplateChildren()
+            nodesConfig: this.getNodesConfig()
         };
         return mergeObjects(super.getDefaultConfig(conf), config);
     }
