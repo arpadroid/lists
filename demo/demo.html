@@ -17,35 +17,35 @@
             itemsPerPage="200"
             has-items-transition
         >
-            <zone name="batch-operations">
+            <arpa-zone name="batch-operations">
                 <select-option value="delete" icon="delete">
                     Delete
                     <arpa-dialog icon="delete">
-                        <zone name="header"> Delete this </zone>
-                        <zone name="content"> Are you sure you want to delete the selected items? </zone>
-                        <zone name="footer">footer</zone>
+                        <arpa-zone name="header"> Delete this </arpa-zone>
+                        <arpa-zone name="content"> Are you sure you want to delete the selected items? </arpa-zone>
+                        <arpa-zone name="footer">footer</arpa-zone>
                     </arpa-dialog>
                 </select-option>
-            </zone>
+            </arpa-zone>
 
-            <zone name="sort-options" lazy>
+            <arpa-zone name="sort-options" lazy>
                 <nav-link param-value="title" icon-right="sort_by_alpha"> Title </nav-link>
                 <nav-link param-value="date" icon-right="calendar_month" default> Date </nav-link>
-            </zone>
+            </arpa-zone>
 
-            <zone name="list-filters"> </zone>
+            <arpa-zone name="list-filters"> </arpa-zone>
 
             <template
                 image="http://casavaquero.local/api/image/convert?width=[width]&height=[height]&quality=[quality]&source={image_url}"
                 id="{id}"
                 type="list-item"
             >
-                <zone name="tags">
+                <arpa-zone name="tags">
                     <tag-item label="{author_initials}" icon="person"></tag-item>
                     <tag-item label="{date}" icon="calendar_month"></tag-item>
-                </zone>
+                </arpa-zone>
 
-                <zone name="nav" lazy>
+                <arpa-zone name="nav" lazy>
                     <nav-link link="/gallery/{id}" icon-right="visibility">View</nav-link>
                     <nav-link link="/gallery/{id}/edit" icon-right="edit">Edit</nav-link>
                     <nav-link link="/gallery/{id}/delete" icon-right="delete" confirm>Delete</nav-link>
@@ -58,7 +58,7 @@
                     <nav-link link="/gallery/{id}/info" icon-right="info">Info</nav-link>
                     <nav-link link="/gallery/{id}/settings" icon-right="settings">Settings</nav-link>
                     <nav-link link="/gallery/{id}/more" icon-right="more_horiz">More</nav-link>
-                </zone>
+                </arpa-zone>
             </template>
         </arpa-list>
         <script type="module" src="../dist/arpadroid-lists.js"></script>

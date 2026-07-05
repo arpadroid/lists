@@ -1,91 +1,217 @@
 /**
- * @typedef {import('@storybook/web-components-vite').Meta} Meta
- * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
- * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
- * @typedef {import('@storybook/web-components-vite').Args} Args
+ * @typedef {import('./listItem.js').default} ListItem
+ * @typedef {import('./listItem.types.js').ListItemConfigType} ListItemConfigType
+ * @typedef {import('@storybook/web-components-vite').Meta<ListItemConfigType>} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj<ListItemConfigType>} Story
  */
 import { waitFor, expect, userEvent } from 'storybook/test';
-import { attrString } from '@arpadroid/tools';
-import { playSetup } from './listItem.stories.util.js';
+import { $attr } from '@arpadroid/tools';
+import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
 
 const html = String.raw;
 
 /** @type {Meta} */
 const Default = {
     title: 'Lists/List Item',
+    component: 'list-item',
     args: {},
     parameters: {
         layout: 'centered'
     }
 };
 
-/** @type {StoryObj} */
+/** @type {Story} */
 export const Render = {
+    parameters: defaultParams,
     args: {
-        icon: 'list',
-        iconRight: 'chevron_right',
-        title: 'List item',
-        subtitle: 'Test subtitle',
-        image: '/test-assets/artists/phidias.jpg'
+        content: 'Default List Item'
+    }
+};
+
+/** @type {Story} */
+export const Simple = {
+    args: {
+        icon: 'check_circle',
+        content: 'Simple List Item'
     },
-    play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
-        const { canvas } = await playSetup(canvasElement);
-        const icon = canvasElement.querySelector('list-item arpa-icon');
+    parameters: testParams,
+    play: async ({ canvasElement, step, canvas }) => {
+        await customElements.whenDefined('arpa-list');
+        await customElements.whenDefined('list-item');
 
         await step('Renders the list item with the expected content', async () => {
-            expect(canvas.getByText('List item')).toBeInTheDocument();
-            expect(canvas.getByText('Test subtitle')).toBeInTheDocument();
-            expect(icon).toHaveTextContent('list');
-            expect(icon).toHaveClass('icon--list');
-            expect(canvas.getByText('chevron_right')).toHaveClass('icon--chevron_right');
-            expect(canvas.getByText('test content')).toBeInTheDocument();
+            await waitFor(() => {
+                expect(canvas.getByText('Simple List Item')).toBeInTheDocument();
+                expect(canvas.getByText('check_circle')).toHaveClass('icon');
+            });
         });
+        await step('Does not render the empty content header', async () => {
+            const contentHeader = canvasElement.querySelector('.listItem__contentHeader');
+            expect(contentHeader).not.toBeInTheDocument();
+        });
+    }
+};
+
+/** @type {Story} */
+export const Link = {
+    args: {
+        icon: 'link',
+        content: 'Link Item',
+        link: '#test-link'
     },
+    parameters: testParams,
+    play: async ({ canvasElement, step, canvas }) => {
+        await customElements.whenDefined('arpa-list');
+        await customElements.whenDefined('list-item');
+
+        await step('Renders the list item with the expected content', async () => {
+            await waitFor(() => {
+                expect(canvas.getByText('Link Item')).toBeInTheDocument();
+                expect(canvas.getByText('link')).toHaveClass('icon--link');
+                const linkNode = canvas.getByRole('link', { name: /link item/i });
+                expect(linkNode).toHaveAttribute('href', '#test-link');
+            });
+        });
+        await step('Does not render the empty content header', async () => {
+            const contentHeader = canvasElement.querySelector('.listItem__contentHeader');
+            expect(contentHeader).not.toBeInTheDocument();
+        });
+    }
+};
+
+const fullTitle = 'We live in a vast and mysterious universe full of interesting facts and wonders.';
+const fullSubtitle = 'Did you know?';
+const fullContent =
+    'There are an estimated 3 trillion trees on Earth, which means there are more trees on our planet than there are stars in the entire Milky Way galaxy!';
+
+/** @type {Story} */
+export const Item = {
+    args: {
+        title: fullTitle,
+        subtitle: fullSubtitle,
+        image: '/test-assets/plane.jpg',
+        content: fullContent
+    },
+    parameters: testParams,
+    play: async ({ step, canvas }) => {
+        await customElements.whenDefined('arpa-list');
+        await customElements.whenDefined('list-item');
+
+        await step('Renders the list item with the expected content', async () => {
+            await waitFor(() => {
+                expect(canvas.getByText(fullTitle)).toBeInTheDocument();
+                expect(canvas.getByText(fullSubtitle)).toBeInTheDocument();
+                expect(canvas.getByText(fullContent)).toBeInTheDocument();
+            });
+        });
+    }
+};
+
+/** @type {Story} */
+export const Template = {
+    args: {
+        ...Item.args
+    },
+    parameters: testParams,
     render: args => {
-        return html`<arpa-list id="list-item-list" controls=" ">
-            <list-item ${attrString(args)}> test content </list-item>
-        </arpa-list>`;
+        return html`
+            <style>
+                .myItem {
+                    display: flex;
+                    flex-direction: column;
+
+                    .listItem__title {
+                        max-width: 400px;
+                    }
+
+                    .listItem__image {
+                        min-width: 100px;
+                    }
+
+                    .listItem__titleWrapper {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 0.5rem;
+                    }
+                }
+                .myItem__container {
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                }
+            </style>
+            <arpa-list id="item-with-template-list">
+                <template template-type="list-item" class="myItem">
+                    <div class="myItem__container">
+                        {image}
+                        <span class="listItem__titleWrapper"> {title} {subtitle} </span>
+                    </div>
+                    {content}
+                </template>
+                <list-item ${$attr(args)}> </list-item>
+            </arpa-list>
+        `;
+    },
+    play: async ({ canvasElement, step, canvas }) => {
+        await customElements.whenDefined('arpa-list');
+        await customElements.whenDefined('list-item');
+        await step('Renders the list item with the expected template', async () => {
+            expect(canvas.getByText(fullTitle)).toBeInTheDocument();
+            expect(canvas.getByText(fullSubtitle)).toBeInTheDocument();
+            expect(canvas.getByText(fullContent)).toBeInTheDocument();
+            const listItem = canvasElement.querySelector('.myItem');
+            expect(listItem?.querySelector('.myItem__container')).toBeInTheDocument();
+            await waitFor(() => {
+                expect(listItem?.querySelector('img')).toHaveAttribute('src', '/test-assets/plane.jpg');
+            });
+        });
     }
 };
 
 const longText =
-    'Morning motivation is key to setting a positive tone for the day. Starting your morning with an energizing mindset can enhance focus, boost productivity, and improve overall well-being. When you take time in the morning to set goals or engage in uplifting activities, it strengthens mental resilience and prepares you to handle challenges. This initial boost also impacts mood, helping maintain a positive outlook. Consistently practicing morning motivation can gradually lead to more fulfilling days and a healthier lifestyle.';
-
-/** @type {StoryObj} */
-export const WithZones = {
+    'There are more stars in the observable universe than there are grains of sand on all the beaches and deserts on Earth. Estimates suggest there are over 10 sextillion (or 10 × 10²¹) stars';
+const zonesTitle = 'Galactic Sandcastles';
+/** @type {Story} */
+export const Zones = {
     args: {
         titleIcon: 'auto_awesome',
         titleLink: '#test-link',
         truncateContent: 50,
-        truncateButton: true,
-        image: '/test-assets/artists/phidias.jpg'
+        truncateButton: true
     },
     parameters: {
-        layout: 'padded'
+        layout: 'padded',
+        ...testParams
     },
-    render: (/** @type {Args} */ args) => {
-        return html`<arpa-list id="list-item-list" title="List Item" controls=" ">
-            <list-item ${attrString(args)}>
-                <zone name="title"><strong>Morning Motivation</strong></zone>
-                <zone name="subtitle">Start your day with a burst of energy!</zone>
-                ${longText}
-            </list-item></arpa-list
-        >`;
+    render: args => {
+        return html`
+            <arpa-list id="list-item-list" title="List Item" controls=" ">
+                <list-item ${$attr(args)}>
+                    <arpa-zone name="title">${zonesTitle}</arpa-zone>
+                    <arpa-zone name="subtitle">Did you know?</arpa-zone>
+                    ${longText}
+                </list-item>
+            </arpa-list>
+        `;
     },
-    play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
-        await new Promise(resolve => setTimeout(resolve, 100));
-        const { canvas } = await playSetup(canvasElement);
+    play: async ({ canvasElement, step, canvas }) => {
+        await customElements.whenDefined('arpa-list');
+        await customElements.whenDefined('list-item');
         await step('Renders the list item with the expected zones', async () => {
             await waitFor(() => {
-                expect(canvas.getByText('Morning Motivation')).toBeInTheDocument();
+                expect(canvas.getByText(zonesTitle)).toBeInTheDocument();
             });
-            expect(canvas.getByText('Start your day with a burst of energy!')).toBeInTheDocument();
+            expect(canvas.getByText('Did you know?')).toBeInTheDocument();
             expect(canvas.getByText('auto_awesome')).toHaveClass('icon--auto_awesome');
-            const titleLink = canvas.getByRole('link', { name: /Morning Motivation/i });
+            const titleLink = canvas.getByRole('link', { name: new RegExp(zonesTitle, 'i') });
             expect(titleLink).toHaveAttribute('href', '#test-link');
-            const content = canvasElement.querySelector('.truncateText__content');
-            expect(content).toBeInTheDocument();
-            expect(content?.textContent).toHaveLength(50);
+            await waitFor(() => {
+                const content = canvasElement.querySelector('.truncateText__content');
+                expect(content).toBeInTheDocument();
+                expect(content?.textContent).toHaveLength(50);
+            });
         });
 
         await step('Expands the content when the Read more button is clicked', async () => {
@@ -95,39 +221,6 @@ export const WithZones = {
             await waitFor(() => {
                 expect(readMoreButton).toHaveTextContent('read less');
                 expect(canvas.getByText(longText)).toBeInTheDocument();
-            });
-        });
-    }
-};
-
-/** @type {StoryObj} */
-export const WithTemplate = {
-    args: {
-        subtitle: 'Test sub title',
-        title: 'Item with template',
-        image: '/test-assets/artists/phidias.jpg'
-    },
-    render: (/** @type {Args} */ args) => {
-        return html`<arpa-list id="item-with-template-list" controls=" ">
-            <template template-type="list-item">
-                <div class="customContent">
-                    {image}
-                    <div class="listItem__contentHeader">{icon}{titleContainer}</div>
-                    {tags} {children} {iconRight}
-                </div>
-                {rhs}
-            </template>
-            <list-item ${attrString(args)}> </list-item>
-        </arpa-list>`;
-    },
-    play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
-        const { canvas, listItem } = await playSetup(canvasElement);
-        await step('Renders the list item with the expected template', async () => {
-            expect(canvas.getByText('Item with template')).toBeInTheDocument();
-            expect(canvas.getByText('Test sub title')).toBeInTheDocument();
-            expect(listItem?.querySelector('.customContent')).toBeInTheDocument();
-            await waitFor(() => {
-                expect(listItem?.querySelector('img')).toHaveAttribute('src', '/test-assets/artists/phidias.jpg');
             });
         });
     }

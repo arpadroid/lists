@@ -3,27 +3,29 @@
 }
 
 .arpaList {
+    --list-layout-gap: 1.2rem;
+
     position: relative;
     display: flex;
-    gap: 0.75rem;
-    flex-direction: column;
     flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--list-layout-gap);
 }
 
 .arpaList__titleWrapper {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0;
-    font-weight: normal;
     flex: 1 1 auto;
-    color: var(--grey-600);
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+    margin: 0;
     font-size: 26px;
+    font-weight: normal;
+    color: var(--grey-600);
 
     arpa-icon {
-        color: var(--grey-500);
         font-weight: 600;
+        color: var(--grey-500);
     }
 }
 
@@ -32,16 +34,16 @@
  */
 
 .arpaList__header {
-    gap: 0.5rem;
     display: flex;
     flex-direction: column;
+    gap: 0.5rem;
 }
 
 .arpaList__headerTop {
     display: flex;
-    align-items: center;
     flex-direction: row;
     gap: 0.5rem;
+    align-items: center;
 }
 
 .arpaList__heading {
@@ -49,46 +51,44 @@
     flex-direction: row;
     align-items: center;
     width: 100%;
-    padding-bottom: 8px;
     min-width: 0;
+    padding-bottom: 8px;
 }
 
 .arpaList .listHeading {
-    flex: 1 1 auto;
     display: flex;
+    flex: 1 1 auto;
     min-width: 0;
     color: var(--grey-500);
 }
 
 .listHeading__resultsMessageText {
-    padding: 4px 0px 16px;
-}
-
-.listHeading__resultsMessageText:empty,
-.arpaList__header:has(.listHeading:empty),
-.arpaList__items:empty,
-.arpaList__header:empty {
-    display: none;
+    padding: 4px 0 16px;
 }
 
 /**
  * Body
  */
 
-.arpaList__body {
-    display: flex;
-    flex-direction: row;
-    gap: 0;
-    position: relative;
-}
-
 .arpaList__bodyMain {
+    position: relative;
+    display: flex;
     flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--list-layout-gap);
     width: 100%;
     min-width: 0;
-    display: flex;
-    flex-direction: column;
+}
+
+.arpaList__body {
     position: relative;
+    display: flex;
+    flex-direction: row;
+    gap: var(--list-layout-gap);
+
+    &:has(.arpaList__aside) .arpaList__bodyMain {
+        width: auto;
+    }
 }
 
 .arpaList__bodyAside {
@@ -99,33 +99,45 @@
     display: none;
 }
 
+.arpaList__aside {
+    flex: 1 0 auto;
+}
+
 /**
  * Items
  */
 
 .arpaList__items {
+    position: relative;
     display: flex;
+    flex: 1 1 auto;
     flex-direction: column;
+    gap: var(--list-layout-gap);
+    width: 100%;
     padding: 0;
     margin: 0;
-    position: relative;
-    width: 100%;
-    flex: 1 1 auto;
-    transition: var(--theme-transition);
     opacity: 1;
-    gap: 8px;
+    transition: var(--theme-transition);
 }
 
 .arpaList__items--transitioning {
     opacity: 0;
 }
 
+.listHeading__resultsMessageText:empty,
+.arpaList__header:empty,
+.arpaList__header:has(.listHeading:empty),
+.arpaList__items:empty {
+    display: none;
+}
+
 .arpaList--itemsOut {
-    opacity: 0;
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
+    opacity: 0;
+
     @starting-style {
         opacity: 1;
     }
@@ -134,6 +146,7 @@
 .arpaList--itemsIn {
     display: flex;
     opacity: 1;
+
     @starting-style {
         opacity: 0;
     }
@@ -147,36 +160,36 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: var(--grey-500);
-    text-transform: uppercase;
-    font-size: 15px;
-    margin: 8px 0px;
-    border: 2px solid var(--color-background);
-    width: 100%;
-    padding: 16px;
-    border-radius: 8px;
-    height: 100px;
-    border: var(--striped-area-border);
-    background: var(--striped-area);
-    outline: var(--striped-area-outline);
-    text-align: center;
     justify-content: center;
+    width: 100%;
+    height: 100px;
+    padding: 16px;
+    margin: 8px 0;
+    font-size: 15px;
+    color: var(--grey-500);
     text-align: center;
+    text-transform: uppercase;
     letter-spacing: 0.7px;
+    outline: var(--striped-area-outline);
+    background: var(--striped-area);
+    border: 2px solid var(--color-background);
+    border: var(--striped-area-border);
+    border-radius: 8px;
 }
 
 .arpaList__noItemsText {
     padding: 6px 12px 5px;
-    border-radius: 4px;
     background-color: var(--overlay-light);
+    border-radius: 4px;
 }
 
 .arpaList__preloader {
     --spinner-size: 70px;
     --spinner-thickness: 2px;
-    --spinner-color: rgba(255, 255, 255, 0.3);
-    opacity: 0;
+    --spinner-color: rgb(255 255 255 / 30%);
+
     z-index: -1;
+    opacity: 0;
 
     .circularSpinner__spinnerContainer {
         position: fixed;
@@ -188,9 +201,9 @@
  */
 
 .arpaList__footer {
-    margin-top: auto;
     position: sticky;
     bottom: 0;
+    margin-top: auto;
 }
 
 .arpaList__pager {
@@ -204,11 +217,13 @@
 
 .arpaList--loading {
     .arpaList__preloader {
-        opacity: 1;
         z-index: 1;
         visibility: hidden;
+        opacity: 1;
+
         .circularSpinner__spinnerContainer {
             visibility: hidden;
+
             .circularSpinner__spinner {
                 visibility: visible;
             }

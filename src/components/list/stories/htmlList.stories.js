@@ -23,16 +23,16 @@ const Default = {
         controls: []
     },
     parameters: {
-        layout: 'centered'
+        layout: 'padded'
     },
     render: args => {
         return html`<arpa-list ${attrString(args)}>
-            <zone name="heading">List heading</zone>
-            <zone name="aside"> List aside</zone>
+            <arpa-zone name="heading">List heading</arpa-zone>
+            <arpa-zone name="aside"> List aside</arpa-zone>
             <template template-type="list-item" truncate-content="70" truncate-button></template>
             <list-item title-link="#test-link" title-icon="auto_awesome" title="Morning Motivation">
-                <zone name="title"></zone>
-                <zone name="subtitle"> Start your day with a burst of energy! </zone>
+                <arpa-zone name="title"></arpa-zone>
+                <arpa-zone name="subtitle"> Start your day with a burst of energy! </arpa-zone>
                 Morning motivation is key to setting a positive tone for the day. Starting your morning with an
                 energizing mindset can enhance focus, boost productivity, and improve overall well-being. When you take
                 time in the morning to set goals or engage in uplifting activities, it strengthens mental resilience and
@@ -42,8 +42,8 @@ const Default = {
             </list-item>
 
             <list-item title-link="#test-link2" title-icon="spa">
-                <zone name="title">Mindful Moments</zone>
-                <zone name="subtitle"> Take a pause and focus on the present. </zone>
+                <arpa-zone name="title">Mindful Moments</arpa-zone>
+                <arpa-zone name="subtitle"> Take a pause and focus on the present. </arpa-zone>
                 Practicing mindful moments is essential for managing stress and staying grounded. Taking a few moments
                 to pause, breathe, and focus on the present can help reduce anxiety, improve focus, and enhance
                 emotional well-being. By regularly disconnecting from distractions, we can better process our thoughts
@@ -53,8 +53,8 @@ const Default = {
             </list-item>
 
             <list-item title-link="#test-link2" title-icon="emoji_events">
-                <zone name="title">Track Your Progress</zone>
-                <zone name="subtitle"> Celebrate every milestone you reach! </zone>
+                <arpa-zone name="title">Track Your Progress</arpa-zone>
+                <arpa-zone name="subtitle"> Celebrate every milestone you reach! </arpa-zone>
                 Tracking your progress is crucial for achieving goals and staying motivated. By regularly reviewing what
                 you’ve accomplished, you gain a sense of direction and accountability, making it easier to stay
                 committed. Celebrating each milestone, no matter how small, boosts confidence and reinforces positive
@@ -64,8 +64,8 @@ const Default = {
             </list-item>
 
             <list-item title-link="#test-link2" title-icon="lightbulb">
-                <zone name="title">Explore New Ideas</zone>
-                <zone name="subtitle"> Feed your curiosity and discover more. </zone>
+                <arpa-zone name="title">Explore New Ideas</arpa-zone>
+                <arpa-zone name="subtitle"> Feed your curiosity and discover more. </arpa-zone>
                 Exploring new ideas fuels creativity, innovation, and personal growth. When you open yourself to fresh
                 perspectives, you expand your understanding of the world and discover new solutions to problems. This
                 habit keeps the mind agile, encourages adaptability, and can lead to breakthroughs in work and life.
@@ -75,8 +75,8 @@ const Default = {
             </list-item>
 
             <list-item title-link="#test-link3" title-icon="self_improvement">
-                <zone name="title">Embrace Gratitude</zone>
-                <zone name="subtitle">Recognize the good in every day.</zone>
+                <arpa-zone name="title">Embrace Gratitude</arpa-zone>
+                <arpa-zone name="subtitle">Recognize the good in every day.</arpa-zone>
                 Practicing gratitude enhances happiness and mental health. By taking a moment to reflect on what we
                 appreciate, we create a positive outlook that can improve resilience and strengthen relationships. Small
                 acts of gratitude, like journaling or acknowledging others, remind us of life’s positives, creating a
@@ -84,8 +84,8 @@ const Default = {
             </list-item>
 
             <list-item title-link="#test-link4" title-icon="fitness_center">
-                <zone name="title">Physical Well-Being</zone>
-                <zone name="subtitle">Strengthen your body, energize your mind.</zone>
+                <arpa-zone name="title">Physical Well-Being</arpa-zone>
+                <arpa-zone name="subtitle">Strengthen your body, energize your mind.</arpa-zone>
                 Physical activity is a cornerstone of both mental and physical health. A consistent exercise routine can
                 improve energy levels, boost mood, and reduce stress. Even a few minutes of movement each day promotes
                 cardiovascular health, enhances focus, and builds confidence. Small steps toward fitness can lead to
@@ -93,8 +93,8 @@ const Default = {
             </list-item>
 
             <list-item title-link="#test-link5" title-icon="insights">
-                <zone name="title">Reflect and Grow</zone>
-                <zone name="subtitle">Use self-reflection as a tool for improvement.</zone>
+                <arpa-zone name="title">Reflect and Grow</arpa-zone>
+                <arpa-zone name="subtitle">Use self-reflection as a tool for improvement.</arpa-zone>
                 Taking time to reflect on personal experiences fosters growth and resilience. Self-reflection helps us
                 learn from past actions, identify strengths, and uncover areas for improvement. This practice builds
                 self-awareness, allowing us to approach goals with greater clarity and purpose. Regular reflection leads
@@ -102,8 +102,8 @@ const Default = {
             </list-item>
 
             <list-item title-link="#test-link6" title-icon="palette">
-                <zone name="title">Creative Expression</zone>
-                <zone name="subtitle">Find joy in the art of self-expression.</zone>
+                <arpa-zone name="title">Creative Expression</arpa-zone>
+                <arpa-zone name="subtitle">Find joy in the art of self-expression.</arpa-zone>
                 Embracing creativity can be a powerful outlet for emotions and thoughts. Whether through art, writing,
                 or another medium, creative expression encourages us to explore our inner world. This practice nurtures
                 confidence, improves problem-solving skills, and enhances emotional well-being. Creativity is a vital

@@ -1,34 +1,24 @@
 /**
- * @typedef {import('../../list/list.js').default} List
- * @typedef {import('../../list/list.types').ListConfigType} ListConfigType
+ * @typedef {import('./tagList.types.js').TagListConfigType} TagListConfigType
  * @typedef {import('./tagList.js').default} TagList
- * @typedef {import('@storybook/web-components-vite').Args} Args
- * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
- * @typedef {import('@storybook/web-components-vite').Meta} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj<TagListConfigType>} Story
+ * @typedef {import('@storybook/web-components-vite').Meta<TagListConfigType>} Meta
  */
 import { attrString } from '@arpadroid/tools';
 import { DataDrivenList as ListStory } from '../../list/stories/list.stories.js';
 import { within, userEvent, waitFor, expect, fn } from 'storybook/test';
+import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
 const html = String.raw;
 
 /** @type {Meta} */
 const TagListStory = {
     ...ListStory,
     title: 'Lists/Tag List',
-    parameters: {},
-    argTypes: {
-        id: { control: 'text' },
-        title: { control: 'text' },
-        controls: { control: 'text' },
-        hasInfo: { control: 'boolean' },
-        itemsPerPage: { control: 'number' },
-        onDelete: { action: 'delete_tag' }
-    },
+    parameters: defaultParams,
     args: {
         ...ListStory.args,
         id: 'tag-list',
         title: 'Tag List',
-        controls: 'search',
         hasInfo: true,
         itemsPerPage: 5,
         onDelete: fn()
@@ -45,34 +35,31 @@ const TagListStory = {
 
 export const Render = TagListStory;
 
-async function playSetup(/** @type {HTMLElement} */ canvasElement) {
-    await customElements.whenDefined('tag-list');
-    await customElements.whenDefined('tag-item');
-    /** @type {TagList | null} */
-    const tagList = canvasElement.querySelector('tag-list');
-    return { tagList, canvas: /** @type {any} */ within(canvasElement) };
-}
-
-/** @type {StoryObj} */
+/** @type {Story} */
 export const Test = {
     args: {
         ...TagListStory.args,
         id: 'tag-list-test',
         title: 'Tag List Test'
     },
-
-    play: async ({ canvasElement, step, args }) => {
-        const setup = await playSetup(canvasElement);
-        const { canvas, tagList } = setup;
+    parameters: testParams,
+    play: async ({ canvasElement, step, args, canvas }) => {
+        await customElements.whenDefined('tag-list');
+        await customElements.whenDefined('tag-item');
+        /** @type {TagList | null} */
+        const tagList = canvasElement.querySelector('tag-list');
+        // @ts-ignore
         tagList?.on('delete_tag', args.onDelete);
 
         await step('Renders the tag list', async () => {
             expect(tagList).toBeInTheDocument();
-            const tags = canvas.getAllByRole('listitem');
-            expect(tags).toHaveLength(3);
-            expect(canvas.getByText('Tag 1')).toBeInTheDocument();
-            expect(canvas.getByText('Tag 2')).toBeInTheDocument();
-            expect(canvas.getByText('Tag 3')).toBeInTheDocument();
+            await waitFor(() => {
+                const tags = canvas.getAllByRole('listitem');
+                expect(tags).toHaveLength(3);
+                expect(canvas.getByText('Tag 1')).toBeInTheDocument();
+                expect(canvas.getByText('Tag 2')).toBeInTheDocument();
+                expect(canvas.getByText('Tag 3')).toBeInTheDocument();
+            });
         });
 
         await step('Sets an event listener on delete and receives callback when delete tag is clicked.', async () => {

@@ -78,8 +78,8 @@ class List extends ArpaElement {
      * @returns {string}
      */
     getParamName(param) {
-        const namespace = this.getProp('param-namespace');
-        return namespace + this.getProp(`${param}-param`);
+        const namespace = this.getProp('paramNamespace');
+        return namespace + this.getProp(`${param}Param`);
     }
 
     instantiateResource(id = this.getId(), userConfig = {}) {
@@ -88,14 +88,15 @@ class List extends ArpaElement {
         const config = mergeObjects(
             {
                 id,
+                controls: [],
                 pageParam: this.getParamName('page'),
                 searchParam: this.getParamName('search'),
                 perPageParam: this.getParamName('perPage'),
                 sortByParam: this.getParamName('sortBy'),
                 sortDirParam: this.getParamName('sortDir'),
-                itemsPerPage: this.getProp('items-per-page'),
+                itemsPerPage: this.getProp('itemsPerPage'),
                 mapItemId: this._config?.mapItemId,
-                itemIdMap: this.getProp('item-id-map'),
+                itemIdMap: this.getProp('itemIdMap'),
                 listComponent: this,
                 url: this.getProp('url')
             },
@@ -824,10 +825,13 @@ class List extends ArpaElement {
 
     /**
      * Handles the pager change event.
-     * @param {import('@arpadroid/ui').PagerCallbackPayloadType} _payload
+     * @param {import('@arpadroid/ui').PagerCallbackPayloadType} payload
      */
-    onPagerChange(_payload) {
-        this.resetScroll();
+    onPagerChange(payload) {
+        if (payload.page) {
+            this.resetScroll();
+            this.listResource?.goToPage(Number(payload.page));
+        }
     }
 
     // #endregion Pager

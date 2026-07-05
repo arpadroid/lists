@@ -28,7 +28,7 @@ const ListStory = {
         hasItemsTransition: true,
         hasInfo: true,
         hasResource: true,
-        controls: ['search', 'sort', 'views', 'multiselect', 'filters'],
+        controls: [],
         views: ['grid', 'list', 'list-compact', 'grid-compact']
     },
     render: args => {
@@ -66,35 +66,7 @@ export const DataDrivenList = {
         await playSetup(canvasElement);
     },
     render: args => {
-        return html`
-            <arpa-list ${attrString(args)}>
-                <zone name="messages">
-                    <info-message>
-                        The list component is an advanced list creation tool, which aims to simplify the process of
-                        creating and managing advanced UI lists with search and filtering functionality. It features
-                        highly customizable list items via templates, multiple view modes, and seamless integration with
-                        data resources.
-                    </info-message>
-                </zone>
-                <zone name="batch-operations">
-                    <select-option value="delete" icon="delete">
-                        Delete
-                        <delete-dialog>
-                            <zone name="header"> Delete items </zone>
-                            <zone name="content"> Are you sure you want to delete the selected items? </zone>
-                        </delete-dialog>
-                    </select-option>
-                </zone>
-
-                <zone name="sort-options">
-                    <nav-link param-value="title" icon-right="sort_by_alpha"> Title </nav-link>
-                    <nav-link param-value="date" icon-right="calendar_month" default> Date </nav-link>
-                </zone>
-
-                <zone name="list-filters"> </zone>
-                ${renderItemTemplate()}
-            </arpa-list>
-        `;
+        return html` <arpa-list ${attrString(args)}> ${renderItemTemplate()} </arpa-list> `;
     }
 };
 
