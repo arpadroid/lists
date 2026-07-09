@@ -135,6 +135,10 @@
     p {
         margin: 0;
     }
+
+    &:empty {
+        display: none;
+    }
 }
 
 /** --- Links --- */

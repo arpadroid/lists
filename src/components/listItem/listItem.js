@@ -41,8 +41,8 @@ class ListItem extends ArpaElement {
      * @returns {ListItemConfigType}
      */
     getDefaultConfig() {
-        this.bind('_onImageLoaded', '_onImageError', 'setSelected');
-        this.bind('_onSelected', '_onDeselected', '_doAction', 'getImageAttributes');
+        this.bind('setSelected');
+        this.bind('_doAction', 'getImageAttributes');
         /** @type {ListItemConfigType} */
         const conf = {
             lazyLoad: false,
@@ -164,7 +164,7 @@ class ListItem extends ArpaElement {
     getWrapperComponent() {
         if (this.link) return 'a';
         if (this.hasActions()) return 'arpa-button';
-        return this.getProp('wrapperComponent');
+        return this.getProp('wrapperComponent') || 'div';
     }
 
     // #endregion Get
@@ -253,15 +253,18 @@ class ListItem extends ArpaElement {
         );
     }
 
+    getLinkClass() {
+        return this.getProp('link') ? 'listItem__link' : '';
+    }
+
     /**
      * Returns the template for the list item.
      * @returns {string}
      */
     $renderTemplate() {
-        const { truncateContent, link } = this.getProperties('truncateContent', 'link');
         const { tags = [] } = this._config;
         return html`
-            <arpa-node name="main" tag="{getWrapperComponent()}" href="{link}" class="${link ? 'listItem__link' : ''}">
+            <arpa-node name="main" tag="${this.getWrapperComponent()}" href="{link}" class="{getLinkClass()}">
                 <arpa-node name="icon" tag="arpa-icon"></arpa-node>
                 <arpa-node
                     tag="arpa-image"
@@ -277,7 +280,7 @@ class ListItem extends ArpaElement {
 
                 <div class="listItem__contentWrapper">
                     <arpa-node name="contentHeader" can-render="title || subtitle">
-                        <arpa-node name="titleWrapper" href="{titleLink}" tag="{getTitleTag()}">
+                        <arpa-node name="titleWrapper" href="{titleLink}" tag="${this.getTitleTag()}">
                             <arpa-node name="titleIcon" tag="arpa-icon"></arpa-node>
                             <arpa-node name="title"></arpa-node>
                         </arpa-node>
@@ -287,19 +290,21 @@ class ListItem extends ArpaElement {
 
                     <arpa-node
                         name="content"
-                        is-content
                         can-render
-                        tag="${truncateContent ? 'truncate-text' : 'div'}"
+                        is-content
+                        tag="${this.getProp('truncateContent') ? 'truncate-text' : 'div'}"
                         max-length="{truncateContent}"
                         has-button="{truncateButton}"
                     ></arpa-node>
 
-                    <arpa-node name="tags" tag="tag-list" id="item-{id}-tagList" variant="compact" can-render="tags">
-                        ${tags?.map(
-                            ({ icon, label }) =>
-                                html`<tag-item class="listItem__tag" text="${label}" icon="${icon}"></tag-item>`
-                        )}
-                    </arpa-node>
+                    ${tags?.length
+                        ? html`<arpa-node name="tags" tag="tag-list" id="item-{id}-tagList" variant="compact">
+                              ${tags?.map(
+                                  ({ icon, label }) =>
+                                      html`<tag-item class="listItem__tag" text="${label}" icon="${icon}"></tag-item>`
+                              )}
+                          </arpa-node>`
+                        : ''}
                 </div>
                 <arpa-node tag="arpa-icon" name="iconRight"></arpa-node>
             </arpa-node>
@@ -426,8 +431,8 @@ class ListItem extends ArpaElement {
 
         this.image = /** @type {ArpaImage | null} */ (this.nodes.image);
         this.image?.addConfig({
-            onLoad: this._onImageLoaded,
-            onError: this._onImageError
+            onLoad: this.$onImageLoaded,
+            onError: this.$onImageError
         });
         this._initializeItem();
         return true;
@@ -487,15 +492,11 @@ class ListItem extends ArpaElement {
 
     // #endregion LIFECYCLE
 
-    /////////////////////////////
-    // #region Events
-    /////////////////////////////
-
     /**
      * Called when the image has loaded.
      * @param {Event} event
      */
-    _onImageLoaded(event) {
+    $onImageLoaded(event) {
         this._config?.onImageLoaded?.(event, this);
     }
 
@@ -503,14 +504,9 @@ class ListItem extends ArpaElement {
      * Called when the image has failed to load.
      * @param {Event} event
      */
-    _onImageError(event) {
+    $onImageError(event) {
         this._config?.onImageError?.(event, this);
     }
-    // #endregion Events
-
-    /////////////////////////////
-    // #region Actions
-    /////////////////////////////
 
     /**
      * Deletes the list item.
@@ -519,7 +515,6 @@ class ListItem extends ArpaElement {
     async delete() {
         return this.listResource ? this.listResource.removeItem({ id: this.getId() }) : this.remove();
     }
-    // #endregion Actions
 }
 
 defineCustomElement(ListItem.prototype.getTagName(), ListItem);

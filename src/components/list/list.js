@@ -7,10 +7,10 @@
  * @typedef {import('../listItem/listItem.types').ListItemImageSizeType} ListItemImageSizeType
  */
 
-import { ArpaElement } from '@arpadroid/ui';
+import { ArpaElement, getTemplateAttributes } from '@arpadroid/ui';
 import { ListResource, getResource } from '@arpadroid/resources';
 import { mergeObjects, appendNodes, defineCustomElement } from '@arpadroid/tools';
-import { renderNode, renderAttr, attrString, bind } from '@arpadroid/tools';
+import { renderNode, renderAttr, attrString, bind, attr } from '@arpadroid/tools';
 import { processTemplate } from '@arpadroid/ui';
 import ListItem from '../listItem/listItem.js';
 
@@ -331,6 +331,10 @@ class List extends ArpaElement {
      * @returns {ListResourceItemType | undefined}
      */
     preProcessNode(node) {
+        if (!node) return;
+        const itemTemplate = this.getItemTemplate();
+        const itemAttributes = itemTemplate && getTemplateAttributes(itemTemplate);
+        itemAttributes && attr(node, itemAttributes, false);
         const { preProcessNode } = this._config;
         return (typeof preProcessNode === 'function' && preProcessNode(node)) || undefined;
     }
