@@ -167,18 +167,20 @@ export const Template = {
         await step('Renders the list item with the expected template', async () => {
             expect(canvas.getByText(fullTitle)).toBeInTheDocument();
             expect(canvas.getByText(fullSubtitle)).toBeInTheDocument();
-            expect(canvas.getByText(fullContent)).toBeInTheDocument();
             const listItem = canvasElement.querySelector('.myItem');
             expect(listItem?.querySelector('.myItem__container')).toBeInTheDocument();
             await waitFor(() => {
+                expect(canvas.getByText(fullContent)).toBeInTheDocument();
                 expect(listItem?.querySelector('img')).toHaveAttribute('src', '/test-assets/plane.jpg');
             });
         });
 
         await step('Renders the tags', async () => {
-            expect(canvas.getByText('Space')).toBeInTheDocument();
-            expect(canvas.getByText('knowledge')).toBeInTheDocument();
-            expect(canvasElement.querySelectorAll('tag-item')).toHaveLength(2);
+            await waitFor(() => {
+                expect(canvas.getByText('Space')).toBeInTheDocument();
+                expect(canvas.getByText('knowledge')).toBeInTheDocument();
+                expect(canvasElement.querySelectorAll('tag-item')).toHaveLength(2);
+            });
         });
     }
 };
