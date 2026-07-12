@@ -8,8 +8,6 @@ import { waitFor, expect, userEvent } from 'storybook/test';
 import { $attr } from '@arpadroid/tools';
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
 
-const html = String.raw;
-
 /** @type {Meta} */
 const Default = {
     title: 'Lists/List Item',
@@ -19,6 +17,8 @@ const Default = {
         layout: 'centered'
     }
 };
+
+const html = String.raw;
 
 /** @type {Story} */
 export const Render = {
@@ -51,6 +51,11 @@ export const Simple = {
         });
     }
 };
+
+const tags = html`<arpa-zone name="tags">
+    <tag-item icon="category">Space</tag-item>
+    <tag-item icon="book_2">knowledge</tag-item>
+</arpa-zone>`;
 
 /** @type {Story} */
 export const Link = {
@@ -85,7 +90,7 @@ const fullContent =
     'There are an estimated 3 trillion trees on Earth, which means there are more trees on our planet than there are stars in the entire Milky Way galaxy!';
 
 /** @type {Story} */
-export const Item = {
+export const FullItem = {
     args: {
         title: fullTitle,
         subtitle: fullSubtitle,
@@ -110,10 +115,12 @@ export const Item = {
 /** @type {Story} */
 export const Template = {
     args: {
-        ...Item.args
+        ...FullItem.args
     },
     parameters: testParams,
     render: args => {
+        const { content } = args;
+        delete args.content;
         return html`
             <style>
                 .myItem {
@@ -146,11 +153,11 @@ export const Template = {
                 <template template-type="list-item" class="myItem">
                     <div class="myItem__container">
                         {image}
-                        <span class="listItem__titleWrapper"> {title} {subtitle} </span>
+                        <span class="listItem__titleWrapper">{title}{subtitle}{tags}</span>
                     </div>
                     {content}
                 </template>
-                <list-item ${$attr(args)}> </list-item>
+                <list-item ${$attr(args)}> ${content} ${tags} </list-item>
             </arpa-list>
         `;
     },
@@ -167,12 +174,19 @@ export const Template = {
                 expect(listItem?.querySelector('img')).toHaveAttribute('src', '/test-assets/plane.jpg');
             });
         });
+
+        await step('Renders the tags', async () => {
+            expect(canvas.getByText('Space')).toBeInTheDocument();
+            expect(canvas.getByText('knowledge')).toBeInTheDocument();
+            expect(canvasElement.querySelectorAll('tag-item')).toHaveLength(2);
+        });
     }
 };
 
 const longText =
     'There are more stars in the observable universe than there are grains of sand on all the beaches and deserts on Earth. Estimates suggest there are over 10 sextillion (or 10 × 10²¹) stars';
 const zonesTitle = 'Galactic Sandcastles';
+
 /** @type {Story} */
 export const Zones = {
     args: {
@@ -187,11 +201,11 @@ export const Zones = {
     },
     render: args => {
         return html`
-            <arpa-list id="list-item-list" title="List Item" controls=" ">
+            <arpa-list id="list-item-list" controls=" ">
                 <list-item ${$attr(args)}>
                     <arpa-zone name="title">${zonesTitle}</arpa-zone>
                     <arpa-zone name="subtitle">Did you know?</arpa-zone>
-                    ${longText}
+                    ${tags} ${longText}
                 </list-item>
             </arpa-list>
         `;
@@ -222,6 +236,12 @@ export const Zones = {
                 expect(readMoreButton).toHaveTextContent('read less');
                 expect(canvas.getByText(longText)).toBeInTheDocument();
             });
+        });
+
+        await step('Renders the tags', async () => {
+            expect(canvas.getByText('Space')).toBeInTheDocument();
+            expect(canvas.getByText('knowledge')).toBeInTheDocument();
+            expect(canvasElement.querySelectorAll('tag-item')).toHaveLength(2);
         });
     }
 };

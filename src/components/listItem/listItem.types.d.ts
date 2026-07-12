@@ -38,7 +38,7 @@ export type ListItemConfigType = ArpaElementConfigType & {
     titleIcon?: string;
     titleLink?: string;
     titleTag?: string;
-    truncateContent?: number;
+    truncateContent?: number | string;
     truncateButton?: boolean | string;
     wrapperComponent?: string;
 };
@@ -56,8 +56,13 @@ export type ListItemImageTypes =
     | 'full_screen';
 
 export type ListItemImageSizeType = {
-    width?: number | 'auto';
-    height?: number | 'auto';
+    width?: string | number | 'auto';
+    height?: string | number | 'auto';
+    aspectRatio?: string | number | 'auto';
+    maxWidth?: string | number | 'auto';
+    maxHeight?: string | number | 'auto';
+    minWidth?: string | number | 'auto';
+    minHeight?: string | number | 'auto';
 };
 
 export type ListItemImageSizesType = Record<

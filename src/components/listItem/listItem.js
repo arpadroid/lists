@@ -41,11 +41,12 @@ class ListItem extends ArpaElement {
      * @returns {ListItemConfigType}
      */
     getDefaultConfig() {
-        this.bind('setSelected');
+        this.bind('setSelected', '$onImageLoaded', '$onImageError');
         this.bind('_doAction', 'getImageAttributes');
         /** @type {ListItemConfigType} */
         const conf = {
             lazyLoad: false,
+            blueprint: ListItem.prototype.$renderTemplate.bind(this),
             selectedClass: 'listItem--selected',
             className: 'listItem',
             listSelector: 'arpa-list',
@@ -56,7 +57,6 @@ class ListItem extends ArpaElement {
             attributes: { role: 'listitem' },
             titleTag: 'span',
             truncateButton: true,
-            zoneResolverSelector: '[zone="{zoneName}"]:not(nav-list [zone="{zoneName}"])',
             imageSizes: {
                 small: { width: 50, height: 50 },
                 list_compact: { width: 40, height: 40 },
@@ -64,8 +64,8 @@ class ListItem extends ArpaElement {
                 grid_compact: { width: 180, height: 180 },
                 grid: { width: 320, height: 320 },
                 grid_large: { width: 480, height: 480 },
-                thumbnail: { height: 110, width: 'auto' },
-                thumbnail_vertical: { height: 'auto', width: 110 },
+                thumbnail: { height: 80, width: 80 },
+                thumbnail_vertical: { height: 'auto', width: 110, aspectRatio: '16 / 9' },
                 // Calculate the full screen width and height inside a function to avoid layout thrashing.
                 full_screen: () => ({ width: getViewportWidth(), height: getViewportHeight() })
             },
@@ -226,12 +226,6 @@ class ListItem extends ArpaElement {
         itemTemplate && applyTemplate(this, itemTemplate, this.getPayload());
     }
 
-    getTemplateVars() {
-        return {
-            id: this.getId()
-        };
-    }
-
     getTitleTag() {
         return (this.getProp('titleLink') && 'a') || this.getProp('titleTag') || 'span';
     }
@@ -249,12 +243,31 @@ class ListItem extends ArpaElement {
 
     canRenderRhs() {
         return (
-            this.hasProp('rhs') || this.hasProp('checkbox') || this.hasProp('nav') || this.listResource?.hasSelection()
+            this.hasProp('rhs') ||
+            this.hasProp('checkbox') ||
+            this.hasContent('nav') ||
+            this.listResource?.hasSelection()
         );
     }
 
     getLinkClass() {
         return this.getProp('link') ? 'listItem__link' : '';
+    }
+
+    getTemplateVars() {
+        return {
+            id: this.getId(),
+            wrapperComponent: this.getWrapperComponent()
+        };
+    }
+
+    wrapperAttr() {
+        return $attr({
+            name: 'main',
+            tag: this.getWrapperComponent(),
+            href: this.getLink(),
+            class: this.getLinkClass()
+        });
     }
 
     /**
@@ -264,8 +277,9 @@ class ListItem extends ArpaElement {
     $renderTemplate() {
         const { tags = [] } = this._config;
         return html`
-            <arpa-node name="main" tag="${this.getWrapperComponent()}" href="{link}" class="{getLinkClass()}">
+            <arpa-node ${this.wrapperAttr()}>
                 <arpa-node name="icon" tag="arpa-icon"></arpa-node>
+                <!-- Image -->
                 <arpa-node
                     tag="arpa-image"
                     name="image"
@@ -274,6 +288,8 @@ class ListItem extends ArpaElement {
                     preview-title="{imagePreviewTitle}"
                     preview-controls="{previewControls}"
                     image-position="{imagePosition}"
+                    on-load="{$onImageLoaded}"
+                    on-error="{$onImageError}"
                     src="{getImage()}"
                     ${$attr(this.getImageAttributes())}
                 ></arpa-node>
@@ -295,16 +311,14 @@ class ListItem extends ArpaElement {
                         tag="${this.getProp('truncateContent') ? 'truncate-text' : 'div'}"
                         max-length="{truncateContent}"
                         has-button="{truncateButton}"
-                    ></arpa-node>
-
-                    ${tags?.length
-                        ? html`<arpa-node name="tags" tag="tag-list" id="item-{id}-tagList" variant="compact">
-                              ${tags?.map(
-                                  ({ icon, label }) =>
-                                      html`<tag-item class="listItem__tag" text="${label}" icon="${icon}"></tag-item>`
-                              )}
-                          </arpa-node>`
-                        : ''}
+                    >
+                    </arpa-node>
+                    <arpa-node name="tags" tag="tag-list" id="item-{id}-tagList" variant="compact" can-render="tags">
+                        ${tags?.map(
+                            ({ icon, label }) =>
+                                html`<tag-item class="listItem__tag" icon="${icon}">${label}</tag-item>`
+                        )}
+                    </arpa-node>
                 </div>
                 <arpa-node tag="arpa-icon" name="iconRight"></arpa-node>
             </arpa-node>
@@ -318,7 +332,7 @@ class ListItem extends ArpaElement {
                         checked="{isSelected()}"
                     />
                 </arpa-node>
-                <arpa-node tag="icon-menu" name="nav" id="{id}-nav"></arpa-node>
+                <arpa-node tag="icon-menu" name="nav" id="{id}-nav" can-render="hasNav()"></arpa-node>
             </arpa-node>
         `;
     }
@@ -428,12 +442,7 @@ class ListItem extends ArpaElement {
         this.button = this.querySelector('button.listItem__main');
         this.mainNode = this.nodes.main;
         this.checkbox = /** @type {HTMLInputElement} */ (this.querySelector('.listItem__checkbox'));
-
         this.image = /** @type {ArpaImage | null} */ (this.nodes.image);
-        this.image?.addConfig({
-            onLoad: this.$onImageLoaded,
-            onError: this.$onImageError
-        });
         this._initializeItem();
         return true;
     }

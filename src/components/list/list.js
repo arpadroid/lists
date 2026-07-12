@@ -121,13 +121,7 @@ class List extends ArpaElement {
             throw new Error('List component must have an id.');
         }
         super.setConfig(config);
-        this._initializeZoneSelector();
         return this._config;
-    }
-
-    _initializeZoneSelector() {
-        const itemTag = this._config?.itemTag || 'list-item';
-        !this._config?.zoneSelector && (this._config.zoneSelector = `zone:not(${itemTag} zone)`);
     }
 
     getNodesConfig() {
