@@ -798,6 +798,7 @@ class List extends ArpaElement {
         return html`<arpa-pager
             id="${this.id}-listPager"
             class="arpaList__pager"
+            has-arrow-controls
             max-nodes="${this.getProp('max-pager-nodes')}"
             total-pages="${this.listResource?.getTotalPages()}"
             current-page="${this.listResource?.getCurrentPage()}"

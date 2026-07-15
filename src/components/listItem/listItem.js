@@ -28,6 +28,7 @@ class ListItem extends ArpaElement {
      */
     constructor(config = {}, payload, map) {
         super(config);
+        this.bind('_onSelected', '_onDeselected');
         this.payload = payload;
         this.map = map;
         if (this.hasAttribute('title')) {
@@ -57,6 +58,7 @@ class ListItem extends ArpaElement {
             attributes: { role: 'listitem' },
             titleTag: 'span',
             truncateButton: true,
+            eventHandlerSelector: '.listItem__main',
             imageSizes: {
                 small: { width: 50, height: 50 },
                 list_compact: { width: 40, height: 40 },
@@ -163,7 +165,7 @@ class ListItem extends ArpaElement {
      */
     getWrapperComponent() {
         if (this.link) return 'a';
-        if (this.hasActions()) return 'arpa-button';
+        if (this.hasActions()) return 'button';
         return this.getProp('wrapperComponent') || 'div';
     }
 
@@ -250,6 +252,10 @@ class ListItem extends ArpaElement {
         );
     }
 
+    hasSelection() {
+        return this.listResource?.hasSelection() || this.hasProp('hasSelection');
+    }
+
     getLinkClass() {
         return this.getProp('link') ? 'listItem__link' : '';
     }
@@ -257,17 +263,22 @@ class ListItem extends ArpaElement {
     getTemplateVars() {
         return {
             id: this.getId(),
-            wrapperComponent: this.getWrapperComponent()
+            wrapperComponent: this.getWrapperComponent(),
+            wrapperAttr: this.wrapperAttr()
         };
     }
 
-    wrapperAttr() {
-        return $attr({
+    getWrapperAttr() {
+        return {
             name: 'main',
             tag: this.getWrapperComponent(),
             href: this.getLink(),
             class: this.getLinkClass()
-        });
+        };
+    }
+
+    wrapperAttr() {
+        return $attr(this.getWrapperAttr());
     }
 
     /**
@@ -324,7 +335,7 @@ class ListItem extends ArpaElement {
             </arpa-node>
 
             <arpa-node name="rhs" can-render="canRenderRhs()">
-                <arpa-node tag="label" name="checkboxContainer" for="listitem__checkbox-{id}" can-render="hasSelection">
+                <arpa-node tag="label" name="checkboxContainer" for="listitem__checkbox-{id}" can-render="hasSelection()">
                     <input
                         class="listItem__checkbox arpaCheckbox"
                         type="checkbox"
@@ -428,7 +439,7 @@ class ListItem extends ArpaElement {
     }
 
     hasActions() {
-        return typeof this._config?.action === 'function' || this.actions?.size > 0;
+        return this.hasAttribute('on-click') || typeof this._config?.action === 'function' || this.actions?.size > 0;
     }
 
     //#endregion RENDERING

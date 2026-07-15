@@ -62,21 +62,22 @@ export async function playSetup(canvasElement, initList = true, preRenderCallbac
  * @returns {string}
  */
 export function renderItemTemplate(attr = {}) {
-    return html` <!-- List Item Template -->
-        <template
-            template-type="list-item"
-            template-mode="append"
-            truncate-content="100"
-            image="{portraitURL}"
-            truncate-button
-            ${attrString(attr)}
-        >
-            <arpa-zone name="tags">
-                <tag-item icon="calendar_month">{date}</tag-item>
-                <tag-item icon="palette">{movement}</tag-item>
-            </arpa-zone>
-            {legacy}
-        </template>`;
+    return html` <template
+        template-type="list-item"
+        template-mode="append"
+        truncate-content="100"
+        image="{portraitURL}"
+        truncate-button
+        ${attrString(attr)}
+    >
+        <arpa-zone name="tags">
+            <tag-item icon="calendar_month">{date}</tag-item>
+            <tag-item icon="palette">{movement}</tag-item>
+        </arpa-zone>
+        <arpa-zone name="content">
+        {legacy}
+        </arpa-zone>
+    </template>`;
 }
 
 /**
