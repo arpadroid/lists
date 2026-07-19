@@ -15,16 +15,14 @@ import { getViewportWidth, getViewportHeight, defineCustomElement } from '@arpad
 
 const html = String.raw;
 class ListItem extends ArpaElement {
-    /** @type {Set<(event: Event) => void>} */
-    actions = new Set();
     /** @type {ListItemConfigType} */
     _config = this._config;
 
     /**
      * Creates a new list item.
-     * @param {ListItemConfigType} config - The configuration for the list item.
-     * @param {Record<string, unknown>} payload - The payload for the list item.
-     * @param {Record<string, unknown>} map - The map for the list item.
+     * @param {ListItemConfigType} config
+     * @param {Record<string, unknown>} payload
+     * @param {Record<string, unknown>} map
      */
     constructor(config = {}, payload, map) {
         super(config);
@@ -37,13 +35,17 @@ class ListItem extends ArpaElement {
         }
     }
 
+    $initialize() {
+        this.actions = new Set();
+    }
+
     /**
      * Gets the default config for the component.
      * @returns {ListItemConfigType}
      */
     getDefaultConfig() {
         this.bind('setSelected', '$onImageLoaded', '$onImageError');
-        this.bind('_doAction', 'getImageAttributes');
+        this.bind('$onAction', 'getImageAttributes');
         /** @type {ListItemConfigType} */
         const conf = {
             lazyLoad: false,
@@ -273,7 +275,8 @@ class ListItem extends ArpaElement {
             name: 'main',
             tag: this.getWrapperComponent(),
             href: this.getLink(),
-            class: this.getLinkClass()
+            class: this.getLinkClass(),
+            'on-click': this.hasActions() ? '{$onAction}' : undefined
         };
     }
 
@@ -335,7 +338,12 @@ class ListItem extends ArpaElement {
             </arpa-node>
 
             <arpa-node name="rhs" can-render="canRenderRhs()">
-                <arpa-node tag="label" name="checkboxContainer" for="listitem__checkbox-{id}" can-render="hasSelection()">
+                <arpa-node
+                    tag="label"
+                    name="checkboxContainer"
+                    for="listitem__checkbox-{id}"
+                    can-render="hasSelection()"
+                >
                     <input
                         class="listItem__checkbox arpaCheckbox"
                         type="checkbox"
@@ -439,7 +447,11 @@ class ListItem extends ArpaElement {
     }
 
     hasActions() {
-        return this.hasAttribute('on-click') || typeof this._config?.action === 'function' || this.actions?.size > 0;
+        return (
+            this.hasAttribute('on-click') ||
+            typeof this._config?.action === 'function' ||
+            (this.actions && this.actions?.size > 0)
+        );
     }
 
     //#endregion RENDERING
@@ -473,13 +485,6 @@ class ListItem extends ArpaElement {
 
     $onComplete() {
         this.removeAttribute('link');
-        this._attachOnClick();
-    }
-
-    _attachOnClick() {
-        if (this.hasActions() && this.nodes.main) {
-            listen(this.nodes.main, 'click', this._doAction);
-        }
     }
 
     /**
@@ -487,13 +492,15 @@ class ListItem extends ArpaElement {
      * @param {Event} event - The event that triggered the action.
      * @returns {void}
      */
-    _doAction(event) {
+    $onAction(event) {
         const { action } = this._config;
         if (typeof action === 'function') {
             action(event, this);
         }
-        for (const act of this.actions) {
-            act(event);
+        if (this.actions) {
+            for (const act of this.actions) {
+                act(event);
+            }
         }
     }
 

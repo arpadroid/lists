@@ -166,6 +166,10 @@ button.listItem__main {
     min-width: 2rem;
     max-width: 15rem;
     max-height: 12rem;
+
+    &.image--loading {
+        aspect-ratio: 1 / 1;
+    }
 }
 
 .listItem__nav {
