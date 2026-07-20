@@ -7,7 +7,7 @@ import type { ListResourceItemType } from './list.js';
 export type ListConfigType = ArpaElementConfigType & {
     canCollapse?: boolean;
     controls?: string[];
-    defaultView?: string;
+    view?: string;
     hasControls?: boolean;
     hasInfo?: boolean;
     hasItemsTransition?: boolean;
