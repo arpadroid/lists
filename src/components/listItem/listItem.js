@@ -45,7 +45,7 @@ class ListItem extends ArpaElement {
      */
     getDefaultConfig() {
         this.bind('setSelected', '$onImageLoaded', '$onImageError');
-        this.bind('$onAction', 'getImageAttributes');
+        this.bind('onAction', 'getImageAttributes');
         /** @type {ListItemConfigType} */
         const conf = {
             lazyLoad: false,
@@ -276,7 +276,7 @@ class ListItem extends ArpaElement {
             tag: this.getWrapperComponent(),
             href: this.getLink(),
             class: this.getLinkClass(),
-            'on-click': this.hasActions() ? '{$onAction}' : undefined
+            'on-click': this.hasActions() ? '{onAction}' : undefined
         };
     }
 
@@ -351,7 +351,6 @@ class ListItem extends ArpaElement {
                         checked="{isSelected()}"
                     />
                 </arpa-node>
-                <arpa-node tag="icon-menu" name="nav" id="{id}-nav" can-render="hasNav()"></arpa-node>
             </arpa-node>
         `;
     }
@@ -492,7 +491,7 @@ class ListItem extends ArpaElement {
      * @param {Event} event - The event that triggered the action.
      * @returns {void}
      */
-    $onAction(event) {
+    onAction(event) {
         const { action } = this._config;
         if (typeof action === 'function') {
             action(event, this);
