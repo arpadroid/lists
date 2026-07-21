@@ -139,10 +139,6 @@ class ListItem extends ArpaElement {
         return label || this.getLabelNode()?.textContent?.trim();
     }
 
-    getTagName() {
-        return 'list-item';
-    }
-
     getSelectedClass() {
         return this.getProp('selected-class');
     }
@@ -543,6 +539,6 @@ class ListItem extends ArpaElement {
     }
 }
 
-defineCustomElement(ListItem.prototype.getTagName(), ListItem);
+defineCustomElement('list-item', ListItem);
 
 export default ListItem;

@@ -9,7 +9,7 @@ import { $attr } from '@arpadroid/tools';
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
 
 /** @type {Meta} */
-const Default = {
+const ListItemStory = {
     title: 'Lists/List Item',
     component: 'list-item',
     args: {},
@@ -17,6 +17,8 @@ const Default = {
         layout: 'centered'
     }
 };
+
+export default ListItemStory;
 
 const html = String.raw;
 
@@ -247,5 +249,3 @@ export const Zones = {
         });
     }
 };
-
-export default Default;
