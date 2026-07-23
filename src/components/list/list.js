@@ -10,8 +10,7 @@
 import { ArpaElement, getTemplateAttributes } from '@arpadroid/ui';
 import { ListResource, getResource } from '@arpadroid/resources';
 import { mergeObjects, appendNodes, defineCustomElement } from '@arpadroid/tools';
-import { renderNode, renderAttr, attrString, bind, attr } from '@arpadroid/tools';
-import { processTemplate } from '@arpadroid/ui';
+import { renderNode, attrString, bind, attr } from '@arpadroid/tools';
 import ListItem from '../listItem/listItem.js';
 
 const html = String.raw;
@@ -126,30 +125,19 @@ class List extends ArpaElement {
 
     getNodesConfig() {
         return {
-            heading: {},
-            titleWrapper: { tag: 'h2', hasZone: false, content: '{titleIcon}{title}' },
-            title: { tag: 'span' },
-            titleIcon: { tag: 'arpa-icon' },
-            aside: {},
-            footer: { content: '{pager}' },
-            preloader: { tag: 'circular-spinner', canRender: 'has-preloader' },
-            noItems: { content: '{noItemsIcon}{noItemsText}', canRender: true },
-            noItemsIcon: { tag: 'arpa-icon' },
-            noItemsText: { content: () => this.getNoItemsContent() }
+            preloader: { tag: 'circular-spinner', canRender: 'has-preloader' }
         };
     }
 
     /**
      * Returns the default configuration for this component.
-     * @param {ListConfigType} config
      * @returns {ListConfigType}
      */
-    getDefaultConfig(config = {}) {
+    getDefaultConfig() {
         /** @type {ListConfigType} */
         const conf = {
             canCollapse: false,
             className: 'arpaList',
-            handleContent: false,
             hasItemsTransition: false,
             hasPager: true,
             hasPreloader: true,
@@ -178,7 +166,7 @@ class List extends ArpaElement {
             title: '',
             nodesConfig: this.getNodesConfig()
         };
-        return mergeObjects(super.getDefaultConfig(conf), config);
+        return mergeObjects(super.getDefaultConfig(), conf);
     }
 
     // #endregion
@@ -192,7 +180,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasPager() {
-        return Boolean(this.hasResource() && this.hasProp('has-pager'));
+        return Boolean(this.hasResource() && this.hasProp('hasPager'));
     }
 
     /**
@@ -227,7 +215,9 @@ class List extends ArpaElement {
     }
 
     getItemCount() {
-        return Number(this.getItems()?.length) || this.getItemNodes()?.length || 0;
+        const items = this.getItems();
+        const nodes = this.getItemNodes();
+        return items?.length || nodes?.length || 0;
     }
 
     /**
@@ -238,25 +228,16 @@ class List extends ArpaElement {
         return this.getProp('render-mode');
     }
 
+    getContentNode() {
+        return this.getRenderMode() === 'minimal' ? this : this.nodes.items;
+    }
+
     /**
      * The main text to be displayed.
      * @returns {string}
      */
     getTitle() {
         return this.getProp('title');
-    }
-
-    /**
-     * Gets the list items that are initially added to the DOM.
-     * @returns {(ListItem | Node | HTMLElement)[]}
-     */
-    getInitialItems() {
-        const itemTagName = this.getProp('item-tag');
-        return (
-            this._childNodes?.filter(node => {
-                return node instanceof Element && node.tagName?.toLowerCase() === itemTagName;
-            }) || []
-        );
     }
 
     getNoItemsContent() {
@@ -377,7 +358,7 @@ class List extends ArpaElement {
     async addItemNodes(items, preProcess = true) {
         this.onRenderReady(() => {
             preProcess && items.forEach(item => this?.preProcessNode(item));
-            const container = this.itemsNode || this;
+            const container = this.getContentNode() || this;
             appendNodes(container, items);
         });
     }
@@ -406,14 +387,13 @@ class List extends ArpaElement {
      * @returns {void}
      */
     transitionNewItems(items) {
-        const container = this.getItemsContainer();
+        const container = /** @type {HTMLElement | null} */ (this.getContentNode());
         if (!container?.children?.length) return this.addItemsBatched(items);
-        const newWrapper = /** @type {HTMLElement | null} */ (renderNode(this.renderItemsWrapper()));
+        const newWrapper = /** @type {HTMLElement } */ (this.renderNode('items'));
         if (!newWrapper) return this.addItemsBatched(items);
         newWrapper.classList?.add('arpaList__items--transitioning');
         /** @type {HTMLElement} */
         this.itemsNode = newWrapper;
-        /** @type {HTMLElement | null} */
         this.oldWrapper = container;
         this.oldWrapper.classList.add('arpaList__items--out');
         const newItems = items.map(item => this.createItem(item));
@@ -505,7 +485,7 @@ class List extends ArpaElement {
      * @returns {Element[] | null | undefined}
      */
     getItemNodes() {
-        return Array.from((this.itemsNode || this)?.children);
+        return Array.from((this.nodes.items || this.getContentNode() || this)?.children);
     }
 
     /**
@@ -538,12 +518,12 @@ class List extends ArpaElement {
      * @param {boolean} sendUpdate
      */
     async setItems(items, sendUpdate = false) {
+        await this.promise;
         if (!items?.length) return;
         if (this.listResource) {
             this.listResource?.setItems(items, sendUpdate);
         } else {
-            this._config.items = items;
-            this._hasRendered && this.renderItems(items);
+            this.renderItems(items);
         }
     }
 
@@ -640,9 +620,7 @@ class List extends ArpaElement {
 
     getTemplateVars() {
         return {
-            pager: this.renderPager(),
-            id: this.getId(),
-            items: this.renderItemsWrapper()
+            id: this.getId()
         };
     }
 
@@ -655,126 +633,75 @@ class List extends ArpaElement {
     }
 
     $renderTemplate() {
-        return this.getRenderMode() === 'minimal' ? this.renderMinimal() : this.renderFull();
-    }
-
-    render() {
-        super.render();
-        this.bodyMainNode = this.querySelector('.arpaList__bodyMain');
-        this.itemsNode = (this.getRenderMode() === 'minimal' ? this : this.querySelector('.arpaList__items')) || this;
-        this.itemsNode && appendNodes(this.itemsNode, this._childNodes);
-        this.renderItems();
-        if (this.itemsNode.innerHTML.trim() === '') {
-            this.itemsNode.innerHTML = '';
+        if (this.getRenderMode() === 'minimal') {
+            return html`{items}`;
         }
-        const initialItems = this._initializeItems();
-        this.itemsNode && appendNodes(this.itemsNode, initialItems);
+        return html`
+            <arpa-node name="header">
+                <arpa-node name="headerTop">
+                    <arpa-node name="titleWrapper" tag="h2" has-zone="false" can-render="titleIcon || title">
+                        <arpa-node name="titleIcon" tag="arpa-icon"></arpa-node>
+                        <arpa-node name="title" tag="span"></arpa-node>
+                    </arpa-node>
+                    {headerControls}
+                </arpa-node>
+            </arpa-node>
+            <arpa-node name="body">
+                <arpa-node name="bodyMain">
+                    <arpa-node name="heading"></arpa-node>
+                    <arpa-node name="items" role="list" aria-label="{heading}" must-render is-content></arpa-node>
+                    <arpa-node name="noItems" can-render="!getItemCount()">
+                        <arpa-node name="noItemsIcon" tag="arpa-icon"></arpa-node>
+                        <arpa-node name="noItemsContent" tag="span"></arpa-node>
+                    </arpa-node>
+                </arpa-node>
+                <arpa-node name="aside"></arpa-node>
+            </arpa-node>
+            <arpa-node name="footer" can-render="hasPager()">
+                <arpa-node
+                    name="pager"
+                    tag="arpa-pager"
+                    can-render="hasPager()"
+                    id="${this.id}-listPager"
+                    has-arrow-controls
+                    max-nodes="${this.getProp('max-pager-nodes')}"
+                    total-pages="${this.listResource?.getTotalPages()}"
+                    current-page="${this.listResource?.getCurrentPage()}"
+                    url-param="${this.getParamName('page')}"
+                ></arpa-node>
+            </arpa-node>
+        `;
     }
 
     async $initializeNodes() {
-        this._childNodes?.forEach(item => {
-            if (item instanceof HTMLElement && item?.tagName?.toLowerCase() === this._config?.itemTag) {
-                this.preProcessNode(/** @type {ListItem} */ (item));
-            }
-        });
-
+        await super.$initializeNodes();
+        this.bodyMainNode = this.nodes.bodyMain;
+        const renderMode = this.getRenderMode();
+        const isMinimal = renderMode === 'minimal';
+        this.itemsNode = /** @type {HTMLElement} */ (isMinimal ? this : this.nodes.items || this);
         this.noItemsNode = this.querySelector('.arpaList__noItems');
         this.preloader = this.querySelector('.arpaList__preloader');
-        this._handleNoItems();
         return true;
     }
 
-    async _handleNoItems() {
-        if (this.listResource?.promise) {
-            await this.listResource.promise;
-        }
-        requestAnimationFrame(() => {
-            if (!this.getItemCount() && !this.isLoading) {
-                this.noItemsNode = this.noItemsNode || renderNode(this.renderChild('noItems'));
-                this.bodyMainNode?.appendChild(this.noItemsNode);
-            } else if (this.noItemsNode?.isConnected) {
-                this.noItemsNode?.remove();
-            }
-        });
-    }
-
-    _initializeItems() {
-        /** @type {(ListItem | Node | HTMLElement)[]} */
-        this.initialItems = this.getInitialItems() || [];
-        const initialItems = this.initialItems;
-        const isStatic = this.listResource?.isStatic();
-        const resource = this.listResource;
-        const perPage = this?.listResource?.getPerPage();
-
-        if (isStatic && perPage && perPage < this.initialItems.length) {
-            /** @type {Record<string, unknown>[]} */
-            const payload = [];
-            this.initialItems.forEach((node, index) => {
-                node instanceof HTMLElement && node.remove();
-                const defaultId = `item-${index}`;
-                const id = node instanceof HTMLElement ? node.getAttribute('id') || defaultId : defaultId;
-                payload.push({ node, id });
-            });
-            resource?.setItems(payload);
-            return [];
-        }
-
-        return initialItems.filter(item => item.parentNode !== this.itemsNode);
+    canRenderItems() {
+        return true;
     }
 
     /**
      * Renders the list items.
      * @param {ListItemConfigType[]} items
-     * @param {HTMLElement} [container]
+     * @param {import('@arpadroid/ui').ArpaElementContentNodeType} [container]
      */
-    renderItems(items = this.getItems(), container = this.itemsNode) {
+    renderItems(items = this.getItems(), container = this.nodes.items || this) {
         if (!(container instanceof HTMLElement)) {
             console.warn('No items container found.');
             return;
         }
-        const $items = items.filter((/** @type {ListResourceItemType} */ item) => {
-            return !item?.node?.isConnected;
-        });
         appendNodes(
             container,
-            $items.map(item => this.createItem(item))
+            items.filter(item => !item?.node?.isConnected).map(item => this.createItem(item))
         );
-    }
-
-    /**
-     * Renders a list with all components.
-     * @returns {string}
-     */
-    renderFull() {
-        return html`
-            <div class="arpaList__header" zone="header">
-                <div class="arpaList__headerTop">{titleWrapper}{headerControls}</div>
-            </div>
-            {controls} {info} {messages}
-            <div class="arpaList__body" zone="body">
-                <div class="arpaList__bodyMain">{heading}{items}</div>
-                {aside}
-            </div>
-            {footer}
-        `;
-    }
-
-    /**
-     * Renders a minimal list.
-     * @returns {string}
-     */
-    renderMinimal() {
-        return html`{items}`;
-    }
-
-    /**
-     * Renders the items wrapper.
-     * @returns {string}
-     */
-    renderItemsWrapper() {
-        if (this.getRenderMode() === 'minimal') return '';
-        const ariaLabel = processTemplate(this.getProp('heading'), {}, this);
-        return html`<div class="arpaList__items" role="list" ${renderAttr('aria-label', ariaLabel)}></div>`;
     }
 
     /**
@@ -792,19 +719,6 @@ class List extends ArpaElement {
     ////////////////////////////
     // #region Pager
     ////////////////////////////
-
-    renderPager() {
-        if (!this.hasPager() || !this.hasResource()) return '';
-        return html`<arpa-pager
-            id="${this.id}-listPager"
-            class="arpaList__pager"
-            has-arrow-controls
-            max-nodes="${this.getProp('max-pager-nodes')}"
-            total-pages="${this.listResource?.getTotalPages()}"
-            current-page="${this.listResource?.getCurrentPage()}"
-            url-param="${this.getParamName('page')}"
-        ></arpa-pager>`;
-    }
 
     /**
      * Updates the pager.

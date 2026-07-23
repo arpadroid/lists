@@ -54,7 +54,6 @@ class ListItem extends ArpaElement {
             className: 'listItem',
             listSelector: 'arpa-list',
             lazyLoadImage: false,
-            handleContent: true,
             hasImageThumbnail: false,
             imageSize: undefined,
             attributes: { role: 'listitem' },

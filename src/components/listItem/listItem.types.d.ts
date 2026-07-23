@@ -2,6 +2,7 @@ import List from '../list/list';
 import ListItem from './listItem';
 import { ArpaElementConfigType, ArpaElementContentType, ImageConfigType } from '@arpadroid/ui';
 import { TagItemConfigType } from '../lists/tagList/tagItem/tagItem.types';
+import { ListResourceItemNodeType } from '@arpadroid/resources';
 
 export type ListItemConfigType = ArpaElementConfigType & {
     action?: (event: Event, item: ListItem) => void;
@@ -41,6 +42,7 @@ export type ListItemConfigType = ArpaElementConfigType & {
     truncateContent?: number | string;
     truncateButton?: boolean | string;
     wrapperComponent?: string;
+    node?: ListResourceItemNodeType;
 };
 
 export type ListItemImageTypes =
