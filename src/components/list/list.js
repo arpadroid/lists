@@ -81,7 +81,7 @@ class List extends ArpaElement {
         return namespace + this.getProp(`${param}Param`);
     }
 
-    instantiateResource(id = this.getId(), userConfig = {}) {
+    instantiateResource(id = this.getProp('id'), userConfig = {}) {
         const resource = getResource(id);
         if (resource) return resource;
         const config = mergeObjects(
@@ -206,14 +206,6 @@ class List extends ArpaElement {
         return this.templates['list-item'];
     }
 
-    /**
-     * Returns the component id.
-     * @returns {string}
-     */
-    getId() {
-        return this.getProp('id');
-    }
-
     getItemCount() {
         const items = this.getItems();
         const nodes = this.getItemNodes();
@@ -230,22 +222,6 @@ class List extends ArpaElement {
 
     getContentNode() {
         return this.getRenderMode() === 'minimal' ? this : this.nodes.items;
-    }
-
-    /**
-     * The main text to be displayed.
-     * @returns {string}
-     */
-    getTitle() {
-        return this.getProp('title');
-    }
-
-    getNoItemsContent() {
-        return this.getProp('no-items-content');
-    }
-
-    getChildren() {
-        return this.itemsNode?.children ?? [];
     }
 
     getLazyLoadImages() {
@@ -476,10 +452,6 @@ class List extends ArpaElement {
         );
     }
 
-    getItemsContainer() {
-        return this.itemsNode || this;
-    }
-
     /**
      * Returns the list item nodes.
      * @returns {Element[] | null | undefined}
@@ -618,12 +590,6 @@ class List extends ArpaElement {
     // #region Render
     ///////////////////
 
-    getTemplateVars() {
-        return {
-            id: this.getId()
-        };
-    }
-
     _preRender() {
         super._preRender();
         if (this.hasAttribute('title')) {
@@ -694,10 +660,6 @@ class List extends ArpaElement {
      * @param {import('@arpadroid/ui').ArpaElementContentNodeType} [container]
      */
     renderItems(items = this.getItems(), container = this.nodes.items || this) {
-        if (!(container instanceof HTMLElement)) {
-            console.warn('No items container found.');
-            return;
-        }
         appendNodes(
             container,
             items.filter(item => !item?.node?.isConnected).map(item => this.createItem(item))
