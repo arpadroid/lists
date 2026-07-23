@@ -242,6 +242,7 @@ class ListItem extends ArpaElement {
 
     canRenderRhs() {
         return (
+            this.zonesByName?.has('rhs') ||
             this.hasProp('rhs') ||
             this.hasProp('checkbox') ||
             this.hasContent('nav') ||

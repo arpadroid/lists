@@ -53,7 +53,6 @@ class List extends ArpaElement {
         if (!this.listResource) return;
         this.listResource.on('payload', this._initializeList);
         this._handleItems();
-        this._handlePreloading();
         const url = this.getProp('url');
         if (url) {
             this.listResource.setUrl(url);
@@ -221,7 +220,7 @@ class List extends ArpaElement {
     }
 
     getContentNode() {
-        return this.getRenderMode() === 'minimal' ? this : this.nodes.items;
+        return /** @type {HTMLElement} */ (this.getRenderMode() === 'minimal' ? this : this.nodes.items);
     }
 
     getLazyLoadImages() {
@@ -303,9 +302,9 @@ class List extends ArpaElement {
      * Adds an item to the list.
      * @param {ListItem | HTMLElement} item
      * @param {boolean} unshift
-     * @param {HTMLElement} [container]
+     * @param {import('@arpadroid/ui').ArpaElementContentNodeType} [container]
      */
-    async addItemNode(item, unshift = false, container = this.itemsNode) {
+    async addItemNode(item, unshift = false, container = this.nodes.items || this) {
         unshift ? container?.prepend(item) : container?.appendChild(item);
     }
 
@@ -515,11 +514,7 @@ class List extends ArpaElement {
         this.listResource?.on('remove_item', this.onResourceRemoveItem);
         this.listResource?.on('items_updated', this.onResourceItemsUpdated);
         this.listResource?.on('items', this.onResourceSetItems);
-        this.listResource?.on('update_item', (/** @type {ListResourceItemType} */ payload) => {
-            if (payload?.node?.reRender) {
-                payload.node.reRender();
-            }
-        });
+        this.listResource?.on('update_item', payload => payload?.node?.reRender?.());
         this.listResource?.on('fetch', this.onResourceFetch);
     }
 
@@ -616,10 +611,11 @@ class List extends ArpaElement {
                 <arpa-node name="bodyMain">
                     <arpa-node name="heading"></arpa-node>
                     <arpa-node name="items" role="list" aria-label="{heading}" must-render is-content></arpa-node>
-                    <arpa-node name="noItems" can-render="!getItemCount()">
+                    <arpa-node name="noItems" can-render="shouldRenderNoItems()" defer>
                         <arpa-node name="noItemsIcon" tag="arpa-icon"></arpa-node>
                         <arpa-node name="noItemsContent" tag="span"></arpa-node>
                     </arpa-node>
+                    <!-- <arpa-node name="preloader" tag="circular-spinner" can-render="hasPreloader"> </arpa-node> -->
                 </arpa-node>
                 <arpa-node name="aside"></arpa-node>
             </arpa-node>
@@ -639,6 +635,10 @@ class List extends ArpaElement {
         `;
     }
 
+    shouldRenderNoItems() {
+        return this.getItemCount() < 1;
+    }
+
     async $initializeNodes() {
         await super.$initializeNodes();
         this.bodyMainNode = this.nodes.bodyMain;
@@ -647,10 +647,7 @@ class List extends ArpaElement {
         this.itemsNode = /** @type {HTMLElement} */ (isMinimal ? this : this.nodes.items || this);
         this.noItemsNode = this.querySelector('.arpaList__noItems');
         this.preloader = this.querySelector('.arpaList__preloader');
-        return true;
-    }
-
-    canRenderItems() {
+        this._handlePreloading();
         return true;
     }
 
@@ -716,18 +713,17 @@ class List extends ArpaElement {
     /////////////////////////
 
     _handlePreloading() {
-        const hasPreloader = this.hasProp('has-preloader');
+        const hasPreloader = this.hasProp('hasPreloader');
         if (!hasPreloader) return;
         this.listResource?.on('fetch', async () => {
             this.isLoading = true;
-            this.preloader = this.preloader || renderNode(this.renderChild('preloader'));
+            this.preloader = this.nodes.preloader || renderNode(this.renderChild('preloader'));
             this.classList.add('arpaList--loading');
             if (this.preloader?.isConnected) return;
             this.preloader && this.bodyMainNode?.appendChild(this.preloader);
         });
-
-        this.listResource?.on('ready', () => {
-            this.preloader?.isConnected && this.preloader.remove();
+        this.listResource?.on('ready', async () => {
+            this.nodes.preloader?.isConnected && this.nodes.preloader.remove();
             this.classList.remove('arpaList--loading');
             this.isLoading = false;
         });
