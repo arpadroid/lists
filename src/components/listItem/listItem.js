@@ -241,6 +241,7 @@ class ListItem extends ArpaElement {
     }
 
     canRenderRhs() {
+        // return true;
         return (
             this.zonesByName?.has('rhs') ||
             this.hasProp('rhs') ||
@@ -278,6 +279,11 @@ class ListItem extends ArpaElement {
 
     wrapperAttr() {
         return $attr(this.getWrapperAttr());
+    }
+
+    hasTags() {
+        const { tags = [] } = this._config;
+        return tags?.length > 0 || this.zonesByName?.has('tags') || this.hasContent('tags');
     }
 
     /**
@@ -323,7 +329,14 @@ class ListItem extends ArpaElement {
                         has-button="{truncateButton}"
                     >
                     </arpa-node>
-                    <arpa-node name="tags" tag="tag-list" id="item-{id}-tagList" variant="compact" can-render="tags">
+                    <arpa-node
+                        name="tags"
+                        tag="tag-list"
+                        id="item-{id}-tagList"
+                        variant="compact"
+                        defer="{hasTags()}"
+                        can-render="hasTags()"
+                    >
                         ${tags?.map(
                             ({ icon, label }) =>
                                 html`<tag-item class="listItem__tag" icon="${icon}">${label}</tag-item>`

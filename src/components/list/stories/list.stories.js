@@ -9,7 +9,7 @@
 
 import { attrString } from '@arpadroid/tools';
 import { expect, waitFor } from 'storybook/test';
-import { playSetup, renderItemTemplate } from './list.stories.utils.js';
+import { playSetup } from './list.stories.utils.js';
 
 const html = String.raw;
 
@@ -56,7 +56,6 @@ export const DataDrivenList = {
         layout: 'flexColumn'
     },
     args: {
-        ...ListStory.args,
         id: 'static-list',
         title: 'List Component',
         itemsPerPage: 10,
@@ -66,7 +65,24 @@ export const DataDrivenList = {
         await playSetup(canvasElement);
     },
     render: args => {
-        return html` <arpa-list ${attrString(args)}> ${renderItemTemplate()} </arpa-list> `;
+        return html`
+            <arpa-list ${attrString(args)}>
+                <template
+                    template-type="list-item"
+                    template-mode="append"
+                    truncate-content="100"
+                    image="{portraitURL}"
+                    truncate-button
+                    ${attrString(args)}
+                >
+                    <arpa-zone name="tags">
+                        <tag-item icon="calendar_month">{date}</tag-item>
+                        <tag-item icon="palette">{movement}</tag-item>
+                    </arpa-zone>
+                    <arpa-zone name="content">{legacy}</arpa-zone>
+                </template>
+            </arpa-list>
+        `;
     }
 };
 
