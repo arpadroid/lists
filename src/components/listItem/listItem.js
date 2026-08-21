@@ -240,8 +240,7 @@ class ListItem extends ArpaElement {
         return this.listResource?.isSelected(this.getPayload()) ?? this.getProp('isSelected');
     }
 
-    canRenderRhs() {
-        // return true;
+    async canRenderRhs() {
         return (
             this.zonesByName?.has('rhs') ||
             this.hasProp('rhs') ||
@@ -329,14 +328,7 @@ class ListItem extends ArpaElement {
                         has-button="{truncateButton}"
                     >
                     </arpa-node>
-                    <arpa-node
-                        name="tags"
-                        tag="tag-list"
-                        id="item-{id}-tagList"
-                        variant="compact"
-                        defer="{hasTags()}"
-                        can-render="hasTags()"
-                    >
+                    <arpa-node name="tags" tag="tag-list" id="item-{id}-tagList" variant="compact" defer="hasTags">
                         ${tags?.map(
                             ({ icon, label }) =>
                                 html`<tag-item class="listItem__tag" icon="${icon}">${label}</tag-item>`

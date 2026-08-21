@@ -19,8 +19,10 @@ class TagItem extends ListItem {
      */
     getDefaultConfig() {
         this._onDelete = this._onDelete.bind(this);
+        /** @type {TagItemConfigType} */
         const config = {
             classNames: ['tagItem', 'tag'],
+            attributeList: ['value'],
             listSelector: 'tag-list',
             tooltipPosition: 'top',
             attributes: {

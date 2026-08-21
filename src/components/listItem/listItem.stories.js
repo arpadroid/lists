@@ -243,9 +243,11 @@ export const Zones = {
         });
 
         await step('Renders the tags', async () => {
-            expect(canvas.getByText('Space')).toBeInTheDocument();
-            expect(canvas.getByText('knowledge')).toBeInTheDocument();
-            expect(canvasElement.querySelectorAll('tag-item')).toHaveLength(2);
+            await waitFor(() => {
+                expect(canvas.getByText('Space')).toBeInTheDocument();
+                expect(canvas.getByText('knowledge')).toBeInTheDocument();
+                expect(canvasElement.querySelectorAll('tag-item')).toHaveLength(2);
+            });
         });
     }
 };

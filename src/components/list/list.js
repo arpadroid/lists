@@ -219,6 +219,10 @@ class List extends ArpaElement {
         return this.getProp('render-mode');
     }
 
+    /**
+     * Returns the content node.
+     * @returns {HTMLElement}
+     */
     getContentNode() {
         return /** @type {HTMLElement} */ (this.getRenderMode() === 'minimal' ? this : this.nodes.items);
     }
@@ -595,7 +599,7 @@ class List extends ArpaElement {
 
     $renderTemplate() {
         if (this.getRenderMode() === 'minimal') {
-            return html`{items}`;
+            return '{items}';
         }
         return html`
             <arpa-node name="header">
@@ -611,7 +615,7 @@ class List extends ArpaElement {
                 <arpa-node name="bodyMain">
                     <arpa-node name="heading"></arpa-node>
                     <arpa-node name="items" role="list" aria-label="{heading}" must-render is-content></arpa-node>
-                    <arpa-node name="noItems" can-render="shouldRenderNoItems()" defer>
+                    <arpa-node name="noItems" defer="shouldRenderNoItems">
                         <arpa-node name="noItemsIcon" tag="arpa-icon"></arpa-node>
                         <arpa-node name="noItemsContent" tag="span"></arpa-node>
                     </arpa-node>
@@ -635,7 +639,7 @@ class List extends ArpaElement {
         `;
     }
 
-    shouldRenderNoItems() {
+    async shouldRenderNoItems() {
         return this.getItemCount() < 1;
     }
 
@@ -645,7 +649,7 @@ class List extends ArpaElement {
         const renderMode = this.getRenderMode();
         const isMinimal = renderMode === 'minimal';
         this.itemsNode = /** @type {HTMLElement} */ (isMinimal ? this : this.nodes.items || this);
-        this.noItemsNode = this.querySelector('.arpaList__noItems');
+        this.noItemsNode = this.nodes.noItems;
         this.preloader = this.querySelector('.arpaList__preloader');
         this._handlePreloading();
         return true;
