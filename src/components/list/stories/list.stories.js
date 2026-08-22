@@ -8,8 +8,9 @@
  */
 
 import { attrString } from '@arpadroid/tools';
-import { expect, waitFor } from 'storybook/test';
-import { playSetup } from './list.stories.utils.js';
+import { expect, waitFor, userEvent } from 'storybook/test';
+import { formatDate } from '@arpadroid/tools';
+import artists from '../../../mockData/artists.json';
 
 const html = String.raw;
 
@@ -21,6 +22,7 @@ const ListStory = {
     parameters: {
         layout: 'padded'
     },
+    excludeStories: ['initializeList'],
     args: {
         id: 'static-list',
         title: '',
@@ -30,25 +32,29 @@ const ListStory = {
         hasResource: true,
         controls: [],
         views: ['grid', 'list', 'list-compact', 'grid-compact']
-    },
-    render: args => {
-        // delete args.text;
-        return html`
-            <arpa-list ${attrString(args)} views="grid, list">
-                <list-item title="Some title" title-link="/some-link" image="/some-image.jpg">
-                    A Demo list item.
-                </list-item>
-            </arpa-list>
-            <script>
-                // http://museovaquero.local/api/gallery/item/get-items?galleryList-search=&galleryList-sortBy=modified_date&galleryList-sortDir=desc&galleryList-state=&galleryList-page=2&galleryList-perPage=50&public=
-                customElements.whenDefined('arpa-list').then(() => {
-                    /** @type {List} */
-                    const list = document.getElementById('test-list');
-                });
-            </script>
-        `;
     }
 };
+
+/**
+ * Initializes the list with the provided payload.
+ * @param {string} id
+ * @param {any[]} [payload]
+ */
+export async function initializeList(id, payload = artists) {
+    const list = /** @type {List | null} */ (document.getElementById(id));
+    /** @type {ListResource | undefined} */
+    const resource = list?.listResource;
+    resource?.mapItem((/** @type {Record<string, any>} */ item) => {
+        const dob = formatDate(item.dateOfBirth, 'YYYY');
+        const dod = formatDate(item.dateOfDeath, 'YYYY');
+        return {
+            ...item,
+            title: `${item.firstName} ${item.lastName}`,
+            date: dob && dod ? `${dob} - ${dod}` : dob
+        };
+    });
+    resource?.setItems(payload);
+}
 
 /** @type {Story} */
 export const DataDrivenList = {
@@ -58,12 +64,10 @@ export const DataDrivenList = {
     args: {
         id: 'static-list',
         title: 'List Component',
-        itemsPerPage: 10,
+        itemsPerPage: 5,
         hasResource: true
     },
-    play: async ({ canvasElement }) => {
-        await playSetup(canvasElement);
-    },
+
     render: args => {
         return html`
             <arpa-list ${attrString(args)}>
@@ -72,8 +76,9 @@ export const DataDrivenList = {
                     template-mode="append"
                     truncate-content="100"
                     image="{portraitURL}"
+                    title="{firstName} {lastName}"
                     truncate-button
-                    ${attrString(args)}
+                    has-selection
                 >
                     <arpa-zone name="tags">
                         <tag-item icon="calendar_month">{date}</tag-item>
@@ -83,12 +88,59 @@ export const DataDrivenList = {
                 </template>
             </arpa-list>
         `;
+    },
+    play: async ({ canvasElement, step, canvas, args }) => {
+        /** @type {List | null} */
+        const listNode = canvasElement.querySelector('arpa-list');
+        await listNode?.promise;
+        listNode && (await initializeList(listNode?.id));
+
+        await step('Sets page to 1 and renders items', async () => {
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            const button = canvas.queryByRole('link', { name: '1' });
+            button && (await userEvent?.click(button));
+        });
+
+        await step('Renders list items from the resource', async () => {
+            await waitFor(() => {
+                expect(canvas.getByText('Phidias')).toBeInTheDocument();
+                const items = listNode?.listResource?.getItems() || [];
+                expect(canvas.getByText(items[0].legacy)).toBeInTheDocument();
+                expect(canvas.getByText('Classical Greek')).toBeInTheDocument();
+            });
+        });
+
+        await step('Changes page and renders new items', async () => {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            const page2Button = canvas.getByRole('link', { name: '2' });
+            await userEvent.click(page2Button);
+            await waitFor(() => {
+                const items = listNode?.listResource?.getItems() || [];
+                expect(canvas.getByText(items[args.itemsPerPage || 0].legacy)).toBeInTheDocument();
+            });
+        });
+    }
+};
+
+/** @type {Story} */
+export const Test200 = {
+    args: {
+        title: 'List Component - 200 items',
+        id: 'test-200',
+        itemsPerPage: 200
+    },
+    render: DataDrivenList.render,
+    play: async ({ canvasElement }) => {
+        /** @type {List | null} */
+        const listNode = canvasElement.querySelector('arpa-list');
+        await listNode?.promise;
+        listNode && (await initializeList(listNode?.id));
     }
 };
 
 /** @type {Story} */
 export const EmptyList = {
-    // name: 'Empty List',
     args: {
         id: 'static-list-test',
         title: 'Empty List',
@@ -100,23 +152,13 @@ export const EmptyList = {
     render: args => {
         return html`<arpa-list ${attrString(args)}></arpa-list>`;
     },
-    play: async ({ canvasElement, step }) => {
-        const { canvas } = await playSetup(canvasElement, false);
+    play: async ({ step, canvas }) => {
         step('Renders an empty list', async () => {
             await waitFor(() => {
+                expect(canvas.getByText('Empty List')).toBeInTheDocument();
                 expect(canvas.getByText('No items found.')).toBeInTheDocument();
             });
         });
-    }
-};
-
-/** @type {Story} */
-export const Test200 = {
-    ...DataDrivenList,
-    args: {
-        ...DataDrivenList.args,
-        id: 'test-200',
-        itemsPerPage: 200
     }
 };
 

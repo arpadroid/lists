@@ -10,7 +10,7 @@
  */
 
 import { ArpaElement, applyTemplate } from '@arpadroid/ui';
-import { listen, $attr, mergeObjects } from '@arpadroid/tools';
+import { $attr, mergeObjects } from '@arpadroid/tools';
 import { getViewportWidth, getViewportHeight, defineCustomElement } from '@arpadroid/tools';
 
 const html = String.raw;
@@ -26,7 +26,7 @@ class ListItem extends ArpaElement {
      */
     constructor(config = {}, payload, map) {
         super(config);
-        this.bind('_onSelected', '_onDeselected');
+        this.bind('_onSelected', '_onDeselected', 'setSelected');
         this.payload = payload;
         this.map = map;
         if (this.hasAttribute('title')) {
@@ -241,17 +241,18 @@ class ListItem extends ArpaElement {
     }
 
     async canRenderRhs() {
-        return (
+        return Boolean(
             this.zonesByName?.has('rhs') ||
             this.hasProp('rhs') ||
             this.hasProp('checkbox') ||
             this.hasContent('nav') ||
+            this.hasProp('hasSelection') ||
             this.listResource?.hasSelection()
         );
     }
 
     hasSelection() {
-        return this.listResource?.hasSelection() || this.hasProp('hasSelection');
+        return Boolean(this.listResource?.hasSelection() || this.hasProp('hasSelection'));
     }
 
     getLinkClass() {
@@ -338,18 +339,14 @@ class ListItem extends ArpaElement {
                 <arpa-node tag="arpa-icon" name="iconRight"></arpa-node>
             </arpa-node>
 
-            <arpa-node name="rhs" can-render="canRenderRhs()">
-                <arpa-node
-                    tag="label"
-                    name="checkboxContainer"
-                    for="listitem__checkbox-{id}"
-                    can-render="hasSelection()"
-                >
+            <arpa-node name="rhs" defer="canRenderRhs">
+                <arpa-node tag="label" name="checkboxContainer" for="listitem__checkbox-{id}" defer="hasSelection">
                     <input
                         class="listItem__checkbox arpaCheckbox"
                         type="checkbox"
                         id="listitem__checkbox-{id}"
                         checked="{isSelected()}"
+                        on-change="{setSelected}"
                     />
                 </arpa-node>
             </arpa-node>
@@ -476,10 +473,8 @@ class ListItem extends ArpaElement {
     async _initializeItem() {
         if (this.itemInitialized) return;
         if (this.checkbox) {
-            listen(this.checkbox, 'change', this.setSelected);
             this.setSelected();
         }
-
         this.itemInitialized = true;
     }
 

@@ -4,19 +4,17 @@
  * @typedef {import('@storybook/web-components-vite').StoryObj<TagListConfigType>} Story
  * @typedef {import('@storybook/web-components-vite').Meta<TagListConfigType>} Meta
  */
-import { attrString } from '@arpadroid/tools';
-import { DataDrivenList as ListStory } from '../../list/stories/list.stories.js';
+import { $attr } from '@arpadroid/tools';
 import { within, userEvent, waitFor, expect, fn } from 'storybook/test';
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
 const html = String.raw;
 
 /** @type {Meta} */
 const TagListStory = {
-    ...ListStory,
     title: 'Lists/Tag List',
+    component: 'tag-list',
     parameters: defaultParams,
     args: {
-        ...ListStory.args,
         id: 'tag-list',
         title: 'Tag List',
         hasInfo: true,
@@ -24,7 +22,7 @@ const TagListStory = {
         onDelete: fn()
     },
     render: args => {
-        return html`<tag-list ${attrString(args)}>
+        return html`<tag-list ${$attr(args)}>
             <template template-type="list-item" has-delete></template>
             <tag-item icon="restaurant">Tag 1</tag-item>
             <tag-item icon="lunch_dining">Tag 2</tag-item>
@@ -38,7 +36,6 @@ export const Render = TagListStory;
 /** @type {Story} */
 export const Test = {
     args: {
-        ...TagListStory.args,
         id: 'tag-list-test',
         title: 'Tag List Test'
     },
