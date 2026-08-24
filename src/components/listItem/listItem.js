@@ -29,10 +29,6 @@ class ListItem extends ArpaElement {
         this.bind('_onSelected', '_onDeselected', 'setSelected');
         this.payload = payload;
         this.map = map;
-        if (this.hasAttribute('title')) {
-            this._config.title = this.getAttribute('title') || '';
-            this.removeAttribute('title');
-        }
     }
 
     $initialize() {
@@ -48,6 +44,7 @@ class ListItem extends ArpaElement {
         this.bind('onAction', 'getImageAttributes');
         /** @type {ListItemConfigType} */
         const conf = {
+            attributeList: ['id'],
             lazyLoad: false,
             blueprint: ListItem.prototype.$renderTemplate.bind(this),
             selectedClass: 'listItem--selected',
@@ -480,6 +477,10 @@ class ListItem extends ArpaElement {
 
     $onComplete() {
         this.removeAttribute('link');
+        if (this.hasAttribute('title')) {
+            this._config.title = this.getAttribute('title') || '';
+            this.removeAttribute('title');
+        }
     }
 
     /**

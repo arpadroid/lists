@@ -491,15 +491,17 @@ class List extends ArpaElement {
      * Sets the list items.
      * @param {ListItemConfigType[]} items
      * @param {boolean} sendUpdate
+     * @returns {Promise<boolean | void>}
      */
     async setItems(items, sendUpdate = false) {
         await this.promise;
         if (!items?.length) return;
         if (this.listResource) {
-            this.listResource?.setItems(items, sendUpdate);
+            await this.listResource?.setItems(items, sendUpdate);
         } else {
             this.renderItems(items);
         }
+        return true;
     }
 
     // #endregion Resource API
