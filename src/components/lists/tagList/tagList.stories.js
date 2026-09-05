@@ -8,6 +8,7 @@ import { $attr } from '@arpadroid/tools';
 import { within, userEvent, waitFor, expect, fn } from 'storybook/test';
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
 const html = String.raw;
+const onDelete = fn();
 
 /** @type {Meta} */
 const TagListStory = {
@@ -18,8 +19,7 @@ const TagListStory = {
         id: 'tag-list',
         title: 'Tag List',
         hasInfo: true,
-        itemsPerPage: 5,
-        onDelete: fn()
+        itemsPerPage: 5
     },
     render: args => {
         return html`<tag-list ${$attr(args)}>
@@ -40,13 +40,11 @@ export const Test = {
         title: 'Tag List Test'
     },
     parameters: testParams,
-    play: async ({ canvasElement, step, args, canvas }) => {
-        await customElements.whenDefined('tag-list');
-        await customElements.whenDefined('tag-item');
+    play: async ({ canvasElement, step, canvas }) => {
         /** @type {TagList | null} */
         const tagList = canvasElement.querySelector('tag-list');
-        // @ts-ignore
-        tagList?.on('delete_tag', args.onDelete);
+        await tagList?.promise;
+        tagList?.on('delete_tag', onDelete);
 
         await step('Renders the tag list', async () => {
             expect(tagList).toBeInTheDocument();
@@ -61,11 +59,12 @@ export const Test = {
 
         await step('Sets an event listener on delete and receives callback when delete tag is clicked.', async () => {
             const tag = /** @type {HTMLElement} */ (canvas.getByText('Tag 1').closest('tag-item'));
-            const deleteButton = within(tag).getByRole('button');
+
+            const deleteButton = await waitFor(() => within(tag).getByRole('button'));
             expect(deleteButton).toBeInTheDocument();
-            userEvent.click(deleteButton);
+            await userEvent.click(deleteButton);
             await waitFor(() => {
-                expect(args.onDelete).toHaveBeenCalledWith(tag, undefined, undefined);
+                expect(onDelete).toHaveBeenCalledWith(tag, undefined, undefined);
             });
         });
     }

@@ -4,7 +4,7 @@
  * @typedef {import('../tagList.js').default} TagList
  */
 
-import { defineCustomElement, mergeObjects, listen } from '@arpadroid/tools';
+import { defineCustomElement, mergeObjects } from '@arpadroid/tools';
 import ListItem from '../../../listItem/listItem.js';
 
 const html = String.raw;
@@ -50,8 +50,9 @@ class TagItem extends ListItem {
             <arpa-node name="text" class="tag__text" is-content></arpa-node>
             <arpa-node name="tooltip" tag="arpa-tooltip" position="{tooltipPosition}"></arpa-node>
             <arpa-node
-                name="deleteButton"
                 tag="icon-button"
+                name="deleteButton"
+                on-click="{_onDelete}"
                 class="tag__delete iconButton--mini"
                 label="Delete tag"
                 aria-label="Delete tag"
@@ -60,21 +61,6 @@ class TagItem extends ListItem {
                 can-render="hasOnDelete()"
             ></arpa-node>
         `;
-    }
-
-    async $initializeNodes() {
-        await super.$initializeNodes();
-        this.initializeDeleteButton();
-        return true;
-    }
-
-    initializeDeleteButton() {
-        if (this.hasOnDelete()) {
-            const deleteBtnComponent = /** @type {IconButton | undefined} */ (this.nodes.deleteButton);
-            deleteBtnComponent?.promise.then(() => {
-                listen(deleteBtnComponent, 'click', this._onDelete);
-            });
-        }
     }
 
     /**

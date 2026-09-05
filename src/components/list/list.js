@@ -695,6 +695,13 @@ class List extends ArpaElement {
         node?.setPager(currentPage, totalPages);
     }
 
+    /**
+     * @param {number} page - The page number to navigate to.
+     */
+    setPage(page) {
+        this.listResource?.goToPage(Number(page));
+    }
+
     _initializePager() {
         /** @type {Pager | null} */
         this.pagerNode = this.querySelector('arpa-pager');

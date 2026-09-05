@@ -26,7 +26,6 @@ class ListItem extends ArpaElement {
      */
     constructor(config = {}, payload, map) {
         super(config);
-        this.bind('_onSelected', '_onDeselected', 'setSelected');
         this.payload = payload;
         this.map = map;
     }
@@ -40,6 +39,7 @@ class ListItem extends ArpaElement {
      * @returns {ListItemConfigType}
      */
     getDefaultConfig() {
+        this.bind('_onSelected', '_onDeselected', 'setSelected');
         this.bind('setSelected', '$onImageLoaded', '$onImageError');
         this.bind('onAction', 'getImageAttributes');
         /** @type {ListItemConfigType} */
@@ -344,6 +344,7 @@ class ListItem extends ArpaElement {
                         id="listitem__checkbox-{id}"
                         checked="{isSelected()}"
                         on-change="{setSelected}"
+                        name="list-item-checkbox-{id}"
                     />
                 </arpa-node>
             </arpa-node>

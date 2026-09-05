@@ -8,8 +8,7 @@
  */
 
 import { attrString } from '@arpadroid/tools';
-import { expect } from 'storybook/test';
-import { playSetup } from './list.stories.utils.js';
+import { expect, waitFor } from 'storybook/test';
 const html = String.raw;
 
 /** @type {Meta} */
@@ -111,16 +110,22 @@ const Default = {
             </list-item>
         </arpa-list>`;
     },
-    play: async ({ canvasElement, step }) => {
-        const { canvas } = await playSetup(canvasElement);
+    play: async ({ canvasElement, canvas, step }) => {
+        /** @type {List | null} */
+        const listNode = canvasElement.querySelector('arpa-list');
+        await listNode?.promise;
         step('Renders the items', async () => {
+            await waitFor(() => {
+                expect(canvas.getAllByRole('listitem')).toHaveLength(8);
+                expect(canvas.getAllByRole('button', { name: /Read more/i })).toHaveLength(8);
+            });
             const items = canvas.getAllByRole('listitem');
             expect(items).toHaveLength(8);
             expect(canvas.getByText('List aside')).toBeInTheDocument();
             expect(canvas.getByText('List heading')).toBeInTheDocument();
-            expect(canvas.getAllByRole('button', { name: /Read more/i })).toHaveLength(8);
             const textContent = items[0].querySelector('.truncateText__content');
-            expect(textContent.textContent).toHaveLength(70);
+            expect(textContent?.textContent).toHaveLength(70);
+            await waitFor(() => expect(canvas.queryByText('No items found.')).not.toBeInTheDocument());
         });
     }
 };

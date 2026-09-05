@@ -55,12 +55,17 @@
     align-self: center;
     justify-content: space-between;
     max-width: 100%;
-    padding: var(--listItem-gap) 0;
     overflow: hidden;
     font-family: var(--primary-font);
     font-size: 1rem;
     line-height: 1rem;
     color: var(--text-color);
+}
+
+.listItem:not(:only-child) {
+    .listItem__contentWrapper {
+        padding: var(--listItem-gap) 0;
+    }
 }
 
 .listItem__contentHeader {
