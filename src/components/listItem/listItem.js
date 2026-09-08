@@ -127,7 +127,7 @@ class ListItem extends ArpaElement {
         return this.getProp('image-alt');
     }
 
-    getLink() {
+    async getLink() {
         return this.getProp('link');
     }
 
@@ -226,11 +226,11 @@ class ListItem extends ArpaElement {
         return (this.getProp('titleLink') && 'a') || this.getProp('titleTag') || 'span';
     }
 
-    _preRender() {
+    async _preRender() {
         this.imageURL = this.getProp('image');
         const { role } = this._config;
         role && this.setAttribute('role', role);
-        this.link = this.getLink();
+        this.link = await this.getLink();
     }
 
     isSelected() {
@@ -268,7 +268,7 @@ class ListItem extends ArpaElement {
         return {
             name: 'main',
             tag: this.getWrapperComponent(),
-            href: this.getLink(),
+            href: this.link,
             class: this.getLinkClass(),
             'on-click': this.hasActions() ? '{onAction}' : undefined
         };

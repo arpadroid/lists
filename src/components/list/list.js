@@ -626,8 +626,7 @@ class List extends ArpaElement {
                 <arpa-node name="aside"></arpa-node>
             </arpa-node>
             <arpa-node name="footer" can-render="hasPager()">
-                <arpa-node
-                    name="pager"
+                <arpa-pager
                     tag="arpa-pager"
                     can-render="hasPager()"
                     id="${this.id}-listPager"
@@ -636,7 +635,7 @@ class List extends ArpaElement {
                     total-pages="${this.listResource?.getTotalPages()}"
                     current-page="${this.listResource?.getCurrentPage()}"
                     url-param="${this.getParamName('page')}"
-                ></arpa-node>
+                ></arpa-pager>
             </arpa-node>
         `;
     }
