@@ -12,12 +12,12 @@ import { expect, waitFor } from 'storybook/test';
 const html = String.raw;
 
 /** @type {Meta} */
-const Default = {
-    title: 'Lists/List/HTML List',
+const ContentDrivenStories = {
+    title: 'Lists/Content Driven',
     component: 'arpa-list',
     args: {
         id: 'static-list-test',
-        title: 'HTML List',
+        title: 'Content Driven List',
         titleIcon: 'list',
         controls: []
     },
@@ -109,7 +109,14 @@ const Default = {
                 aspect of a balanced life, inspiring innovation and joy.
             </list-item>
         </arpa-list>`;
-    },
+    }
+};
+
+/** @type {Story} */
+export const Render = {};
+
+/** @type {Story} */
+export const Test = {
     play: async ({ canvasElement, canvas, step }) => {
         /** @type {List | null} */
         const listNode = canvasElement.querySelector('arpa-list');
@@ -130,7 +137,4 @@ const Default = {
     }
 };
 
-/** @type {Story} */
-export const HTMLList = Default;
-
-export default Default;
+export default ContentDrivenStories;

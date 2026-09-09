@@ -226,11 +226,11 @@ class ListItem extends ArpaElement {
         return (this.getProp('titleLink') && 'a') || this.getProp('titleTag') || 'span';
     }
 
-    async _preRender() {
+    _preRender() {
         this.imageURL = this.getProp('image');
         const { role } = this._config;
         role && this.setAttribute('role', role);
-        this.link = await this.getLink();
+        this.getLink().then(link => (this.link = link));
     }
 
     isSelected() {

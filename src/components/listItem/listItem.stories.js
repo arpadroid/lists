@@ -229,6 +229,7 @@ export const Zones = {
                 const content = canvasElement.querySelector('.truncateText__content');
                 expect(content).toBeInTheDocument();
                 expect(content?.textContent).toHaveLength(50);
+                expect(canvas.getByRole('button', { name: /read more/i })).toBeInTheDocument();
             });
         });
 
