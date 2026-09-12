@@ -208,7 +208,7 @@ class List extends ArpaElement {
     getItemCount() {
         const items = this.getItems();
         const nodes = this.getItemNodes();
-        return items?.length || nodes?.length || 0;
+        return items?.length || nodes?.length || this.itemsNode?.childNodes?.length || 0;
     }
 
     /**
@@ -460,7 +460,8 @@ class List extends ArpaElement {
      * @returns {Element[] | null | undefined}
      */
     getItemNodes() {
-        return Array.from((this.nodes.items || this.getContentNode() || this)?.children);
+        const nodes = (this.nodes.items || this.getContentNode() || this)?.children;
+        return Array.from(nodes);
     }
 
     /**

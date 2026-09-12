@@ -220,8 +220,8 @@ export const Zones = {
         await step('Renders the list item with the expected zones', async () => {
             await waitFor(() => {
                 expect(canvas.getByText(zonesTitle)).toBeInTheDocument();
+                expect(canvas.getByText('Did you know?')).toBeInTheDocument();
             });
-            expect(canvas.getByText('Did you know?')).toBeInTheDocument();
             expect(canvas.getByText('auto_awesome')).toHaveClass('icon--auto_awesome');
             const titleLink = canvas.getByRole('link', { name: new RegExp(zonesTitle, 'i') });
             expect(titleLink).toHaveAttribute('href', '#test-link');

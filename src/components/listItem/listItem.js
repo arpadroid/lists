@@ -12,6 +12,7 @@
 import { ArpaElement, applyTemplate } from '@arpadroid/ui';
 import { $attr, mergeObjects } from '@arpadroid/tools';
 import { getViewportWidth, getViewportHeight, defineCustomElement } from '@arpadroid/tools';
+import { getAttributes } from '@arpadroid/tools/node';
 
 const html = String.raw;
 class ListItem extends ArpaElement {
@@ -150,7 +151,13 @@ class ListItem extends ArpaElement {
      * @returns {Record<string, unknown>}
      */
     getPayload() {
-        return this.payload ?? this._config;
+        /** @type {Record<string, unknown>} */
+        return (
+            this.payload || {
+                ...this._config,
+                ...getAttributes(this, { camelCaseKeys: true })
+            }
+        );
     }
 
     /**
@@ -318,10 +325,10 @@ class ListItem extends ArpaElement {
                     </arpa-node>
 
                     <arpa-node
+                        tag="${this.getProp('truncateContent') ? 'truncate-text' : 'div'}"
                         name="content"
                         can-render
                         is-content
-                        tag="${this.getProp('truncateContent') ? 'truncate-text' : 'div'}"
                         max-length="{truncateContent}"
                         has-button="{truncateButton}"
                     >
@@ -459,9 +466,7 @@ class ListItem extends ArpaElement {
         /** @type {HTMLElement | null} */
         this.button = this.querySelector('button.listItem__main');
         this.mainNode = this.nodes.main;
-        this.checkbox = /** @type {HTMLInputElement} */ (this.querySelector('.listItem__checkbox'));
         this.image = /** @type {ArpaImage | null} */ (this.nodes.image);
-        this._initializeItem();
         return true;
     }
 
@@ -469,6 +474,8 @@ class ListItem extends ArpaElement {
      * Initializes event listeners and actions for the list item.
      */
     async _initializeItem() {
+        await this.onNodesReady();
+        this.checkbox = /** @type {HTMLInputElement} */ (this.querySelector('.listItem__checkbox'));
         if (this.itemInitialized) return;
         if (this.checkbox) {
             this.setSelected();
@@ -477,6 +484,7 @@ class ListItem extends ArpaElement {
     }
 
     $onComplete() {
+        this._initializeItem();
         this.removeAttribute('link');
         if (this.hasAttribute('title')) {
             this._config.title = this.getAttribute('title') || '';
@@ -501,12 +509,9 @@ class ListItem extends ArpaElement {
         }
     }
 
-    /**
-     * Once the item is rendered, it registers itself with the list resource.
-     */
-    async _onRenderComplete() {
-        await super._onRenderComplete();
+    async $resolveRender() {
         this.isConnected && this.register();
+        return true;
     }
 
     register() {
