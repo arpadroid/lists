@@ -510,7 +510,7 @@ class ListItem extends ArpaElement {
     }
 
     async $resolveRender() {
-        this.isConnected && this.register();
+        this.register();
         return true;
     }
 
