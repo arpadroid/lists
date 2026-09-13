@@ -121,7 +121,7 @@ export const Test = {
         /** @type {List | null} */
 
         const listNode = await initializeList(canvasElement);
-        await listNode?.onNodesReady();
+        await listNode?.promise;
 
         await step('Sets page to 1 and renders items', async () => {
             const button = await waitFor(() => canvas.queryByRole('link', { name: '1' }));
