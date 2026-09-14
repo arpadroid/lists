@@ -76,7 +76,7 @@ class List extends ArpaElement {
      * @returns {string}
      */
     getParamName(param) {
-        const namespace = this.getProp('paramNamespace');
+        const namespace = this.getProp('paramNamespace') || '';
         return namespace + this.getProp(`${param}Param`);
     }
 
@@ -428,7 +428,7 @@ class List extends ArpaElement {
     getDefaultItemConfig(config = {}) {
         const renderMode = this.getRenderMode();
         renderMode === 'minimal' && (config.renderMode = 'minimal');
-        return config;
+        return { ...config, list: this };
     }
 
     /**
@@ -627,7 +627,8 @@ class List extends ArpaElement {
                 <arpa-node name="aside"></arpa-node>
             </arpa-node>
             <arpa-node name="footer" can-render="hasPager()">
-                <arpa-pager
+                <arpa-node
+                    name="pager"
                     tag="arpa-pager"
                     can-render="hasPager()"
                     id="${this.id}-listPager"
@@ -636,7 +637,7 @@ class List extends ArpaElement {
                     total-pages="${this.listResource?.getTotalPages()}"
                     current-page="${this.listResource?.getCurrentPage()}"
                     url-param="${this.getParamName('page')}"
-                ></arpa-pager>
+                ></arpa-node>
             </arpa-node>
         `;
     }
@@ -654,6 +655,7 @@ class List extends ArpaElement {
         this.noItemsNode = this.nodes.noItems;
         this.preloader = this.querySelector('.arpaList__preloader');
         this._handlePreloading();
+        this._initializePager();
         return true;
     }
 
@@ -687,12 +689,15 @@ class List extends ArpaElement {
 
     /**
      * Updates the pager.
-     * @param {Pager | null} node
+     * @param {Pager | null} [node]
      */
-    updatePager(node = this.querySelector('arpa-pager')) {
+    async updatePager(node) {
+        await this.waitForArpaNodes();
+        node = /** @type {Pager | null} */ (node || this.nodes.pager || this.querySelector('arpa-pager'));
+        if (!node) return;
         const currentPage = this.listResource?.getCurrentPage() || 1;
         const totalPages = this.listResource?.getTotalPages() || 1;
-        node?.setPager(currentPage, totalPages);
+        node?.setPager?.(currentPage, totalPages);
     }
 
     /**
@@ -702,10 +707,9 @@ class List extends ArpaElement {
         this.listResource?.goToPage(Number(page));
     }
 
-    _initializePager() {
-        /** @type {Pager | null} */
-        this.pagerNode = this.querySelector('arpa-pager');
-        this.pagerNode?.onChange(this.onPagerChange);
+    async _initializePager() {
+        this.pagerNode = /** @type {Pager | undefined} */ (this.nodes.pager);
+        this.pagerNode?.onChange?.(this.onPagerChange);
     }
 
     /**
@@ -745,6 +749,7 @@ class List extends ArpaElement {
     $onDestroy() {
         this?.listResource?.destroy();
     }
+
     // #endregion Lifecycle
 }
 

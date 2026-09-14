@@ -77,11 +77,8 @@ class ListItem extends ArpaElement {
         return mergeObjects(super.getDefaultConfig(), conf);
     }
 
-    $initializeProperties() {
-        super.$initializeProperties();
+    async $initializeProperties() {
         this.grabList();
-        !this.listResource && typeof this.list?.preProcessNode === 'function' && this.list?.preProcessNode(this);
-
         return true;
     }
 
@@ -90,8 +87,12 @@ class ListItem extends ArpaElement {
         const listSelector = this.getProp('list-selector');
         /** @type {List} */
         this.list = this._config?.list || this.closest(listSelector);
+
         /** @type {ListResource} */
         this.listResource = this.list?.listResource;
+        if (!this.listResource && typeof this.list?.preProcessNode === 'function') {
+            this.list?.preProcessNode(this);
+        }
         return this.list;
     }
 
@@ -233,11 +234,12 @@ class ListItem extends ArpaElement {
         return (this.getProp('titleLink') && 'a') || this.getProp('titleTag') || 'span';
     }
 
-    _preRender() {
+    async $preRender() {
         this.imageURL = this.getProp('image');
         const { role } = this._config;
         role && this.setAttribute('role', role);
-        this.getLink().then(link => (this.link = link));
+        this.link = await this.getLink();
+        return true;
     }
 
     isSelected() {
