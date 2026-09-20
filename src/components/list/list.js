@@ -319,14 +319,14 @@ class List extends ArpaElement {
      */
     addItems(itemsPayload) {
         if (this.listResource) return this.listResource?.addItems(itemsPayload);
-        if (this.itemsNode) {
-            return appendNodes(
-                this.itemsNode,
-                itemsPayload.map(item => this.createItem(item))
-            );
-        } else {
-            this._config.items = this._config?.items?.concat(itemsPayload);
-        }
+        const items = /** @type {ListItem[]} */ (itemsPayload.map(item => this.createItem(item)));
+        Promise.allSettled(items.map(item => item.promise)).then(() => {
+            if (this.itemsNode) {
+                return appendNodes(this.itemsNode, items);
+            } else {
+                this._config.items = this._config?.items?.concat(itemsPayload);
+            }
+        });
     }
 
     /**
@@ -356,6 +356,8 @@ class List extends ArpaElement {
             this.addItemNodes(itemNodes);
             currentIndex += batchSize;
             currentIndex < totalItems && setTimeout(processBatch);
+            // Promise.allSettled(itemNodes.map(item => item.promise)).then(() => {
+            // });
         };
         processBatch();
     }
@@ -375,12 +377,14 @@ class List extends ArpaElement {
         this.itemsNode = newWrapper;
         this.oldWrapper = container;
         this.oldWrapper.classList.add('arpaList__items--out');
-        const newItems = items.map(item => this.createItem(item));
-        appendNodes(newWrapper, newItems);
-        container.after(newWrapper);
-        container.addEventListener('transitionend', this.onTransitionOut);
-        container.classList.add('arpaList--itemsOut');
-        newWrapper.classList.add('arpaList--itemsIn');
+        const newItems = /** @type {ListItem[]} */ (items.map(item => this.createItem(item)));
+        Promise.allSettled(newItems.map(item => item.onRendered())).then(() => {
+            appendNodes(newWrapper, newItems);
+            container.after(newWrapper);
+            container.addEventListener('transitionend', this.onTransitionOut);
+            container.classList.add('arpaList--itemsOut');
+            newWrapper.classList.add('arpaList--itemsIn');
+        });
     }
 
     /**

@@ -130,9 +130,11 @@ export const Test = {
             expect(items).toHaveLength(8);
             expect(canvas.getByText('List aside')).toBeInTheDocument();
             expect(canvas.getByText('List heading')).toBeInTheDocument();
-            const textContent = items[0].querySelector('.truncateText__content');
-            expect(textContent?.textContent).toHaveLength(70);
-            await waitFor(() => expect(canvas.queryByText('No items found.')).not.toBeInTheDocument());
+            await waitFor(() => {
+                const textContent = items[0].querySelector('.truncateText__content');
+                expect(textContent?.textContent).toHaveLength(70);
+                expect(canvas.queryByText('No items found.')).not.toBeInTheDocument()
+            });
         });
     }
 };
