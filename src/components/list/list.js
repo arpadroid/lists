@@ -318,15 +318,15 @@ class List extends ArpaElement {
      * @returns {ListItem[] | ListItemConfigType[] | void}
      */
     addItems(itemsPayload) {
-        if (this.listResource) return this.listResource?.addItems(itemsPayload);
+        if (this.listResource) {
+            return this.listResource?.addItems(itemsPayload);
+        }
         const items = /** @type {ListItem[]} */ (itemsPayload.map(item => this.createItem(item)));
-        Promise.allSettled(items.map(item => item.promise)).then(() => {
-            if (this.itemsNode) {
-                return appendNodes(this.itemsNode, items);
-            } else {
-                this._config.items = this._config?.items?.concat(itemsPayload);
-            }
-        });
+        if (this.itemsNode) {
+            return appendNodes(this.itemsNode, items);
+        } else {
+            this._config.items = this._config?.items?.concat(itemsPayload);
+        }
     }
 
     /**
@@ -504,6 +504,7 @@ class List extends ArpaElement {
         if (this.listResource) {
             await this.listResource?.setItems(items, sendUpdate);
         } else {
+            this.itemsNode && (this.itemsNode.innerHTML = '');
             this.renderItems(items);
         }
         return true;

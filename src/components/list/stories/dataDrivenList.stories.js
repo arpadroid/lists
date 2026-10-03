@@ -86,11 +86,7 @@ const DataDrivenListStory = {
 };
 
 /** @type {Story} */
-export const Render = {
-    args: {
-        itemsPerPage: 1
-    }
-};
+export const Render = {};
 
 /** @type {Story} */
 export const Test300 = {
