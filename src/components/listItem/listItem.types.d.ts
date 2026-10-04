@@ -1,32 +1,10 @@
 import List from '../list/list';
 import ListItem from './listItem';
-import { ArpaElementConfigType, ImageConfigType } from '@arpadroid/ui';
+import { ArpaElementConfigType, ArpaElementContentType, ImageConfigType } from '@arpadroid/ui';
 import { TagItemConfigType } from '../lists/tagList/tagItem/tagItem.types';
-
-export type ListItemImageTypes =
-    | 'adaptive'
-    | 'list_compact'
-    | 'list'
-    | 'small'
-    | 'grid'
-    | 'grid_compact'
-    | 'grid_large'
-    | 'thumbnail'
-    | 'thumbnail_vertical'
-    | 'full_screen';
-
-export type ListItemImageSizeType = {
-    width?: number | 'auto';
-    height?: number | 'auto';
-};
-
-export type ListItemImageSizesType = Record<
-    ListItemImageTypes | string,
-    ListItemImageSizeType | (() => ListItemImageSizeType)
->;
+import { ListResourceItemNodeType } from '@arpadroid/resources';
 
 export type ListItemConfigType = ArpaElementConfigType & {
-    // dialogContext?: DialogContext;
     action?: (event: Event, item: ListItem) => void;
     content?: string;
     hasSelection?: boolean;
@@ -41,7 +19,7 @@ export type ListItemConfigType = ArpaElementConfigType & {
     defaultImageSize?: ListItemImageTypes | 'string';
     imagePosition?: string;
     imageSizes?: ListItemImageSizesType;
-    imagePreview?: boolean,
+    imagePreview?: boolean;
     lazyLoad?: boolean;
     lazyLoadImage?: boolean;
     link?: string;
@@ -51,21 +29,48 @@ export type ListItemConfigType = ArpaElementConfigType & {
     onImageLoaded?: (event: Event, item: ListItem) => void;
     previewControls?: string[];
     renderMode?: 'minimal' | 'full';
-    rhsContent?: string;
+    rhs?: ArpaElementContentType;
     role?: string;
     selectedClass?: string;
-    subTitle?: string;
+    subtitle?: string;
     tags?: TagItemConfigType[];
     template?: HTMLTemplateElement | undefined;
     title?: string;
     titleIcon?: string;
     titleLink?: string;
     titleTag?: string;
-    truncateContent?: number;
+    truncateContent?: number | string;
     truncateButton?: boolean | string;
     wrapperComponent?: string;
+    node?: ListResourceItemNodeType;
 };
 
+export type ListItemImageTypes =
+    | 'adaptive'
+    | 'list_compact'
+    | 'list'
+    | 'small'
+    | 'grid'
+    | 'grid_compact'
+    | 'grid_large'
+    | 'thumbnail'
+    | 'thumbnail_vertical'
+    | 'full_screen';
+
+export type ListItemImageSizeType = {
+    width?: string | number | 'auto';
+    height?: string | number | 'auto';
+    aspectRatio?: string | number | 'auto';
+    maxWidth?: string | number | 'auto';
+    maxHeight?: string | number | 'auto';
+    minWidth?: string | number | 'auto';
+    minHeight?: string | number | 'auto';
+};
+
+export type ListItemImageSizesType = Record<
+    ListItemImageTypes | string,
+    ListItemImageSizeType | (() => ListItemImageSizeType)
+>;
 
 export type ListItemViewConfigType = {
     id: string;

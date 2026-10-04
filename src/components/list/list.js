@@ -7,11 +7,10 @@
  * @typedef {import('../listItem/listItem.types').ListItemImageSizeType} ListItemImageSizeType
  */
 
-import { ArpaElement } from '@arpadroid/ui';
+import { ArpaElement, getTemplateAttributes } from '@arpadroid/ui';
 import { ListResource, getResource } from '@arpadroid/resources';
 import { mergeObjects, appendNodes, defineCustomElement } from '@arpadroid/tools';
-import { renderNode, renderAttr, attrString, bind } from '@arpadroid/tools';
-import { processTemplate } from '@arpadroid/ui';
+import { renderNode, attrString, bind, attr } from '@arpadroid/tools';
 import ListItem from '../listItem/listItem.js';
 
 const html = String.raw;
@@ -54,7 +53,6 @@ class List extends ArpaElement {
         if (!this.listResource) return;
         this.listResource.on('payload', this._initializeList);
         this._handleItems();
-        this._handlePreloading();
         const url = this.getProp('url');
         if (url) {
             this.listResource.setUrl(url);
@@ -78,24 +76,25 @@ class List extends ArpaElement {
      * @returns {string}
      */
     getParamName(param) {
-        const namespace = this.getProp('param-namespace');
-        return namespace + this.getProp(`${param}-param`);
+        const namespace = this.getProp('paramNamespace') || '';
+        return namespace + this.getProp(`${param}Param`);
     }
 
-    instantiateResource(id = this.getId(), userConfig = {}) {
+    instantiateResource(id = this.getProp('id'), userConfig = {}) {
         const resource = getResource(id);
         if (resource) return resource;
         const config = mergeObjects(
             {
                 id,
+                controls: [],
                 pageParam: this.getParamName('page'),
                 searchParam: this.getParamName('search'),
                 perPageParam: this.getParamName('perPage'),
                 sortByParam: this.getParamName('sortBy'),
                 sortDirParam: this.getParamName('sortDir'),
-                itemsPerPage: this.getProp('items-per-page'),
+                itemsPerPage: this.getProp('itemsPerPage'),
                 mapItemId: this._config?.mapItemId,
-                itemIdMap: this.getProp('item-id-map'),
+                itemIdMap: this.getProp('itemIdMap'),
                 listComponent: this,
                 url: this.getProp('url')
             },
@@ -120,41 +119,24 @@ class List extends ArpaElement {
             throw new Error('List component must have an id.');
         }
         super.setConfig(config);
-        this._initializeZoneSelector();
         return this._config;
-    }
-
-    _initializeZoneSelector() {
-        const itemTag = this._config?.itemTag || 'list-item';
-        !this._config?.zoneSelector && (this._config.zoneSelector = `zone:not(${itemTag} zone)`);
     }
 
     getNodesConfig() {
         return {
-            heading: {},
-            titleWrapper: { tag: 'h2', hasZone: false, content: '{titleIcon}{title}' },
-            title: { tag: 'span' },
-            titleIcon: { tag: 'arpa-icon' },
-            aside: {},
-            footer: { content: '{pager}' },
-            preloader: { tag: 'circular-spinner', canRender: 'has-preloader' },
-            noItems: { content: '{noItemsIcon}{noItemsText}', canRender: true },
-            noItemsIcon: { tag: 'arpa-icon' },
-            noItemsText: { content: () => this.getNoItemsContent() }
+            preloader: { tag: 'circular-spinner', canRender: 'has-preloader' }
         };
     }
 
     /**
      * Returns the default configuration for this component.
-     * @param {ListConfigType} config
      * @returns {ListConfigType}
      */
-    getDefaultConfig(config = {}) {
+    getDefaultConfig() {
         /** @type {ListConfigType} */
         const conf = {
             canCollapse: false,
             className: 'arpaList',
-            handleContent: false,
             hasItemsTransition: false,
             hasPager: true,
             hasPreloader: true,
@@ -183,7 +165,7 @@ class List extends ArpaElement {
             title: '',
             nodesConfig: this.getNodesConfig()
         };
-        return mergeObjects(super.getDefaultConfig(conf), config);
+        return mergeObjects(super.getDefaultConfig(), conf);
     }
 
     // #endregion
@@ -197,7 +179,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasPager() {
-        return Boolean(this.hasResource() && this.hasProp('has-pager'));
+        return Boolean(this.hasResource() && this.hasProp('hasPager'));
     }
 
     /**
@@ -223,16 +205,10 @@ class List extends ArpaElement {
         return this.templates['list-item'];
     }
 
-    /**
-     * Returns the component id.
-     * @returns {string}
-     */
-    getId() {
-        return this.getProp('id');
-    }
-
     getItemCount() {
-        return Number(this.getItems()?.length) || this.getItemNodes()?.length || 0;
+        const items = this.getItems();
+        const nodes = this.getItemNodes();
+        return items?.length || nodes?.length || this.itemsNode?.childNodes?.length || 0;
     }
 
     /**
@@ -244,32 +220,11 @@ class List extends ArpaElement {
     }
 
     /**
-     * The main text to be displayed.
-     * @returns {string}
+     * Returns the content node.
+     * @returns {HTMLElement}
      */
-    getTitle() {
-        return this.getProp('title');
-    }
-
-    /**
-     * Gets the list items that are initially added to the DOM.
-     * @returns {(ListItem | Node | HTMLElement)[]}
-     */
-    getInitialItems() {
-        const itemTagName = this.getProp('item-tag');
-        return (
-            this._childNodes?.filter(node => {
-                return node instanceof Element && node.tagName?.toLowerCase() === itemTagName;
-            }) || []
-        );
-    }
-
-    getNoItemsContent() {
-        return this.getProp('no-items-content');
-    }
-
-    getChildren() {
-        return this.itemsNode?.children ?? [];
+    getContentNode() {
+        return /** @type {HTMLElement} */ (this.getRenderMode() === 'minimal' ? this : this.nodes.items);
     }
 
     getLazyLoadImages() {
@@ -330,6 +285,10 @@ class List extends ArpaElement {
      * @returns {ListResourceItemType | undefined}
      */
     preProcessNode(node) {
+        if (!node) return;
+        const itemTemplate = this.getItemTemplate();
+        const itemAttributes = itemTemplate && getTemplateAttributes(itemTemplate);
+        itemAttributes && attr(node, itemAttributes, false);
         const { preProcessNode } = this._config;
         return (typeof preProcessNode === 'function' && preProcessNode(node)) || undefined;
     }
@@ -347,9 +306,9 @@ class List extends ArpaElement {
      * Adds an item to the list.
      * @param {ListItem | HTMLElement} item
      * @param {boolean} unshift
-     * @param {HTMLElement} [container]
+     * @param {import('@arpadroid/ui').ArpaElementContentNodeType} [container]
      */
-    async addItemNode(item, unshift = false, container = this.itemsNode) {
+    async addItemNode(item, unshift = false, container = this.nodes.items || this) {
         unshift ? container?.prepend(item) : container?.appendChild(item);
     }
 
@@ -359,12 +318,12 @@ class List extends ArpaElement {
      * @returns {ListItem[] | ListItemConfigType[] | void}
      */
     addItems(itemsPayload) {
-        if (this.listResource) return this.listResource?.addItems(itemsPayload);
+        if (this.listResource) {
+            return this.listResource?.addItems(itemsPayload);
+        }
+        const items = /** @type {ListItem[]} */ (itemsPayload.map(item => this.createItem(item)));
         if (this.itemsNode) {
-            return appendNodes(
-                this.itemsNode,
-                itemsPayload.map(item => this.createItem(item))
-            );
+            return appendNodes(this.itemsNode, items);
         } else {
             this._config.items = this._config?.items?.concat(itemsPayload);
         }
@@ -378,7 +337,7 @@ class List extends ArpaElement {
     async addItemNodes(items, preProcess = true) {
         this.onRenderReady(() => {
             preProcess && items.forEach(item => this?.preProcessNode(item));
-            const container = this.itemsNode || this;
+            const container = this.getContentNode() || this;
             appendNodes(container, items);
         });
     }
@@ -397,6 +356,8 @@ class List extends ArpaElement {
             this.addItemNodes(itemNodes);
             currentIndex += batchSize;
             currentIndex < totalItems && setTimeout(processBatch);
+            // Promise.allSettled(itemNodes.map(item => item.promise)).then(() => {
+            // });
         };
         processBatch();
     }
@@ -407,22 +368,23 @@ class List extends ArpaElement {
      * @returns {void}
      */
     transitionNewItems(items) {
-        const container = this.getItemsContainer();
+        const container = /** @type {HTMLElement | null} */ (this.getContentNode());
         if (!container?.children?.length) return this.addItemsBatched(items);
-        const newWrapper = /** @type {HTMLElement | null} */ (renderNode(this.renderItemsWrapper()));
+        const newWrapper = /** @type {HTMLElement } */ (this.renderNode('items'));
         if (!newWrapper) return this.addItemsBatched(items);
         newWrapper.classList?.add('arpaList__items--transitioning');
         /** @type {HTMLElement} */
         this.itemsNode = newWrapper;
-        /** @type {HTMLElement | null} */
         this.oldWrapper = container;
         this.oldWrapper.classList.add('arpaList__items--out');
-        const newItems = items.map(item => this.createItem(item));
-        appendNodes(newWrapper, newItems);
-        container.after(newWrapper);
-        container.addEventListener('transitionend', this.onTransitionOut);
-        container.classList.add('arpaList--itemsOut');
-        newWrapper.classList.add('arpaList--itemsIn');
+        const newItems = /** @type {ListItem[]} */ (items.map(item => this.createItem(item)));
+        Promise.allSettled(newItems.map(item => item.onRendered())).then(() => {
+            appendNodes(newWrapper, newItems);
+            container.after(newWrapper);
+            container.addEventListener('transitionend', this.onTransitionOut);
+            container.classList.add('arpaList--itemsOut');
+            newWrapper.classList.add('arpaList--itemsIn');
+        });
     }
 
     /**
@@ -470,7 +432,7 @@ class List extends ArpaElement {
     getDefaultItemConfig(config = {}) {
         const renderMode = this.getRenderMode();
         renderMode === 'minimal' && (config.renderMode = 'minimal');
-        return config;
+        return { ...config, list: this };
     }
 
     /**
@@ -497,16 +459,13 @@ class List extends ArpaElement {
         );
     }
 
-    getItemsContainer() {
-        return this.itemsNode || this;
-    }
-
     /**
      * Returns the list item nodes.
      * @returns {Element[] | null | undefined}
      */
     getItemNodes() {
-        return Array.from((this.itemsNode || this)?.children);
+        const nodes = (this.nodes.items || this.getContentNode() || this)?.children;
+        return Array.from(nodes);
     }
 
     /**
@@ -537,15 +496,18 @@ class List extends ArpaElement {
      * Sets the list items.
      * @param {ListItemConfigType[]} items
      * @param {boolean} sendUpdate
+     * @returns {Promise<boolean | void>}
      */
     async setItems(items, sendUpdate = false) {
+        await this.promise;
         if (!items?.length) return;
         if (this.listResource) {
-            this.listResource?.setItems(items, sendUpdate);
+            await this.listResource?.setItems(items, sendUpdate);
         } else {
-            this._config.items = items;
-            this._hasRendered && this.renderItems(items);
+            this.itemsNode && (this.itemsNode.innerHTML = '');
+            this.renderItems(items);
         }
+        return true;
     }
 
     // #endregion Resource API
@@ -564,11 +526,7 @@ class List extends ArpaElement {
         this.listResource?.on('remove_item', this.onResourceRemoveItem);
         this.listResource?.on('items_updated', this.onResourceItemsUpdated);
         this.listResource?.on('items', this.onResourceSetItems);
-        this.listResource?.on('update_item', (/** @type {ListResourceItemType} */ payload) => {
-            if (payload?.node?.reRender) {
-                payload.node.reRender();
-            }
-        });
+        this.listResource?.on('update_item', payload => payload?.node?.reRender?.());
         this.listResource?.on('fetch', this.onResourceFetch);
     }
 
@@ -639,14 +597,6 @@ class List extends ArpaElement {
     // #region Render
     ///////////////////
 
-    getTemplateVars() {
-        return {
-            pager: this.renderPager(),
-            id: this.getId(),
-            items: this.renderItemsWrapper()
-        };
-    }
-
     _preRender() {
         super._preRender();
         if (this.hasAttribute('title')) {
@@ -656,126 +606,74 @@ class List extends ArpaElement {
     }
 
     $renderTemplate() {
-        return this.getRenderMode() === 'minimal' ? this.renderMinimal() : this.renderFull();
+        if (this.getRenderMode() === 'minimal') {
+            return '{items}';
+        }
+        return html`
+            <arpa-node name="header">
+                <arpa-node name="headerTop">
+                    <arpa-node name="titleWrapper" tag="h2" has-zone="false" can-render="titleIcon || title">
+                        <arpa-node name="titleIcon" tag="arpa-icon"></arpa-node>
+                        <arpa-node name="title" tag="span"></arpa-node>
+                    </arpa-node>
+                    {headerControls}
+                </arpa-node>
+            </arpa-node>
+            <arpa-node name="body">
+                <arpa-node name="bodyMain">
+                    <arpa-node name="heading"></arpa-node>
+                    <arpa-node name="items" role="list" aria-label="{heading}" must-render is-content></arpa-node>
+                    <arpa-node name="noItems" defer="shouldRenderNoItems">
+                        <arpa-node name="noItemsIcon" tag="arpa-icon"></arpa-node>
+                        <arpa-node name="noItemsContent" tag="span"></arpa-node>
+                    </arpa-node>
+                    <!-- <arpa-node name="preloader" tag="circular-spinner" can-render="hasPreloader"> </arpa-node> -->
+                </arpa-node>
+                <arpa-node name="aside"></arpa-node>
+            </arpa-node>
+            <arpa-node name="footer" can-render="hasPager()">
+                <arpa-node
+                    name="pager"
+                    tag="arpa-pager"
+                    can-render="hasPager()"
+                    id="${this.id}-listPager"
+                    has-arrow-controls
+                    max-nodes="${this.getProp('max-pager-nodes')}"
+                    total-pages="${this.listResource?.getTotalPages()}"
+                    current-page="${this.listResource?.getCurrentPage()}"
+                    url-param="${this.getParamName('page')}"
+                ></arpa-node>
+            </arpa-node>
+        `;
     }
 
-    render() {
-        super.render();
-        this.bodyMainNode = this.querySelector('.arpaList__bodyMain');
-        this.itemsNode = (this.getRenderMode() === 'minimal' ? this : this.querySelector('.arpaList__items')) || this;
-        this.itemsNode && appendNodes(this.itemsNode, this._childNodes);
-        this.renderItems();
-        if (this.itemsNode.innerHTML.trim() === '') {
-            this.itemsNode.innerHTML = '';
-        }
-        const initialItems = this._initializeItems();
-        this.itemsNode && appendNodes(this.itemsNode, initialItems);
+    async shouldRenderNoItems() {
+        return this.getItemCount() < 1;
     }
 
     async $initializeNodes() {
-        this._childNodes?.forEach(item => {
-            if (item instanceof HTMLElement && item?.tagName?.toLowerCase() === this._config?.itemTag) {
-                this.preProcessNode(/** @type {ListItem} */ (item));
-            }
-        });
-
-        this.noItemsNode = this.querySelector('.arpaList__noItems');
+        await super.$initializeNodes();
+        this.bodyMainNode = this.nodes.bodyMain;
+        const renderMode = this.getRenderMode();
+        const isMinimal = renderMode === 'minimal';
+        this.itemsNode = /** @type {HTMLElement} */ (isMinimal ? this : this.nodes.items || this);
+        this.noItemsNode = this.nodes.noItems;
         this.preloader = this.querySelector('.arpaList__preloader');
-        this._handleNoItems();
+        this._handlePreloading();
+        this._initializePager();
         return true;
-    }
-
-    async _handleNoItems() {
-        if (this.listResource?.promise) {
-            await this.listResource.promise;
-        }
-        requestAnimationFrame(() => {
-            if (!this.getItemCount() && !this.isLoading) {
-                this.noItemsNode = this.noItemsNode || renderNode(this.renderChild('noItems'));
-                this.bodyMainNode?.appendChild(this.noItemsNode);
-            } else if (this.noItemsNode?.isConnected) {
-                this.noItemsNode?.remove();
-            }
-        });
-    }
-
-    _initializeItems() {
-        /** @type {(ListItem | Node | HTMLElement)[]} */
-        this.initialItems = this.getInitialItems() || [];
-        const initialItems = this.initialItems;
-        const isStatic = this.listResource?.isStatic();
-        const resource = this.listResource;
-        const perPage = this?.listResource?.getPerPage();
-
-        if (isStatic && perPage && perPage < this.initialItems.length) {
-            /** @type {Record<string, unknown>[]} */
-            const payload = [];
-            this.initialItems.forEach((node, index) => {
-                node instanceof HTMLElement && node.remove();
-                const defaultId = `item-${index}`;
-                const id = node instanceof HTMLElement ? node.getAttribute('id') || defaultId : defaultId;
-                payload.push({ node, id });
-            });
-            resource?.setItems(payload);
-            return [];
-        }
-
-        return initialItems.filter(item => item.parentNode !== this.itemsNode);
     }
 
     /**
      * Renders the list items.
      * @param {ListItemConfigType[]} items
-     * @param {HTMLElement} [container]
+     * @param {import('@arpadroid/ui').ArpaElementContentNodeType} [container]
      */
-    renderItems(items = this.getItems(), container = this.itemsNode) {
-        if (!(container instanceof HTMLElement)) {
-            console.warn('No items container found.');
-            return;
-        }
-        const $items = items.filter((/** @type {ListResourceItemType} */ item) => {
-            return !item?.node?.isConnected;
-        });
+    renderItems(items = this.getItems(), container = this.nodes.items || this) {
         appendNodes(
             container,
-            $items.map(item => this.createItem(item))
+            items.filter(item => !item?.node?.isConnected).map(item => this.createItem(item))
         );
-    }
-
-    /**
-     * Renders a list with all components.
-     * @returns {string}
-     */
-    renderFull() {
-        return html`
-            <div class="arpaList__header" zone="header">
-                <div class="arpaList__headerTop">{titleWrapper}{headerControls}</div>
-            </div>
-            {controls} {info} {messages}
-            <div class="arpaList__body" zone="body">
-                <div class="arpaList__bodyMain">{heading}{items}</div>
-                {aside}
-            </div>
-            {footer}
-        `;
-    }
-
-    /**
-     * Renders a minimal list.
-     * @returns {string}
-     */
-    renderMinimal() {
-        return html`{items}`;
-    }
-
-    /**
-     * Renders the items wrapper.
-     * @returns {string}
-     */
-    renderItemsWrapper() {
-        if (this.getRenderMode() === 'minimal') return '';
-        const ariaLabel = processTemplate(this.getProp('heading'), {}, this);
-        return html`<div class="arpaList__items" role="list" ${renderAttr('aria-label', ariaLabel)}></div>`;
     }
 
     /**
@@ -794,40 +692,40 @@ class List extends ArpaElement {
     // #region Pager
     ////////////////////////////
 
-    renderPager() {
-        if (!this.hasPager() || !this.hasResource()) return '';
-        return html`<arpa-pager
-            id="${this.id}-listPager"
-            class="arpaList__pager"
-            max-nodes="${this.getProp('max-pager-nodes')}"
-            total-pages="${this.listResource?.getTotalPages()}"
-            current-page="${this.listResource?.getCurrentPage()}"
-            url-param="${this.getParamName('page')}"
-        ></arpa-pager>`;
+    /**
+     * Updates the pager.
+     * @param {Pager | null} [node]
+     */
+    async updatePager(node) {
+        await this.waitForArpaNodes();
+        node = /** @type {Pager | null} */ (node || this.nodes.pager || this.querySelector('arpa-pager'));
+        if (!node) return;
+        const currentPage = this.listResource?.getCurrentPage() || 1;
+        const totalPages = this.listResource?.getTotalPages() || 1;
+        node?.setPager?.(currentPage, totalPages);
     }
 
     /**
-     * Updates the pager.
-     * @param {Pager | null} node
+     * @param {number} page - The page number to navigate to.
      */
-    updatePager(node = this.querySelector('arpa-pager')) {
-        const currentPage = this.listResource?.getCurrentPage() || 1;
-        const totalPages = this.listResource?.getTotalPages() || 1;
-        node?.setPager(currentPage, totalPages);
+    setPage(page) {
+        this.listResource?.goToPage(Number(page));
     }
 
-    _initializePager() {
-        /** @type {Pager | null} */
-        this.pagerNode = this.querySelector('arpa-pager');
-        this.pagerNode?.onChange(this.onPagerChange);
+    async _initializePager() {
+        this.pagerNode = /** @type {Pager | undefined} */ (this.nodes.pager);
+        this.pagerNode?.onChange?.(this.onPagerChange);
     }
 
     /**
      * Handles the pager change event.
-     * @param {import('@arpadroid/ui').PagerCallbackPayloadType} _payload
+     * @param {import('@arpadroid/ui').PagerCallbackPayloadType} payload
      */
-    onPagerChange(_payload) {
-        this.resetScroll();
+    onPagerChange(payload) {
+        if (payload.page) {
+            this.resetScroll();
+            this.listResource?.goToPage(Number(payload.page));
+        }
     }
 
     // #endregion Pager
@@ -837,18 +735,17 @@ class List extends ArpaElement {
     /////////////////////////
 
     _handlePreloading() {
-        const hasPreloader = this.hasProp('has-preloader');
+        const hasPreloader = this.hasProp('hasPreloader');
         if (!hasPreloader) return;
         this.listResource?.on('fetch', async () => {
             this.isLoading = true;
-            this.preloader = this.preloader || renderNode(this.renderChild('preloader'));
+            this.preloader = this.nodes.preloader || renderNode(this.renderChild('preloader'));
             this.classList.add('arpaList--loading');
             if (this.preloader?.isConnected) return;
             this.preloader && this.bodyMainNode?.appendChild(this.preloader);
         });
-
-        this.listResource?.on('ready', () => {
-            this.preloader?.isConnected && this.preloader.remove();
+        this.listResource?.on('ready', async () => {
+            this.nodes.preloader?.isConnected && this.nodes.preloader.remove();
             this.classList.remove('arpaList--loading');
             this.isLoading = false;
         });
@@ -857,6 +754,7 @@ class List extends ArpaElement {
     $onDestroy() {
         this?.listResource?.destroy();
     }
+
     // #endregion Lifecycle
 }
 

@@ -29,7 +29,7 @@ class TagList extends List {
      */
     getDefaultConfig() {
         /** @type {TagListConfigType} */
-        const config = mergeObjects(super.getDefaultConfig(), {
+        const conf = {
             className: 'tagList',
             renderMode: 'minimal',
             hasResource: false,
@@ -40,7 +40,8 @@ class TagList extends List {
             attributes: {
                 role: 'list'
             }
-        });
+        };
+        const config = mergeObjects(super.getDefaultConfig(), conf);
         if (typeof config.onDelete === 'function') {
             this.on('delete_tag', config.onDelete);
         }
@@ -54,13 +55,6 @@ class TagList extends List {
     onDeleteTag(tag) {
         this.signal('delete_tag', tag);
     }
-
-    /** @type {(item: TagItemConfigType) => Promise<void>} */
-    addItem = this.addItem;
-    /** @type {(items: (TagItemConfigType & Record<string, any>)[]) => Promise<void>} */
-    setItems = this.setItems;
-    /** @type {(item: Record<string, any>) => Promise<void>} */
-    removeItem = this.removeItem;
 }
 
 defineCustomElement('tag-list', TagList);
