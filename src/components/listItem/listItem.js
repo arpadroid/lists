@@ -251,7 +251,6 @@ class ListItem extends ArpaElement {
             this.zonesByName?.has('rhs') ||
             this.hasProp('rhs') ||
             this.hasProp('checkbox') ||
-            this.hasContent('nav') ||
             this.hasProp('hasSelection') ||
             this.listResource?.hasSelection()
         );
@@ -485,13 +484,14 @@ class ListItem extends ArpaElement {
         this.itemInitialized = true;
     }
 
-    $onComplete() {
+    async $onComplete() {
         this._initializeItem();
         this.removeAttribute('link');
         if (this.hasAttribute('title')) {
             this._config.title = this.getAttribute('title') || '';
             this.removeAttribute('title');
         }
+        return true;
     }
 
     /**
