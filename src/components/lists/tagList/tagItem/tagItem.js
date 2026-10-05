@@ -21,7 +21,8 @@ class TagItem extends ListItem {
         this._onDelete = this._onDelete.bind(this);
         /** @type {TagItemConfigType} */
         const config = {
-            classNames: ['tagItem', 'tag'],
+            className: 'tagItem',
+            classNames: ['tag'],
             attributeList: ['value'],
             listSelector: 'tag-list',
             tooltipPosition: 'top',

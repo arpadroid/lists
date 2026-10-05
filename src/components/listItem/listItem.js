@@ -328,7 +328,6 @@ class ListItem extends ArpaElement {
                     <arpa-node
                         tag="${this.getProp('truncateContent') ? 'truncate-text' : 'div'}"
                         name="content"
-                        can-render
                         is-content
                         max-length="{truncateContent}"
                         has-button="{truncateButton}"

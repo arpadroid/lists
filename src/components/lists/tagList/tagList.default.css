@@ -1,19 +1,17 @@
-.tagList.tagList {
+.tagList {
     display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    flex-wrap: wrap;
     gap: 0.25rem;
+
+    &.tagList {
+        flex-wrap: wrap;
+    }
+
     .tag {
         display: flex;
         align-items: center;
-        arpa-icon {
-            height: auto;
-            font-size: 1.25rem;
-        }
     }
 }
 
 .tagList.tagList[variant='compact'] {
-    gap: 4px;
+    gap: 0.25rem;
 }
