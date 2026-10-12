@@ -365,20 +365,27 @@ class List extends ArpaElement {
     /**
      * Transitions new items into the list.
      * @param {ListItemConfigType[]} items
-     * @returns {void}
+     * @returns {Promise<void>}
      */
-    transitionNewItems(items) {
+    async transitionNewItems(items) {
         const container = /** @type {HTMLElement | null} */ (this.getContentNode());
-        if (!container?.children?.length) return this.addItemsBatched(items);
+        if (!container?.children?.length) {
+            return this.addItemsBatched(items);
+        }
         const newWrapper = /** @type {HTMLElement } */ (this.renderNode('items'));
-        if (!newWrapper) return this.addItemsBatched(items);
+        if (!newWrapper) {
+            return this.addItemsBatched(items);
+        }
         newWrapper.classList?.add('arpaList__items--transitioning');
+        // A container still mid-transition would keep itemsIn (opacity: 1) and never fire transitionend.
+        container.classList.remove('arpaList--itemsIn', 'arpaList__items--transitioning');
+        this.oldWrapper?.removeEventListener('transitionend', this.onTransitionOut);
         /** @type {HTMLElement} */
         this.itemsNode = newWrapper;
         this.oldWrapper = container;
         this.oldWrapper.classList.add('arpaList__items--out');
         const newItems = /** @type {ListItem[]} */ (items.map(item => this.createItem(item)));
-        Promise.allSettled(newItems.map(item => item.onRendered())).then(() => {
+        await Promise.allSettled(newItems.map(item => item.onRendered())).then(() => {
             appendNodes(newWrapper, newItems);
             container.after(newWrapper);
             container.addEventListener('transitionend', this.onTransitionOut);
@@ -552,7 +559,7 @@ class List extends ArpaElement {
         if (hasItemsTransition) {
             const oldItems = document.querySelectorAll('.arpaList__items--out');
             oldItems.forEach(element => element.remove());
-            this.transitionNewItems(items);
+            await this.transitionNewItems(items);
         } else {
             this.itemsNode && (this.itemsNode.innerHTML = '');
             this.addItemsBatched(items);
