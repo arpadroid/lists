@@ -7,7 +7,7 @@
  * @typedef {import('../listItem/listItem.types').ListItemImageSizeType} ListItemImageSizeType
  */
 
-import { ArpaElement, getTemplateAttributes } from '@arpadroid/ui';
+import { ArpaElement, getArpaElementWithTag, getTemplateAttributes } from '@arpadroid/ui';
 import { ListResource, getResource } from '@arpadroid/resources';
 import { mergeObjects, appendNodes, defineCustomElement } from '@arpadroid/tools';
 import { renderNode, attrString, bind, attr } from '@arpadroid/tools';
@@ -40,11 +40,11 @@ class List extends ArpaElement {
 
     /**
      * Returns the parent list component from a given element.
-     * @param {Element} element
+     * @param {HTMLElement} element
      * @returns {List | null}
      */
     static getList(element) {
-        return element.closest('.arpaList, arpa-list, arpa-gallery, list-manager');
+        return /** @type {List} */ (getArpaElementWithTag(element, 'arpa-list'));
     }
 
     _initializeListResource() {
@@ -335,11 +335,9 @@ class List extends ArpaElement {
      * @param {boolean} preProcess
      */
     async addItemNodes(items, preProcess = true) {
-        this.onRenderReady(() => {
-            preProcess && items.forEach(item => this?.preProcessNode(item));
-            const container = this.getContentNode() || this;
-            appendNodes(container, items);
-        });
+        preProcess && items.forEach(item => this?.preProcessNode(item));
+        const container = this.getContentNode() || this;
+        appendNodes(container, items);
     }
 
     /**
@@ -347,17 +345,27 @@ class List extends ArpaElement {
      * @param {ListItemConfigType[]} items
      * @param {number} batchSize
      */
-    addItemsBatched(items = [], batchSize = 36) {
+    async addItemsBatched(items = [], batchSize = 20) {
+        await this.onRendered();
+        await this.waitForNodes();
+        const container = this.getContentNode() || this;
         const totalItems = items.length;
         let currentIndex = 0;
-        const processBatch = () => {
+        const processBatch = async () => {
             const batch = items.slice(currentIndex, currentIndex + batchSize);
-            const itemNodes = /** @type {ListItem[]} */ (batch.map(config => this.createItem(config)));
-            this.addItemNodes(itemNodes);
+            const renderedItems = [];
+            for (const i of batch) {
+                const item = /** @type {ListItem} */ (this.createItem(i));
+                renderedItems.push(item);
+                await item.waitForArpaNodes(item.arpaNodes, { waitForDeferred: true });
+                await item.waitForZones();
+                await item?.waitForNodes(item.nodes, { onRendered: true });
+            }
+            await new Promise(resolve => setTimeout(resolve));
+            await this.batcher?.append(container, Array.from(renderedItems), { batchSize, timeout: 0 });
+            await Promise.allSettled(renderedItems.map(item => item.onRendered()));
             currentIndex += batchSize;
-            currentIndex < totalItems && setTimeout(processBatch);
-            // Promise.allSettled(itemNodes.map(item => item.promise)).then(() => {
-            // });
+            currentIndex < totalItems && processBatch();
         };
         processBatch();
     }
@@ -384,14 +392,12 @@ class List extends ArpaElement {
         this.itemsNode = newWrapper;
         this.oldWrapper = container;
         this.oldWrapper.classList.add('arpaList__items--out');
-        const newItems = /** @type {ListItem[]} */ (items.map(item => this.createItem(item)));
-        await Promise.allSettled(newItems.map(item => item.onRendered())).then(() => {
-            appendNodes(newWrapper, newItems);
-            container.after(newWrapper);
-            container.addEventListener('transitionend', this.onTransitionOut);
-            container.classList.add('arpaList--itemsOut');
-            newWrapper.classList.add('arpaList--itemsIn');
-        });
+
+        await this.addItemsBatched(items);
+        container.after(newWrapper);
+        container.addEventListener('transitionend', this.onTransitionOut);
+        container.classList.add('arpaList--itemsOut');
+        newWrapper.classList.add('arpaList--itemsIn');
     }
 
     /**
@@ -511,7 +517,7 @@ class List extends ArpaElement {
         if (this.listResource) {
             await this.listResource?.setItems(items, sendUpdate);
         } else {
-            this.itemsNode && (this.itemsNode.innerHTML = '');
+            this.itemsNode && this.itemsNode.replaceChildren();
             this.renderItems(items);
         }
         return true;
@@ -561,7 +567,7 @@ class List extends ArpaElement {
             oldItems.forEach(element => element.remove());
             await this.transitionNewItems(items);
         } else {
-            this.itemsNode && (this.itemsNode.innerHTML = '');
+            this.itemsNode && this.itemsNode.replaceChildren();
             this.addItemsBatched(items);
         }
         this.resolveFetch?.(true);
@@ -575,7 +581,7 @@ class List extends ArpaElement {
      * Handles the removal of all list items from the list resource.
      */
     onResourceRemoveItems() {
-        this.itemsNode && (this.itemsNode.innerHTML = '');
+        this.itemsNode && this.itemsNode.replaceChildren();
     }
 
     /**
@@ -655,6 +661,7 @@ class List extends ArpaElement {
     }
 
     async shouldRenderNoItems() {
+        await this.onRendered();
         return this.getItemCount() < 1;
     }
 

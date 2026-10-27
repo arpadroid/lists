@@ -30,7 +30,7 @@ export async function initializeList(id, payload = artists) {
             date: lived
         };
     });
-    resource?.setItems(payload);
+    await resource?.setItems(payload);
 }
 
 /**
