@@ -9,7 +9,7 @@
  * @typedef {import('../lists/tagList/tagItem/tagItem.types').TagItemConfigType} TagItemConfigType
  */
 
-import { ArpaElement, applyTemplate } from '@arpadroid/ui';
+import { ArpaElement, applyTemplate, getArpaElementMatch } from '@arpadroid/ui';
 import { $attr, mergeObjects } from '@arpadroid/tools';
 import { getViewportWidth, getViewportHeight, defineCustomElement } from '@arpadroid/tools';
 import { getAttributes } from '@arpadroid/tools/node';
@@ -77,25 +77,6 @@ class ListItem extends ArpaElement {
         return mergeObjects(super.getDefaultConfig(), conf);
     }
 
-    async $initializeProperties() {
-        this.grabList();
-        return true;
-    }
-
-    grabList() {
-        if (this.list) return this.list;
-        const listSelector = this.getProp('list-selector');
-        /** @type {List} */
-        this.list = this._config?.list || this.closest(listSelector);
-
-        /** @type {ListResource} */
-        this.listResource = this.list?.listResource;
-        if (!this.listResource && typeof this.list?.preProcessNode === 'function') {
-            this.list?.preProcessNode(this);
-        }
-        return this.list;
-    }
-
     _onSelected() {
         this.checkbox && (this.checkbox.checked = true);
         this.classList.add(this.getSelectedClass());
@@ -129,7 +110,7 @@ class ListItem extends ArpaElement {
         return this.getProp('image-alt');
     }
 
-    async getLink() {
+    getLink() {
         return this.getProp('link');
     }
 
@@ -220,8 +201,33 @@ class ListItem extends ArpaElement {
     // #region Rendering
     /////////////////////////////
 
-    async _initializeTemplates() {
-        super._initializeTemplates();
+    grabList() {
+        if (this.list) return this.list;
+        const listSelector = this.getProp('listSelector');
+        this.list =
+            /** @type {List} */
+            (this._config?.list || (listSelector && getArpaElementMatch(this, el => el.matches(listSelector))));
+
+        /** @type {ListResource} */
+        this.listResource = this.list?.listResource;
+        if (!this.listResource && typeof this.list?.preProcessNode === 'function') {
+            this.list?.preProcessNode(this);
+        }
+        return this.list;
+    }
+
+    async _render() {
+        this.grabList();
+        this.link = this.link || this.getLink();
+
+        return super._render();
+    }
+
+    $canRender() {
+        if (!this.list && !this.isConnected) {
+            this._config.renderOnConnected = true;
+            return false;
+        }
         this._initializeListTemplate();
     }
 
@@ -238,7 +244,6 @@ class ListItem extends ArpaElement {
         this.imageURL = this.getProp('image');
         const { role } = this._config;
         role && this.setAttribute('role', role);
-        this.link = await this.getLink();
         return true;
     }
 
@@ -359,8 +364,7 @@ class ListItem extends ArpaElement {
     }
 
     _getItemTemplate() {
-        const list = this.grabList();
-        return typeof list?.getItemTemplate === 'function' && list?.getItemTemplate();
+        return typeof this.list?.getItemTemplate === 'function' && this.list?.getItemTemplate();
     }
 
     /**
@@ -374,7 +378,6 @@ class ListItem extends ArpaElement {
     }
 
     getImageAttributes() {
-        this.grabList();
         const totalItems = typeof this.list?.getItemCount === 'function' ? this.list?.getItemCount() : 0;
         const lazyLoad = this.getLazyLoad();
         const isAuto = lazyLoad === 'auto' && (totalItems || 0) > 100;
@@ -516,7 +519,6 @@ class ListItem extends ArpaElement {
     }
 
     register() {
-        this.grabList();
         this.listResource?.registerItem({ id: this.getId(), ...this.getPayload() }, this);
     }
 

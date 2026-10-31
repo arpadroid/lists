@@ -133,7 +133,7 @@ export const Test = {
             await waitFor(() => {
                 const textContent = items[0].querySelector('.truncateText__content');
                 expect(textContent?.textContent).toHaveLength(70);
-                expect(canvas.queryByText('No items found.')).not.toBeInTheDocument()
+                expect(canvas.queryByText('No items found.')).not.toBeInTheDocument();
             });
         });
     }

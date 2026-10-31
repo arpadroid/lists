@@ -164,16 +164,17 @@ export const Template = {
         `;
     },
     play: async ({ canvasElement, step, canvas }) => {
-        await customElements.whenDefined('arpa-list');
-        await customElements.whenDefined('list-item');
         await step('Renders the list item with the expected template', async () => {
             await waitFor(() => {
-                expect(canvas.getByText(fullTitle)).toBeInTheDocument();
-                expect(canvas.getByText(fullSubtitle)).toBeInTheDocument();
-                const listItem = canvasElement.querySelector('.myItem');
-                expect(listItem?.querySelector('.myItem__container')).toBeInTheDocument();
-                expect(canvas.getByText(fullContent)).toBeInTheDocument();
-                expect(listItem?.querySelector('img')).toHaveAttribute('src', '/test-assets/plane.jpg');
+                expect(canvasElement.querySelector('.myItem')).toBeInTheDocument();
+            });
+
+            expect(canvas.getByText(fullTitle)).toBeInTheDocument();
+            expect(canvas.getByText(fullSubtitle)).toBeInTheDocument();
+            expect(canvasElement.querySelector('.myItem__container')).toBeInTheDocument();
+            expect(canvas.getByText(fullContent)).toBeInTheDocument();
+            await waitFor(async () => {
+                expect(canvasElement?.querySelector('img')).toHaveAttribute('src', '/test-assets/plane.jpg');
             });
         });
 

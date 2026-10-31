@@ -345,7 +345,7 @@ class List extends ArpaElement {
      * @param {ListItemConfigType[]} items
      * @param {number} batchSize
      */
-    async addItemsBatched(items = [], batchSize = 20) {
+    async addItemsBatched(items = [], batchSize = 25) {
         await this.onRendered();
         await this.waitForNodes();
         const container = this.getContentNode() || this;
