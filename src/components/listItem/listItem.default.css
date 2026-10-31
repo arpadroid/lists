@@ -102,12 +102,10 @@
     font-size: 1.2rem;
     font-weight: 800;
     line-height: 1.5rem;
-    color: var(--grey-600);
+    color: var(--grey-750);
 }
 
 .listItem__titleIcon {
-    --icon-size: 1.1rem;
-
     position: relative;
     display: inline-block;
     font-weight: 600;
@@ -115,10 +113,10 @@
 }
 
 .listItem__subtitle {
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 700;
     line-height: 1.4rem;
-    color: var(--grey-700);
+    color: var(--grey-750);
 }
 
 /** --- Content --- */
@@ -126,14 +124,20 @@
 .listItem__content {
     font-size: 1rem;
     font-weight: 600;
-    line-height: 1.45rem;
-    color: var(--grey-600);
+    line-height: 1.75rem;
+    color: var(--grey-650);
 
-    .truncateText__readMoreButton {
+    .truncateText__button {
+        position: relative;
         align-self: flex-start;
-        padding-left: 0.25rem;
+        margin-top: 0.25rem;
         margin-left: 0;
         font-size: 0.8rem;
+
+        .arpaButton__content {
+            font-weight: 700;
+            color: var(--grey-800);
+        }
     }
 
     p {
