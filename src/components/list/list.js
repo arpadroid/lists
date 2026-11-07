@@ -30,7 +30,7 @@ class List extends ArpaElement {
     $preInitialize() {
         bind(this, 'onResourceAddItem', 'onResourceRemoveItem', 'onResourceRemoveItems', '_initializeList');
         bind(this, 'onResourceItemsUpdated', 'onResourceSetItems', 'onResourceAddItems', 'onResourceFetch');
-        bind(this, 'onTransitionOut', 'onPagerChange');
+        bind(this, 'onPagerChange');
     }
 
     $initialize() {
@@ -344,26 +344,22 @@ class List extends ArpaElement {
      * Handles the addition of a list item from the list resource.
      * @param {ListItemConfigType[]} items
      * @param {number} batchSize
+     * @param {HTMLElement} [wrapper]
      */
-    async addItemsBatched(items = [], batchSize = 25) {
+    async addItemsBatched(items = [], batchSize = 25, wrapper) {
+        if (!items.length) return;
         await this.onRendered();
         await this.waitForNodes();
-        const container = this.getContentNode() || this;
+        const container = wrapper || this.getContentNode() || this;
         const totalItems = items.length;
         let currentIndex = 0;
         const processBatch = async () => {
             const batch = items.slice(currentIndex, currentIndex + batchSize);
-            const renderedItems = [];
-            for (const i of batch) {
-                const item = /** @type {ListItem} */ (this.createItem(i));
-                renderedItems.push(item);
-                await item.waitForArpaNodes(item.arpaNodes, { waitForDeferred: true });
-                await item.waitForZones();
-                await item?.waitForNodes(item.nodes, { onRendered: true });
-            }
-            await new Promise(resolve => setTimeout(resolve));
-            await this.batcher?.append(container, Array.from(renderedItems), { batchSize, timeout: 0 });
+            const renderedItems = batch.map(i => /** @type {ListItem} */ (this.createItem(i)));
+            // Items must finish rendering while detached: zone content inserted into an already upgraded
+            // custom element (e.g. truncate-text) that has not rendered yet is dropped.
             await Promise.allSettled(renderedItems.map(item => item.onRendered()));
+            await this.batcher?.append(container, renderedItems, { batchSize, timeout: 0 });
             currentIndex += batchSize;
             currentIndex < totalItems && processBatch();
         };
@@ -377,43 +373,42 @@ class List extends ArpaElement {
      */
     async transitionNewItems(items) {
         const container = /** @type {HTMLElement | null} */ (this.getContentNode());
-        if (!container?.children?.length) {
-            return this.addItemsBatched(items);
+        const hasItems = Boolean(container?.querySelector(this.getProp('itemTag')));
+
+        if (!hasItems) {
+            container?.addEventListener(
+                'transitionend',
+                () => {
+                    container?.classList?.remove('arpaList__items--transitioning');
+                    container?.classList?.remove('arpaList--itemsIn');
+                },
+                { once: true }
+            );
+            container?.classList?.add('arpaList__items--transitioning');
+            return this.addItemsBatched(items, items.length);
         }
-        const newWrapper = /** @type {HTMLElement } */ (this.renderNode('items'));
-        if (!newWrapper) {
-            return this.addItemsBatched(items);
-        }
-        newWrapper.classList?.add('arpaList__items--transitioning');
-        // A container still mid-transition would keep itemsIn (opacity: 1) and never fire transitionend.
-        container.classList.remove('arpaList--itemsIn', 'arpaList__items--transitioning');
-        this.oldWrapper?.removeEventListener('transitionend', this.onTransitionOut);
+        this.newItems = items;
+
+        container?.classList.add('arpaList__items--transitioning');
+        const newWrapper = /** @type {HTMLElement} */ (this.renderNode('items'));
+        await this.addItemsBatched(items, 25, newWrapper);
+        await new Promise(resolve => setTimeout(resolve, 0));
+        container?.classList.add('arpaList--itemsOut');
+        newWrapper.classList.add('arpaList--itemsIn');
+        await new Promise(resolve => requestAnimationFrame(resolve));
+
+        container?.after(newWrapper);
         /** @type {HTMLElement} */
         this.itemsNode = newWrapper;
-        this.oldWrapper = container;
-        this.oldWrapper.classList.add('arpaList__items--out');
-
-        await this.addItemsBatched(items);
-        container.after(newWrapper);
-        container.addEventListener('transitionend', this.onTransitionOut);
-        container.classList.add('arpaList--itemsOut');
-        newWrapper.classList.add('arpaList--itemsIn');
-    }
-
-    /**
-     * Handles the transition out of the old items wrapper.
-     * @param {TransitionEvent} event
-     */
-    onTransitionOut(event) {
-        if (event && event.target === this.oldWrapper && event.target instanceof HTMLElement) {
-            event.target?.removeEventListener('transitionend', this.onTransitionOut);
-            if (this.oldWrapper) {
-                this.oldWrapper.style.display = 'none';
-                this.oldWrapper.remove();
-            }
-            this.oldWrapper = null;
-            this.itemsNode?.classList.remove('arpaList--itemsIn', 'arpaList__items--transitioning');
-        }
+        this.nodes.items = newWrapper;
+        newWrapper?.addEventListener(
+            'transitionend',
+            () => {
+                container?.remove();
+                newWrapper?.classList?.remove('arpaList--itemsIn');
+            },
+            { once: true }
+        );
     }
 
     /**

@@ -3,7 +3,7 @@
 }
 
 .arpaList {
-    --list-layout-gap: 1.2rem;
+    --list-layout-gap: 0.75rem;
 
     position: relative;
     display: flex;
@@ -19,7 +19,7 @@
     gap: 0.5rem;
     align-items: center;
     margin: 0;
-    font-size: 26px;
+    font-size: 1.625rem;
     font-weight: normal;
     color: var(--grey-600);
 
@@ -52,7 +52,7 @@
     align-items: center;
     width: 100%;
     min-width: 0;
-    padding-bottom: 8px;
+    padding-bottom: 0.5rem;
 }
 
 .arpaList .listHeading {
@@ -63,7 +63,7 @@
 }
 
 .listHeading__resultsMessageText {
-    padding: 4px 0 16px;
+    padding: 0.25rem 0 1rem;
 }
 
 /**
@@ -120,10 +120,6 @@
     transition: var(--theme-transition);
 }
 
-.arpaList__items--transitioning {
-    opacity: 0;
-}
-
 .listHeading__resultsMessageText:empty,
 .arpaList__header:empty,
 .arpaList__header:has(.listHeading:empty),
@@ -134,8 +130,7 @@
 .arpaList--itemsOut {
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
+    z-index: 0;
     opacity: 0;
 
     @starting-style {
@@ -143,13 +138,19 @@
     }
 }
 
-.arpaList--itemsIn {
+.arpaList--itemsIn.arpaList--itemsIn {
+    position: relative;
+    z-index: 0;
     display: flex;
     opacity: 1;
 
     @starting-style {
         opacity: 0;
     }
+}
+
+.arpaList__items--transitioning {
+    /* opacity: 0; */
 }
 
 /**
@@ -162,30 +163,30 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 100px;
-    padding: 16px;
-    margin: 8px 0;
-    font-size: 15px;
+    height: 6.25rem;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    font-size: 0.9375rem;
     color: var(--grey-500);
     text-align: center;
     text-transform: uppercase;
-    letter-spacing: 0.7px;
+    letter-spacing: 1px;
     outline: var(--striped-area-outline);
     background: var(--striped-area);
-    border: 2px solid var(--color-background);
+    border: 0.125rem solid var(--color-background);
     border: var(--striped-area-border);
-    border-radius: 8px;
+    border-radius: 0.5rem;
 }
 
 .arpaList__noItemsText {
-    padding: 6px 12px 5px;
+    padding: 0.375rem 0.75rem 0.3125rem;
     background-color: var(--overlay-light);
-    border-radius: 4px;
+    border-radius: 0.25rem;
 }
 
 .arpaList__preloader {
-    --spinner-size: 70px;
-    --spinner-thickness: 2px;
+    --spinner-size: 4.375rem;
+    --spinner-thickness: 0.125rem;
     --spinner-color: rgb(255 255 255 / 30%);
 
     z-index: -1;
@@ -207,6 +208,7 @@
 }
 
 .arpaList__pager {
+    z-index: 1;
     background-color: var(--overlay);
     border-radius: 0;
 }
@@ -242,6 +244,6 @@
 .arpaList[variant='mini'] {
     .arpaList__noItems {
         flex-direction: row;
-        height: 20px;
+        height: 1.25rem;
     }
 }
