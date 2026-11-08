@@ -98,7 +98,6 @@ export const Test300 = {
     play: async ({ canvasElement, step }) => {
         const listNode = await initializeList(canvasElement);
         await listNode?.onNodesReady();
-        await new Promise(resolve => setTimeout(resolve, 100));
         const resource = /** @type {ListResource | undefined} */ (listNode?.listResource);
         await step('Expect all items to be rendered', async () => {
             await waitFor(() => {
@@ -134,7 +133,6 @@ export const Test = {
         });
 
         await step('Changes page and renders new items', async () => {
-            await new Promise(resolve => setTimeout(resolve, 100));
             const page2Button = canvas.getByRole('link', { name: '2' });
             await userEvent.click(page2Button);
             await waitFor(() => {

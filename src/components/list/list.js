@@ -240,8 +240,12 @@ class List extends ArpaElement {
     /**
      * Scrolls list to the top.
      */
-    resetScroll() {
-        this.hasProp('resetScrollOnLoad') && this.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    async resetScroll() {
+        if (!this.hasProp('resetScrollOnLoad')) {
+            return;
+        }
+        this.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        await new Promise(resolve => setTimeout(resolve, 100));
     }
 
     // #endregion set
@@ -379,36 +383,29 @@ class List extends ArpaElement {
             container?.addEventListener(
                 'transitionend',
                 () => {
-                    container?.classList?.remove('arpaList__items--transitioning');
                     container?.classList?.remove('arpaList--itemsIn');
                 },
                 { once: true }
             );
-            container?.classList?.add('arpaList__items--transitioning');
             return this.addItemsBatched(items, items.length);
         }
         this.newItems = items;
-
-        container?.classList.add('arpaList__items--transitioning');
         const newWrapper = /** @type {HTMLElement} */ (this.renderNode('items'));
-        await this.addItemsBatched(items, 25, newWrapper);
-        await new Promise(resolve => setTimeout(resolve, 0));
-        container?.classList.add('arpaList--itemsOut');
-        newWrapper.classList.add('arpaList--itemsIn');
-        await new Promise(resolve => requestAnimationFrame(resolve));
-
-        container?.after(newWrapper);
-        /** @type {HTMLElement} */
-        this.itemsNode = newWrapper;
-        this.nodes.items = newWrapper;
-        newWrapper?.addEventListener(
+        newWrapper.addEventListener(
             'transitionend',
             () => {
                 container?.remove();
-                newWrapper?.classList?.remove('arpaList--itemsIn');
+                newWrapper.classList?.remove('arpaList--itemsIn');
             },
             { once: true }
         );
+        await this.addItemsBatched(items, 25, newWrapper);
+        container?.after(newWrapper);
+        container?.classList.add('arpaList--itemsOut');
+        newWrapper.classList.add('arpaList--itemsIn');
+        /** @type {HTMLElement} */
+        this.itemsNode = newWrapper;
+        this.nodes.items = newWrapper;
     }
 
     /**
@@ -558,8 +555,6 @@ class List extends ArpaElement {
         this.updatePager();
         const hasItemsTransition = this.hasProp('has-items-transition');
         if (hasItemsTransition) {
-            const oldItems = document.querySelectorAll('.arpaList__items--out');
-            oldItems.forEach(element => element.remove());
             await this.transitionNewItems(items);
         } else {
             this.itemsNode && this.itemsNode.replaceChildren();
@@ -730,9 +725,9 @@ class List extends ArpaElement {
      * Handles the pager change event.
      * @param {import('@arpadroid/ui').PagerCallbackPayloadType} payload
      */
-    onPagerChange(payload) {
+    async onPagerChange(payload) {
         if (payload.page) {
-            this.resetScroll();
+            await this.resetScroll();
             this.listResource?.goToPage(Number(payload.page));
         }
     }

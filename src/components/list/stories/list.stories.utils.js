@@ -52,7 +52,6 @@ export async function playSetup(canvasElement, initList = true, preRenderCallbac
     typeof preRenderCallback === 'function' && preRenderCallback({ listResource, listNode, listItem });
     await listNode?.promise;
     listNode?.id && initList && (await initializeList(listNode?.id));
-    await new Promise(resolve => setTimeout(resolve, 50));
     return { canvas, listNode, listItem, listResource };
 }
 

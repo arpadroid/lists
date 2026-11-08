@@ -229,6 +229,7 @@ class ListItem extends ArpaElement {
             return false;
         }
         this._initializeListTemplate();
+        return true;
     }
 
     async _initializeListTemplate() {
