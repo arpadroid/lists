@@ -663,6 +663,7 @@ class List extends ArpaElement {
         this.itemsNode = /** @type {HTMLElement} */ (isMinimal ? this : this.nodes.items || this);
         this.noItemsNode = this.nodes.noItems;
         this.preloader = this.querySelector('.arpaList__preloader');
+        this.controls = this.nodes.controls;
         this._handlePreloading();
         this._initializePager();
         return true;
