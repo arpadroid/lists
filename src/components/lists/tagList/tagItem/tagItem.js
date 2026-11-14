@@ -26,6 +26,7 @@ class TagItem extends ListItem {
             attributeList: ['value'],
             listSelector: 'tag-list',
             tooltipPosition: 'top',
+            fastRender: true,
             attributes: {
                 role: 'listitem'
             }

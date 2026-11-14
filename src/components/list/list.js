@@ -244,6 +244,7 @@ class List extends ArpaElement {
         if (!this.hasProp('resetScrollOnLoad')) {
             return;
         }
+
         this.scrollIntoView({ behavior: 'smooth', block: 'start' });
         await new Promise(resolve => setTimeout(resolve, 100));
     }
@@ -380,14 +381,7 @@ class List extends ArpaElement {
         const hasItems = Boolean(container?.querySelector(this.getProp('itemTag')));
 
         if (!hasItems) {
-            container?.addEventListener(
-                'transitionend',
-                () => {
-                    container?.classList?.remove('arpaList--itemsIn');
-                },
-                { once: true }
-            );
-            return this.addItemsBatched(items, items.length);
+            return this.addItemsBatched(items);
         }
         this.newItems = items;
         const newWrapper = /** @type {HTMLElement} */ (this.renderNode('items'));
