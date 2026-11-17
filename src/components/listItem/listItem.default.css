@@ -128,18 +128,6 @@
     line-height: 1.5rem;
     color: var(--grey-650);
 
-    .truncateText__button {
-        position: relative;
-        align-self: flex-start;
-        margin-left: 0;
-        font-size: 0.8rem;
-
-        .arpaButton__content {
-            font-weight: 700;
-            color: var(--grey-800);
-        }
-    }
-
     p {
         margin: 0;
     }

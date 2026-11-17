@@ -137,7 +137,7 @@ class ListItem extends ArpaElement {
         return (
             this.payload || {
                 ...this._config,
-                ...getAttributes(this, { camelCaseKeys: true })
+                ...getAttributes(this, { camelCaseKeys: true, convertFalseToBoolean: false })
             }
         );
     }
@@ -234,7 +234,8 @@ class ListItem extends ArpaElement {
 
     async _initializeListTemplate() {
         const itemTemplate = this._getItemTemplate();
-        itemTemplate && applyTemplate(this, itemTemplate, this.getPayload());
+        const payload = this.getPayload();
+        itemTemplate && applyTemplate(this, itemTemplate, payload);
     }
 
     getTitleTag() {
@@ -297,6 +298,10 @@ class ListItem extends ArpaElement {
         return tags?.length > 0 || this.zonesByName?.has('tags') || this.hasContent('tags');
     }
 
+    hasTruncation() {
+        return Boolean(this.getProp('truncateContent') || this.getProp('truncateLines'));
+    }
+
     /**
      * Returns the template for the list item.
      * @returns {string}
@@ -321,22 +326,23 @@ class ListItem extends ArpaElement {
                     ${$attr(this.getImageAttributes())}
                 ></arpa-node>
 
-                <div class="listItem__contentWrapper">
+                <arpa-node name="contentWrapper">
                     <arpa-node name="contentHeader" can-render="title || subtitle">
                         <arpa-node name="titleWrapper" href="{titleLink}" tag="${this.getTitleTag()}">
                             <arpa-node name="titleIcon" tag="arpa-icon"></arpa-node>
                             <arpa-node name="title"></arpa-node>
                         </arpa-node>
-
-                        <arpa-node tag="span" name="subtitle"></arpa-node>
+                        <arpa-node name="subtitle" tag="span"></arpa-node>
                     </arpa-node>
-
                     <arpa-node
-                        tag="${this.getProp('truncateContent') ? 'truncate-text' : 'div'}"
                         name="content"
                         is-content
-                        max-length="{truncateContent}"
+                        tag="${this.hasTruncation() ? 'truncate-text' : 'div'}"
                         has-button="{truncateButton}"
+                        max-length="{truncateContent}"
+                        ${$attr({
+                            maxLines: this.hasAttribute('truncate-content') ? undefined : '{truncateLines}'
+                        })}
                     >
                     </arpa-node>
                     <arpa-node name="tags" tag="tag-list" id="item-{id}-tagList" variant="compact" defer="hasTags">
@@ -345,8 +351,8 @@ class ListItem extends ArpaElement {
                                 html`<tag-item class="listItem__tag" icon="${icon}">${label}</tag-item>`
                         )}
                     </arpa-node>
-                </div>
-                <arpa-node tag="arpa-icon" name="iconRight"></arpa-node>
+                </arpa-node>
+                <arpa-node name="iconRight" tag="arpa-icon"></arpa-node>
             </arpa-node>
 
             <arpa-node name="rhs" defer="canRenderRhs">

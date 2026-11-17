@@ -40,6 +40,7 @@ export type ListItemConfigType = ArpaElementConfigType & {
     titleLink?: string;
     titleTag?: string;
     truncateContent?: number | string;
+    truncateLines?: number | string;
     truncateButton?: boolean | string;
     wrapperComponent?: string;
     node?: ListResourceItemNodeType;
