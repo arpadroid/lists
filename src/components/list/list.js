@@ -602,10 +602,15 @@ class List extends ArpaElement {
         }
     }
 
-    $renderTemplate() {
-        if (this.getRenderMode() === 'minimal') {
-            return '{items}';
-        }
+    getTotalPages() {
+        return this.listResource?.getTotalPages();
+    }
+
+    getCurrentPage() {
+        return this.listResource?.getCurrentPage();
+    }
+
+    $renderBlueprint() {
         return html`
             <arpa-node name="header">
                 <arpa-node name="headerTop">
@@ -616,10 +621,11 @@ class List extends ArpaElement {
                     {headerControls}
                 </arpa-node>
             </arpa-node>
+
             <arpa-node name="body">
                 <arpa-node name="bodyMain">
                     <arpa-node name="heading"></arpa-node>
-                    <arpa-node name="items" role="list" aria-label="{heading}" must-render is-content></arpa-node>
+                    <arpa-node name="items" role="list" is-content></arpa-node>
                     <arpa-node name="noItems" defer="shouldRenderNoItems">
                         <arpa-node name="noItemsIcon" tag="arpa-icon"></arpa-node>
                         <arpa-node name="noItemsContent" tag="span"></arpa-node>
@@ -628,6 +634,7 @@ class List extends ArpaElement {
                 </arpa-node>
                 <arpa-node name="aside"></arpa-node>
             </arpa-node>
+
             <arpa-node name="footer" can-render="hasPager()">
                 <arpa-node
                     name="pager"
@@ -635,13 +642,21 @@ class List extends ArpaElement {
                     can-render="hasPager()"
                     id="${this.id}-listPager"
                     has-arrow-controls
-                    max-nodes="${this.getProp('max-pager-nodes')}"
-                    total-pages="${this.listResource?.getTotalPages()}"
-                    current-page="${this.listResource?.getCurrentPage()}"
-                    url-param="${this.getParamName('page')}"
-                ></arpa-node>
+                    max-nodes="{maxPagerNodes}"
+                    total-pages="{getTotalPages()}"
+                    current-page="{getCurrentPage()}"
+                    url-param="{getParamName('page')}"
+                >
+                </arpa-node>
             </arpa-node>
         `;
+    }
+
+    $renderTemplate() {
+        if (this.getRenderMode() === 'minimal') {
+            return '{items}';
+        }
+        return html`{header} {body} {footer}`;
     }
 
     async shouldRenderNoItems() {
@@ -657,7 +672,6 @@ class List extends ArpaElement {
         this.itemsNode = /** @type {HTMLElement} */ (isMinimal ? this : this.nodes.items || this);
         this.noItemsNode = this.nodes.noItems;
         this.preloader = this.querySelector('.arpaList__preloader');
-        this.controls = this.nodes.controls;
         this._handlePreloading();
         this._initializePager();
         return true;
@@ -696,7 +710,8 @@ class List extends ArpaElement {
      * @param {Pager | null} [node]
      */
     async updatePager(node) {
-        await this.waitForArpaNodes();
+        await this.onRendered();
+        await this.promise;
         node = /** @type {Pager | null} */ (node || this.nodes.pager || this.querySelector('arpa-pager'));
         if (!node) return;
         const currentPage = this.listResource?.getCurrentPage() || 1;

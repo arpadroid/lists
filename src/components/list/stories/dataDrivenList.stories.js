@@ -22,9 +22,6 @@ const html = String.raw;
  */
 export async function initializeList(canvasElement, payload = artists) {
     const list = /** @type {List} */ (canvasElement.querySelector('arpa-list'));
-    await list?.onRendered();
-    await list?.onNodesReady();
-    // const list = /** @type {List | null} */ (document.getElementById(id));
     /** @type {ListResource | undefined} */
     const resource = list?.listResource;
     resource?.mapItem((/** @type {Record<string, any>} */ item) => {
@@ -49,12 +46,9 @@ const DataDrivenListStory = {
     parameters: {
         layout: 'flexColumn'
     },
-    beforeEach: async ({ canvasElement }) => {
-        await initializeList(canvasElement);
-    },
     args: {
         id: 'data-driven-list',
-        title: 'List Component',
+        title: 'Data Driven List',
         itemsPerPage: 5,
         hasResource: true,
         hasItemsTransition: true
@@ -65,10 +59,9 @@ const DataDrivenListStory = {
                 <template
                     template-type="list-item"
                     template-mode="append"
-                    truncate-content="100"
+                    truncate-lines="2"
                     image="{portraitURL}"
                     title="{firstName} {lastName}"
-                    truncate-button
                     has-selection
                 >
                     <arpa-zone name="tags">

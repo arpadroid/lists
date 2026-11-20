@@ -18,7 +18,7 @@ const ContentDrivenStories = {
     args: {
         id: 'static-list-test',
         title: 'Content Driven List',
-        titleIcon: 'list',
+        // titleIcon: 'list',
         controls: []
     },
     parameters: {
@@ -28,7 +28,7 @@ const ContentDrivenStories = {
         return html`<arpa-list ${attrString(args)}>
             <arpa-zone name="heading">List heading</arpa-zone>
             <arpa-zone name="aside"> List aside</arpa-zone>
-            <template template-type="list-item" truncate-content="70" truncate-button></template>
+            <template template-type="list-item" truncate-lines="2" truncate-button></template>
             <list-item title-link="#test-link" title-icon="auto_awesome" title="Morning Motivation">
                 <arpa-zone name="title"></arpa-zone>
                 <arpa-zone name="subtitle"> Start your day with a burst of energy! </arpa-zone>
@@ -124,15 +124,13 @@ export const Test = {
         step('Renders the items', async () => {
             await waitFor(() => {
                 expect(canvas.getAllByRole('listitem')).toHaveLength(8);
-                expect(canvas.getAllByRole('button', { name: /Read more/i })).toHaveLength(8);
+                expect(canvas.getAllByRole('button', { name: /read more/i })).toHaveLength(8);
             });
             const items = canvas.getAllByRole('listitem');
             expect(items).toHaveLength(8);
             expect(canvas.getByText('List aside')).toBeInTheDocument();
             expect(canvas.getByText('List heading')).toBeInTheDocument();
             await waitFor(() => {
-                const textContent = items[0].querySelector('.truncateText__content');
-                expect(textContent?.textContent).toHaveLength(70);
                 expect(canvas.queryByText('No items found.')).not.toBeInTheDocument();
             });
         });

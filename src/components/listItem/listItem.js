@@ -232,6 +232,8 @@ class ListItem extends ArpaElement {
         return true;
     }
 
+    templateInitialized = false;
+
     async _initializeListTemplate() {
         const itemTemplate = this._getItemTemplate();
         const payload = this.getPayload();
@@ -253,7 +255,7 @@ class ListItem extends ArpaElement {
         return this.listResource?.isSelected(this.getPayload()) ?? this.getProp('isSelected');
     }
 
-    async canRenderRhs() {
+    canRenderRhs() {
         return Boolean(
             this.zonesByName?.has('rhs') ||
             this.hasProp('rhs') ||
@@ -302,71 +304,82 @@ class ListItem extends ArpaElement {
         return Boolean(this.getProp('truncateContent') || this.getProp('truncateLines'));
     }
 
+    $renderBlueprint() {
+        const { tags = [] } = this._config;
+
+        return html`
+            <arpa-node name="icon" tag="arpa-icon"></arpa-node>
+            <arpa-node name="iconRight" tag="arpa-icon"></arpa-node>
+
+            <arpa-node
+                tag="arpa-image"
+                name="image"
+                has-image-thumbnail="{hasImageThumbnail}"
+                has-preview="{imagePreview}"
+                preview-title="{imagePreviewTitle}"
+                preview-controls="{previewControls}"
+                image-position="{imagePosition}"
+                on-load="{$onImageLoaded}"
+                on-error="{$onImageError}"
+                src="{getImage()}"
+                ${$attr(this.getImageAttributes())}
+            ></arpa-node>
+
+            <arpa-node name="titleWrapper" href="{titleLink}" tag="${this.getTitleTag()}">
+                <arpa-node name="titleIcon" tag="arpa-icon"></arpa-node>
+                <arpa-node name="title"></arpa-node>
+            </arpa-node>
+
+            <arpa-node name="contentHeader" can-render="title || subtitle">
+                {titleWrapper}
+                <arpa-node name="subtitle" tag="span"></arpa-node>
+            </arpa-node>
+
+            <arpa-node
+                name="content"
+                is-content
+                tag="${this.hasTruncation() ? 'truncate-text' : 'div'}"
+                has-button="{truncateButton}"
+                max-length="{truncateContent}"
+                ${$attr({
+                    maxLines: this.hasAttribute('truncate-content') ? undefined : '{truncateLines}'
+                })}
+            >
+                ${this.getProp('content') || ''}
+            </arpa-node>
+
+            <arpa-node name="tags" tag="tag-list" id="item-{id}-tagList" variant="compact" can-render="hasTags()">
+                ${tags?.map(
+                    ({ icon, label }) => html`<tag-item class="listItem__tag" icon="${icon}">${label}</tag-item>`
+                )}
+            </arpa-node>
+
+            <arpa-node tag="label" name="checkboxContainer" for="listitem__checkbox-{id}" can-render="hasSelection()">
+                <input
+                    class="listItem__checkbox arpaCheckbox"
+                    type="checkbox"
+                    id="listitem__checkbox-{id}"
+                    checked="{isSelected()}"
+                    on-change="{setSelected}"
+                    name="list-item-checkbox-{id}"
+                />
+            </arpa-node>
+        `;
+    }
+
     /**
      * Returns the template for the list item.
      * @returns {string}
      */
     $renderTemplate() {
-        const { tags = [] } = this._config;
         return html`
             <arpa-node ${this.wrapperAttr()}>
-                <arpa-node name="icon" tag="arpa-icon"></arpa-node>
-                <!-- Image -->
-                <arpa-node
-                    tag="arpa-image"
-                    name="image"
-                    has-image-thumbnail="{hasImageThumbnail}"
-                    has-preview="{imagePreview}"
-                    preview-title="{imagePreviewTitle}"
-                    preview-controls="{previewControls}"
-                    image-position="{imagePosition}"
-                    on-load="{$onImageLoaded}"
-                    on-error="{$onImageError}"
-                    src="{getImage()}"
-                    ${$attr(this.getImageAttributes())}
-                ></arpa-node>
-
-                <arpa-node name="contentWrapper">
-                    <arpa-node name="contentHeader" can-render="title || subtitle">
-                        <arpa-node name="titleWrapper" href="{titleLink}" tag="${this.getTitleTag()}">
-                            <arpa-node name="titleIcon" tag="arpa-icon"></arpa-node>
-                            <arpa-node name="title"></arpa-node>
-                        </arpa-node>
-                        <arpa-node name="subtitle" tag="span"></arpa-node>
-                    </arpa-node>
-                    <arpa-node
-                        name="content"
-                        is-content
-                        tag="${this.hasTruncation() ? 'truncate-text' : 'div'}"
-                        has-button="{truncateButton}"
-                        max-length="{truncateContent}"
-                        ${$attr({
-                            maxLines: this.hasAttribute('truncate-content') ? undefined : '{truncateLines}'
-                        })}
-                    >
-                    </arpa-node>
-                    <arpa-node name="tags" tag="tag-list" id="item-{id}-tagList" variant="compact" defer="hasTags">
-                        ${tags?.map(
-                            ({ icon, label }) =>
-                                html`<tag-item class="listItem__tag" icon="${icon}">${label}</tag-item>`
-                        )}
-                    </arpa-node>
-                </arpa-node>
-                <arpa-node name="iconRight" tag="arpa-icon"></arpa-node>
+                {icon}{image}
+                <arpa-node name="contentWrapper">{contentHeader}{content}{tags}</arpa-node>
+                {iconRight}
             </arpa-node>
 
-            <arpa-node name="rhs" defer="canRenderRhs">
-                <arpa-node tag="label" name="checkboxContainer" for="listitem__checkbox-{id}" defer="hasSelection">
-                    <input
-                        class="listItem__checkbox arpaCheckbox"
-                        type="checkbox"
-                        id="listitem__checkbox-{id}"
-                        checked="{isSelected()}"
-                        on-change="{setSelected}"
-                        name="list-item-checkbox-{id}"
-                    />
-                </arpa-node>
-            </arpa-node>
+            <arpa-node name="rhs" can-render="canRenderRhs()">{checkboxContainer}</arpa-node>
         `;
     }
 
