@@ -330,23 +330,11 @@ class ListItem extends ArpaElement {
                 <arpa-node name="title"></arpa-node>
             </arpa-node>
 
-            <arpa-node name="contentHeader" can-render="title || subtitle">
-                {titleWrapper}
-                <arpa-node name="subtitle" tag="span"></arpa-node>
-            </arpa-node>
+            <arpa-node name="subtitle" tag="span"></arpa-node>
 
-            <arpa-node
-                name="content"
-                is-content
-                tag="${this.hasTruncation() ? 'truncate-text' : 'div'}"
-                has-button="{truncateButton}"
-                max-length="{truncateContent}"
-                ${$attr({
-                    maxLines: this.hasAttribute('truncate-content') ? undefined : '{truncateLines}'
-                })}
-            >
-                ${this.getProp('content') || ''}
-            </arpa-node>
+            <arpa-node name="contentHeader" can-render="title || subtitle">{titleWrapper}{subtitle}</arpa-node>
+
+            <arpa-node ${this.contentAttr()}> ${this.getProp('content') || ''} </arpa-node>
 
             <arpa-node name="tags" tag="tag-list" id="item-{id}-tagList" variant="compact" can-render="hasTags()">
                 ${tags?.map(
@@ -375,11 +363,21 @@ class ListItem extends ArpaElement {
         return html`
             <arpa-node ${this.wrapperAttr()}>
                 {icon}{image}
-                <arpa-node name="contentWrapper">{contentHeader}{content}{tags}</arpa-node>
+                <arpa-node name="contentWrapper">
+                    <arpa-node name="contentHeader" can-render="title || subtitle">
+                        <div class="listItem__contentHeader__top">
+                            <arpa-node name="titleWrapper" href="{titleLink}" tag="{getTitleTag()}">
+                                {titleIcon} {title}
+                            </arpa-node>
+                            {checkboxContainer} {nav}
+                        </div>
+                        <arpa-node name="subtitle" tag="span"></arpa-node>
+                    </arpa-node>
+                    {content}{tags}
+                </arpa-node>
                 {iconRight}
             </arpa-node>
-
-            <arpa-node name="rhs" can-render="canRenderRhs()">{checkboxContainer}</arpa-node>
+            <arpa-node name="rhs" can-render="canRenderRhs()"></arpa-node>
         `;
     }
 
@@ -395,6 +393,25 @@ class ListItem extends ArpaElement {
     hasContent(property) {
         if (this.payload?.[property]) return true;
         return super.hasContent(property);
+    }
+
+    getContentAttributes() {
+        return {
+            hasButton: this.hasProp('truncateButton'),
+            maxLength: '{truncateContent}',
+            maxLines: this.hasAttribute('truncate-content') ? undefined : '{truncateLines}',
+            tag: this.hasTruncation() ? 'truncate-text' : 'div',
+            name: 'content',
+            isContent: true
+        };
+    }
+
+    contentAttr() {
+        return $attr(this.getContentAttributes());
+    }
+
+    imageAttr() {
+        return $attr(this.getImageAttributes());
     }
 
     getImageAttributes() {

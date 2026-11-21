@@ -27,7 +27,7 @@ const ContentDrivenStories = {
     render: args => {
         return html`<arpa-list ${attrString(args)}>
             <arpa-zone name="heading">List heading</arpa-zone>
-            <arpa-zone name="aside"> List aside</arpa-zone>
+            <arpa-zone name="aside">Aside</arpa-zone>
             <template template-type="list-item" truncate-lines="2" truncate-button></template>
             <list-item title-link="#test-link" title-icon="auto_awesome" title="Morning Motivation">
                 <arpa-zone name="title"></arpa-zone>
@@ -128,7 +128,7 @@ export const Test = {
             });
             const items = canvas.getAllByRole('listitem');
             expect(items).toHaveLength(8);
-            expect(canvas.getByText('List aside')).toBeInTheDocument();
+            expect(canvas.getByText('Aside')).toBeInTheDocument();
             expect(canvas.getByText('List heading')).toBeInTheDocument();
             await waitFor(() => {
                 expect(canvas.queryByText('No items found.')).not.toBeInTheDocument();

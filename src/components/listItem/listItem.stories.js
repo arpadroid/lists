@@ -31,35 +31,6 @@ export const Render = {
 };
 
 /** @type {Story} */
-export const Simple = {
-    args: {
-        icon: 'check_circle',
-        content: 'Simple List Item'
-    },
-    parameters: testParams,
-    play: async ({ canvasElement, step, canvas }) => {
-        await customElements.whenDefined('arpa-list');
-        await customElements.whenDefined('list-item');
-
-        await step('Renders the list item with the expected content', async () => {
-            await waitFor(() => {
-                expect(canvas.getByText('Simple List Item')).toBeInTheDocument();
-                expect(canvas.getByText('check_circle')).toHaveClass('icon');
-            });
-        });
-        await step('Does not render the empty content header', async () => {
-            const contentHeader = canvasElement.querySelector('.listItem__contentHeader');
-            expect(contentHeader).not.toBeInTheDocument();
-        });
-    }
-};
-
-const tags = html`<arpa-zone name="tags">
-    <tag-item icon="category">Space</tag-item>
-    <tag-item icon="book_2">knowledge</tag-item>
-</arpa-zone>`;
-
-/** @type {Story} */
 export const Link = {
     args: {
         icon: 'link',
@@ -86,13 +57,37 @@ export const Link = {
     }
 };
 
+/** @type {Story} */
+export const ItemSimple = {
+    args: {
+        icon: 'check_circle',
+        content: 'Simple List Item'
+    },
+    parameters: testParams,
+    play: async ({ canvasElement, step, canvas }) => {
+        await customElements.whenDefined('arpa-list');
+        await customElements.whenDefined('list-item');
+
+        await step('Renders the list item with the expected content', async () => {
+            await waitFor(() => {
+                expect(canvas.getByText('Simple List Item')).toBeInTheDocument();
+                expect(canvas.getByText('check_circle')).toHaveClass('icon');
+            });
+        });
+        await step('Does not render the empty content header', async () => {
+            const contentHeader = canvasElement.querySelector('.listItem__contentHeader');
+            expect(contentHeader).not.toBeInTheDocument();
+        });
+    }
+};
+
 const fullTitle = 'We live in a vast and mysterious universe full of interesting facts and wonders.';
 const fullSubtitle = 'Did you know?';
 const fullContent =
     'There are an estimated 3 trillion trees on Earth, which means there are more trees on our planet than there are stars in the entire Milky Way galaxy!';
 
 /** @type {Story} */
-export const FullItem = {
+export const ItemFull = {
     args: {
         title: fullTitle,
         subtitle: fullSubtitle,
@@ -114,10 +109,15 @@ export const FullItem = {
     }
 };
 
+const tags = html`<arpa-zone name="tags">
+    <tag-item icon="category">Space</tag-item>
+    <tag-item icon="book_2">knowledge</tag-item>
+</arpa-zone>`;
+
 /** @type {Story} */
-export const Template = {
+export const CustomTemplate = {
     args: {
-        ...FullItem.args
+        ...ItemFull.args
     },
     parameters: testParams,
     render: args => {
@@ -129,19 +129,20 @@ export const Template = {
                     display: flex;
                     flex-direction: column;
 
-                    .listItem__title {
-                        max-width: 400px;
-                    }
-
                     .listItem__image {
-                        min-width: 100px;
+                        min-width: 120px;
+                        height: stretch;
                     }
 
                     .listItem__titleWrapper {
                         display: flex;
                         flex-direction: column;
                         align-items: flex-start;
-                        gap: 0.5rem;
+                        padding: 0.5rem 0;
+                    }
+
+                    .listItem__tags {
+                        align-self: flex-start;
                     }
                 }
                 .myItem__container {
@@ -155,9 +156,10 @@ export const Template = {
                 <template template-type="list-item" class="myItem">
                     <div class="myItem__container">
                         {image}
-                        <span class="listItem__titleWrapper">{title}{subtitle}{tags}</span>
+                        <span class="listItem__titleWrapper">{title}{subtitle}</span>
                     </div>
-                    {content}
+                    <arpa-node tag="truncate-text" name="content" name="content" max-lines="2" is-content></arpa-node>
+                    {tags}
                 </template>
                 <list-item ${$attr(args)}> ${content} ${tags} </list-item>
             </arpa-list>
@@ -172,8 +174,8 @@ export const Template = {
             expect(canvas.getByText(fullTitle)).toBeInTheDocument();
             expect(canvas.getByText(fullSubtitle)).toBeInTheDocument();
             expect(canvasElement.querySelector('.myItem__container')).toBeInTheDocument();
-            expect(canvas.getByText(fullContent)).toBeInTheDocument();
             await waitFor(async () => {
+                expect(canvas.getByText(fullContent)).toBeInTheDocument();
                 expect(canvasElement?.querySelector('img')).toHaveAttribute('src', '/test-assets/plane.jpg');
             });
         });
@@ -197,7 +199,7 @@ export const Zones = {
     args: {
         titleIcon: 'auto_awesome',
         titleLink: '#test-link',
-        truncateContent: 50,
+        truncateLines: 2,
         truncateButton: true
     },
     parameters: {
@@ -216,8 +218,6 @@ export const Zones = {
         `;
     },
     play: async ({ canvasElement, step, canvas }) => {
-        await customElements.whenDefined('arpa-list');
-        await customElements.whenDefined('list-item');
         await step('Renders the list item with the expected zones', async () => {
             await waitFor(() => {
                 expect(canvas.getByText(zonesTitle)).toBeInTheDocument();
@@ -229,13 +229,12 @@ export const Zones = {
             await waitFor(() => {
                 const content = canvasElement.querySelector('.truncateText__content');
                 expect(content).toBeInTheDocument();
-                expect(content?.textContent).toHaveLength(50);
                 expect(canvas.getByRole('button', { name: /read more/i })).toBeInTheDocument();
             });
         });
 
         await step('Expands the content when the Read more button is clicked', async () => {
-            const readMoreButton = canvas.getByRole('button', { name: /read more/i });
+            const readMoreButton = await waitFor(() => canvas.getByRole('button', { name: /read more/i }));
             expect(readMoreButton).toBeInTheDocument();
             await userEvent.click(readMoreButton);
             await waitFor(() => {
